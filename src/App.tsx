@@ -8,7 +8,7 @@ import { Dashboard } from "./pages/dashboard";
 
 function App() {
   return (
-    <div className="bg-[url('/src/assets/background.jpg')] bg-cover bg-center min-h-screen">
+    <div className="h-screen bg-gradient-to-br from-[#e4f4ff] to-[#f8c778]">
       <Navbar />
       <Routes>
         <Route>
