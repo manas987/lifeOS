@@ -6,6 +6,7 @@ export function Navbar() {
   const [panel, setPanel] = useState<
     null | "settings" | "notifications" | "profile"
   >(null);
+
   const [mode, setmode] = useState<"dark" | "light">("light");
 
   function renderPanel() {
@@ -28,12 +29,14 @@ export function Navbar() {
     <div>
       <div className="flex justify-between p-5">
         <div className="border border-[#979797] rounded-full p-3">Life Os</div>
+
         <div className="flex gap-1">
+          {/* Navigation */}
           <div className="bg-[#f1f1f1] rounded-full flex">
             <NavLink
               to="/dashboard"
               className={({ isActive }) =>
-                `rounded-full p-3 pr-5 pl-5 transition ${
+                `rounded-full p-3 pr-5 pl-5 transition-colors duration-150 ${
                   isActive
                     ? "bg-[#2b2b2b] text-[#e4e4e4]"
                     : "hover:bg-[#dadada]"
@@ -45,7 +48,7 @@ export function Navbar() {
             <NavLink
               to="/tasks"
               className={({ isActive }) =>
-                `rounded-full p-3 pr-5 pl-5 transition ${
+                `rounded-full p-3 pr-5 pl-5 transition-colors duration-150 ${
                   isActive
                     ? "bg-[#2b2b2b] text-[#e4e4e4]"
                     : "hover:bg-[#dadada]"
@@ -57,7 +60,7 @@ export function Navbar() {
             <NavLink
               to="/finances"
               className={({ isActive }) =>
-                `rounded-full p-3 pr-5 pl-5 transition ${
+                `rounded-full p-3 pr-5 pl-5 transition-colors duration-150 ${
                   isActive
                     ? "bg-[#2b2b2b] text-[#e4e4e4]"
                     : "hover:bg-[#dadada]"
@@ -69,7 +72,7 @@ export function Navbar() {
             <NavLink
               to="/habits"
               className={({ isActive }) =>
-                `rounded-full p-3 pr-5 pl-5 transition ${
+                `rounded-full p-3 pr-5 pl-5 transition-colors duration-150 ${
                   isActive
                     ? "bg-[#2b2b2b] text-[#e4e4e4]"
                     : "hover:bg-[#dadada]"
@@ -79,10 +82,11 @@ export function Navbar() {
             </NavLink>
           </div>
 
+          {/* Right side buttons */}
           <div className="flex gap-1">
             <button
               onClick={() => setPanel("settings")}
-              className="bg-[#f1f1f1] rounded-full p-3 flex gap-1 hover:bg-[#dadada]">
+              className="bg-[#f1f1f1] rounded-full p-3 flex gap-1 hover:bg-[#dadada] transition-colors duration-150">
               <Settings /> Settings
             </button>
 
@@ -90,24 +94,25 @@ export function Navbar() {
               onClick={() =>
                 setmode((prev) => (prev === "light" ? "dark" : "light"))
               }
-              className="bg-[#f1f1f1] rounded-full p-3 hover:bg-[#dadada]">
+              className="bg-[#f1f1f1] rounded-full p-3 hover:bg-[#dadada] transition-colors duration-150">
               {mode === "light" ? <MoonStar /> : <Sun />}
             </button>
 
             <button
               onClick={() => setPanel("notifications")}
-              className="bg-[#f1f1f1] rounded-full p-3 hover:bg-[#dadada]">
+              className="bg-[#f1f1f1] rounded-full p-3 hover:bg-[#dadada] transition-colors duration-150">
               <Bell />
             </button>
 
             <button
               onClick={() => setPanel("profile")}
-              className="bg-[#f1f1f1] rounded-full p-3 hover:bg-[#dadada]">
+              className="bg-[#f1f1f1] rounded-full p-3 hover:bg-[#dadada] transition-colors duration-150">
               <User />
             </button>
           </div>
         </div>
       </div>
+
       {panel && (
         <div
           className="fixed inset-0 bg-black/30 flex justify-end"
