@@ -1,19 +1,23 @@
+import { useOutletContext } from "react-router-dom";
 import { Tasklayout } from "./taskitem";
-import { Tasksarray } from "./tasklist";
 
 export function Today() {
+  const { taskslist, toggletask } = useOutletContext<any>();
   const today = new Date().toISOString().slice(0, 10);
-  const todayTasks = Tasksarray.filter((task) => task.createdAt === today);
+  const todayTasks = taskslist.filter(
+    (task: any) => task.createdAt === today && !task.completed,
+  );
   return (
     <div>
       <h2 className="text-3xl font-light mb-4">Today</h2>
 
       <div className="flex flex-col gap-3">
-        {todayTasks.map((task) => (
+        {todayTasks.map((task: any) => (
           <Tasklayout
             key={task.id}
             title={task.title}
             completed={task.completed}
+            onClick={() => toggletask(task.id)}
           />
         ))}
       </div>
