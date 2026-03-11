@@ -11,11 +11,9 @@ export function Taskside() {
       <div className="p-1">
         <h1 className="text-5xl font-light">Tasks</h1>
       </div>
-      {/* Actions */}
       <button className="glass-card w-full p-4 text-left hover:!bg-white transition duration-150">
         Add task
       </button>
-      {/* Navigation */}
       <NavLink
         to="/tasks/inbox"
         className={({ isActive }) => linkClass(isActive)}>
@@ -40,7 +38,6 @@ export function Taskside() {
         Completed
       </NavLink>
 
-      {/* Projects */}
       <div className="glass-card w-full p-3 flex justify-between items-center hover:!bg-white transition duration-150">
         Projects
         <button className="hover:bg-[#dadada] rounded-full p-1">
