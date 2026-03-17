@@ -19,7 +19,8 @@ export function Taskside({ addtask }: Props) {
         <h1 className="text-5xl font-light">Tasks</h1>
       </div>
       <NavLink
-        to="/tasks/inbox"
+        to="/tasks"
+        end
         className={({ isActive }) => linkClass(isActive)}>
         Inbox
       </NavLink>

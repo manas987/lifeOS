@@ -9,7 +9,6 @@ import { Inbox } from "./pages/tasks/taskinbox";
 import { Today } from "./pages/tasks/tasktoday";
 import { Upcoming } from "./pages/tasks/taskupcom";
 import { Completed } from "./pages/tasks/taskcompleted";
-import bg from "./assets/background.jpg";
 
 function App() {
   return (
@@ -22,6 +21,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
 
         <Route path="/tasks" element={<Tasks />}>
+          <Route index element={<Inbox />} />
           <Route path="inbox" element={<Inbox />} />
           <Route path="today" element={<Today />} />
           <Route path="upcoming" element={<Upcoming />} />
