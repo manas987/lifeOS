@@ -44,7 +44,7 @@ export function Tasklayout({
         } ${isDragging ? "scale-105 shadow-xl opacity-90 z-50" : ""}`}>
         <button
           onClick={onClick}
-          className="flex items-center gap-3 w-full text-left"
+          className="flex items-center gap-3 w-full text-left cursor-grab active:cursor-grabbing"
           {...listeners}>
           {completed ? <CheckCircle2 size={18} /> : <Circle size={18} />}
           <span className="truncate">{title}</span>
