@@ -10,7 +10,7 @@ export function Upcoming() {
   return (
     <div>
       <h2 className="text-3xl font-light mb-4">Upcoming</h2>
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-3 overflow-visible">
         {upcomingtask.map((task: any) => (
           <Tasklayout
             key={task.id}

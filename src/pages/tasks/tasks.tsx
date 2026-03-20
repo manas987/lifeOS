@@ -15,7 +15,6 @@ export function Tasks() {
     const saved = localStorage.getItem("tasks");
     return saved ? JSON.parse(saved) : [];
   });
-
   useEffect(() => {
     localStorage.setItem("tasks", JSON.stringify(taskslist));
   }, [taskslist]);
@@ -41,7 +40,7 @@ export function Tasks() {
   return (
     <div className="flex">
       <Taskside addtask={addtask} />
-      <div className="flex-1 p-4 pl-9">
+      <div className="flex-1 p-4 pl-9 overflow-visible">
         <Outlet context={{ taskslist, toggletask }} />
       </div>
     </div>

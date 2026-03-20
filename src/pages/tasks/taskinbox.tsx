@@ -9,7 +9,7 @@ export function Inbox() {
   return (
     <div>
       <h2 className="text-3xl font-light mb-4">Inbox</h2>
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-3 overflow-visible">
         {inboxtask.map((task: any) => (
           <Tasklayout
             key={task.id}
