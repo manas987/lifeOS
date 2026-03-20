@@ -2,7 +2,7 @@ import { useOutletContext } from "react-router-dom";
 import { Tasklayout } from "./taskitem";
 
 export function Today() {
-  const { taskslist, toggletask } = useOutletContext<any>();
+  const { taskslist, toggletask, open, setOpen, deleteTask }= useOutletContext<any>();
   const today = new Date().toISOString().slice(0, 10);
   const todayTasks = taskslist.filter(
     (task: any) => task.createdAt === today && !task.completed,
@@ -18,6 +18,9 @@ export function Today() {
             title={task.title}
             completed={task.completed}
             onClick={() => toggletask(task.id)}
+            isOpen={open === task.id}
+            onToggle={() => setOpen(open === task.id ? null : task.id)}
+            onDelete={() => deleteTask(task.id)}
           />
         ))}
       </div>

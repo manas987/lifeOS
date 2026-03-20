@@ -3,6 +3,7 @@ import { Taskside } from "./tasksside";
 import { useEffect, useState } from "react";
 
 export function Tasks() {
+  const [open, setOpen] = useState<number | null>(null);
   type Tasktype = {
     id: number;
     title: string;
@@ -37,11 +38,17 @@ export function Tasks() {
     );
   }
 
+  function deleteTask(id: number) {
+    settasks((prev) => prev.filter((task) => task.id !== id));
+    setOpen(null);
+  }
   return (
     <div className="flex">
       <Taskside addtask={addtask} />
       <div className="flex-1 p-4 pl-9 overflow-visible">
-        <Outlet context={{ taskslist, toggletask }} />
+        <Outlet
+          context={{ taskslist, toggletask, open, setOpen, deleteTask }}
+        />
       </div>
     </div>
   );

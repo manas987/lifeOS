@@ -2,7 +2,8 @@ import { useOutletContext } from "react-router-dom";
 import { Tasklayout } from "./taskitem";
 
 export function Inbox() {
-  const { taskslist, toggletask } = useOutletContext<any>();
+  const { taskslist, toggletask, open, setOpen, deleteTask } =
+    useOutletContext<any>();
 
   const inboxtask = taskslist.filter((task: any) => !task.completed);
 
@@ -16,6 +17,9 @@ export function Inbox() {
             title={task.title}
             completed={task.completed}
             onClick={() => toggletask(task.id)}
+            isOpen={open === task.id}
+            onToggle={() => setOpen(open === task.id ? null : task.id)}
+            onDelete={() => deleteTask(task.id)}
           />
         ))}
       </div>
