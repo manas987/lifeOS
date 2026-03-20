@@ -1,6 +1,8 @@
 import { Outlet } from "react-router-dom";
 import { Taskside } from "./tasksside";
 import { useEffect, useState } from "react";
+import type { DragEndEvent } from "@dnd-kit/core";
+import { arrayMove } from "@dnd-kit/sortable";
 
 export function Tasks() {
   const [open, setOpen] = useState<number | null>(null);
@@ -42,12 +44,31 @@ export function Tasks() {
     settasks((prev) => prev.filter((task) => task.id !== id));
     setOpen(null);
   }
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    if (!over) return;
+    if (active.id === over.id) return;
+    settasks((prev) => {
+      const oldIndex = prev.findIndex((task) => task.id === active.id);
+      const newIndex = prev.findIndex((task) => task.id === over.id);
+      return arrayMove(prev, oldIndex, newIndex);
+    });
+  }
+
   return (
     <div className="flex">
       <Taskside addtask={addtask} />
       <div className="flex-1 p-4 pl-9 overflow-visible">
         <Outlet
-          context={{ taskslist, toggletask, open, setOpen, deleteTask }}
+          context={{
+            taskslist,
+            toggletask,
+            open,
+            setOpen,
+            deleteTask,
+            handleDragEnd,
+          }}
         />
       </div>
     </div>

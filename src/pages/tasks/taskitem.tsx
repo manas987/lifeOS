@@ -1,5 +1,6 @@
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { Circle, CheckCircle2, Ellipsis } from "lucide-react";
-import { useState } from "react";
 
 type TaskProps = {
   title: string;
@@ -8,6 +9,7 @@ type TaskProps = {
   isOpen: boolean;
   onToggle: () => void;
   onDelete: () => void;
+  id: number;
 };
 export function Tasklayout({
   title,
@@ -16,16 +18,34 @@ export function Tasklayout({
   isOpen,
   onToggle,
   onDelete,
+  id,
 }: TaskProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
   return (
-    <div className="relative w-full group">
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      className="relative w-full group">
       <div
         className={`glass-card w-full p-4 flex items-center justify-between hover:!bg-white/80 transition duration-150 ${
           completed ? "line-through opacity-60" : ""
-        }`}>
+        } ${isDragging ? "scale-105 shadow-xl opacity-90 z-50" : ""}`}>
         <button
           onClick={onClick}
-          className="flex items-center gap-3 w-full text-left">
+          className="flex items-center gap-3 w-full text-left"
+          {...listeners}>
           {completed ? <CheckCircle2 size={18} /> : <Circle size={18} />}
           <span className="truncate">{title}</span>
         </button>
