@@ -5,7 +5,6 @@ import type { DragEndEvent } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 
 export function Tasks() {
-  const [toastKey, setToastKey] = useState<number>(0);
   const [open, setOpen] = useState<number | null>(null);
   type Tasktype = {
     id: number;
@@ -52,7 +51,6 @@ export function Tasks() {
     }, 10);
     settasks((prev) => prev.filter((task) => task.id !== id));
     setOpen(null);
-    setToastKey((prev) => prev + 1);
   }
 
   function handleDragEnd(event: DragEndEvent) {

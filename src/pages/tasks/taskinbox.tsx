@@ -25,22 +25,28 @@ export function Inbox() {
     <div>
       <h2 className="text-3xl font-light mb-4">Inbox</h2>
       <div className="flex flex-col gap-3 overflow-visible">
-        <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-          <SortableContext items={ids}>
-            {inboxtask.map((task: any) => (
-              <Tasklayout
-                key={task.id}
-                title={task.title}
-                completed={task.completed}
-                onClick={() => toggletask(task.id)}
-                isOpen={open === task.id}
-                onToggle={() => setOpen(open === task.id ? null : task.id)}
-                onDelete={() => deleteTask(task.id)}
-                id={task.id}
-              />
-            ))}
-          </SortableContext>
-        </DndContext>
+        {inboxtask.length === 0 ? (
+          <div className="text-sm opacity-60 mt-10 text-center">
+            No tasks yet
+          </div>
+        ) : (
+          <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+            <SortableContext items={ids}>
+              {inboxtask.map((task: any) => (
+                <Tasklayout
+                  key={task.id}
+                  title={task.title}
+                  completed={task.completed}
+                  onClick={() => toggletask(task.id)}
+                  isOpen={open === task.id}
+                  onToggle={() => setOpen(open === task.id ? null : task.id)}
+                  onDelete={() => deleteTask(task.id)}
+                  id={task.id}
+                />
+              ))}
+            </SortableContext>
+          </DndContext>
+        )}
       </div>
     </div>
   );
