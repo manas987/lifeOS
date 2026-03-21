@@ -5,13 +5,14 @@ import type { DragEndEvent } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 
 export function Tasks() {
+  const [toastKey, setToastKey] = useState<number>(0);
   const [open, setOpen] = useState<number | null>(null);
   type Tasktype = {
     id: number;
     title: string;
     completed: boolean;
     createdAt: string;
-    // duedate: string;
+    duedate?: string;
   };
 
   const [taskslist, settasks] = useState<Tasktype[]>(() => {
@@ -40,9 +41,18 @@ export function Tasks() {
     );
   }
 
+  const [deleteundo, setdeleteundo] = useState<Tasktype | null>(null);
+
   function deleteTask(id: number) {
+    const tempdeletestorage = taskslist.find((item) => item.id === id);
+    if (!tempdeletestorage) return;
+    setdeleteundo(null);
+    setTimeout(() => {
+      setdeleteundo(tempdeletestorage);
+    }, 10);
     settasks((prev) => prev.filter((task) => task.id !== id));
     setOpen(null);
+    setToastKey((prev) => prev + 1);
   }
 
   function handleDragEnd(event: DragEndEvent) {
@@ -55,6 +65,19 @@ export function Tasks() {
       return arrayMove(prev, oldIndex, newIndex);
     });
   }
+
+  function undodelete() {
+    if (!deleteundo) return;
+    settasks((prev) => [...prev, deleteundo]);
+    setdeleteundo(null);
+  }
+  useEffect(() => {
+    if (!deleteundo) return;
+    const timer = setTimeout(() => {
+      setdeleteundo(null);
+    }, 4000);
+    return () => clearTimeout(timer);
+  }, [deleteundo]);
 
   return (
     <div className="flex">
@@ -70,6 +93,12 @@ export function Tasks() {
             handleDragEnd,
           }}
         />
+      </div>
+      <div
+        className={`fixed bottom-5 left-5 glass-card p-3 flex gap-3 transition-all duration-300 ease-out
+  ${deleteundo ? "translate-x-0 opacity-100" : "-translate-x-full opacity-0"}`}>
+        <span>Task deleted</span>
+        <button onClick={undodelete}>Undo</button>
       </div>
     </div>
   );
