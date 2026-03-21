@@ -6,6 +6,7 @@ import { arrayMove } from "@dnd-kit/sortable";
 
 export function Tasks() {
   const [open, setOpen] = useState<number | null>(null);
+
   type Tasktype = {
     id: number;
     title: string;
@@ -18,6 +19,7 @@ export function Tasks() {
     const saved = localStorage.getItem("tasks");
     return saved ? JSON.parse(saved) : [];
   });
+
   useEffect(() => {
     localStorage.setItem("tasks", JSON.stringify(taskslist));
   }, [taskslist]);
@@ -69,6 +71,7 @@ export function Tasks() {
     settasks((prev) => [...prev, deleteundo]);
     setdeleteundo(null);
   }
+
   useEffect(() => {
     if (!deleteundo) return;
     const timer = setTimeout(() => {

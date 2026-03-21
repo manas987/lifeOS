@@ -28,10 +28,12 @@ export function Tasklayout({
     transition,
     isDragging,
   } = useSortable({ id });
+
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
   };
+
   return (
     <div
       ref={setNodeRef}

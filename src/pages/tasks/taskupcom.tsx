@@ -13,11 +13,13 @@ export function Upcoming() {
     useOutletContext<any>();
 
   const today = new Date().toISOString().slice(0, 10);
+
   const upcomingtask = taskslist.filter(
     (task: any) => task.createdAt > today && !task.completed,
   );
 
   const ids = taskslist.map((task: any) => task.id);
+
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -25,6 +27,7 @@ export function Upcoming() {
       },
     }),
   );
+
   return (
     <div>
       <h2 className="text-3xl font-light mb-4">Upcoming</h2>

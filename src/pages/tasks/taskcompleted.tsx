@@ -13,7 +13,9 @@ export function Completed() {
     useOutletContext<any>();
 
   const completedTasks = taskslist.filter((task: any) => task.completed);
+
   const ids = taskslist.map((task: any) => task.id);
+
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -21,6 +23,7 @@ export function Completed() {
       },
     }),
   );
+
   return (
     <div>
       <h2 className="text-3xl font-light mb-4">Completed</h2>

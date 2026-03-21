@@ -13,14 +13,17 @@ export function Inbox() {
     useOutletContext<any>();
 
   const inboxtask = taskslist.filter((task: any) => !task.completed);
+
   const ids = inboxtask.map((task: any) => task.id);
+
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8, // try 5–8
+        distance: 8,
       },
     }),
   );
+
   return (
     <div>
       <h2 className="text-3xl font-light mb-4">Inbox</h2>
