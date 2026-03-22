@@ -93,7 +93,6 @@ export function Taskside({ addtask }: Props) {
                 mode="single"
                 selected={date}
                 onSelect={setDate}
-                disabled={(date) => date < today}
               />
             </PopoverContent>
           </Popover>
