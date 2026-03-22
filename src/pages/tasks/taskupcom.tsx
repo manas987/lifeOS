@@ -9,16 +9,22 @@ import {
 import { SortableContext } from "@dnd-kit/sortable";
 
 export function Upcoming() {
-  const { taskslist, toggletask, open, setOpen, deleteTask, handleDragEnd } =
-    useOutletContext<any>();
-
-  const today = new Date().toISOString().slice(0, 10);
+  const {
+    taskslist,
+    toggletask,
+    open,
+    setOpen,
+    deleteTask,
+    handleDragEnd,
+    formatLocalDate,
+  } = useOutletContext<any>();
+  const today = formatLocalDate(new Date());
 
   const upcomingtask = taskslist.filter(
-    (task: any) => task.createdAt > today && !task.completed,
+    (task: any) => task.duedate > today && !task.completed,
   );
 
-  const ids = taskslist.map((task: any) => task.id);
+  const ids = upcomingtask.map((task: any) => task.id);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -43,6 +49,7 @@ export function Upcoming() {
                 <Tasklayout
                   key={task.id}
                   title={task.title}
+                  duedate={task.duedate}
                   completed={task.completed}
                   onClick={() => toggletask(task.id)}
                   isOpen={open === task.id}

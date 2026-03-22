@@ -14,7 +14,7 @@ export function Completed() {
 
   const completedTasks = taskslist.filter((task: any) => task.completed);
 
-  const ids = taskslist.map((task: any) => task.id);
+  const ids = completedTasks.map((task: any) => task.id);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -39,6 +39,7 @@ export function Completed() {
               {completedTasks.map((task: any) => (
                 <Tasklayout
                   key={task.id}
+                  duedate={task.duedate}
                   title={task.title}
                   completed={task.completed}
                   onClick={() => toggletask(task.id)}

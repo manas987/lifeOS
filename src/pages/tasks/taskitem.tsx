@@ -1,9 +1,10 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Circle, CheckCircle2, Ellipsis } from "lucide-react";
+import { Circle, CheckCircle2, Ellipsis, CalendarDays } from "lucide-react";
 
 type TaskProps = {
   title: string;
+  duedate?: string;
   completed?: boolean;
   onClick?: () => void;
   isOpen: boolean;
@@ -11,8 +12,38 @@ type TaskProps = {
   onDelete: () => void;
   id: number;
 };
+
+function formatDate(dateStr: string) {
+  const date = new Date(dateStr);
+  const today = new Date();
+
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  if (date.toDateString() === today.toDateString()) return "Today";
+  if (date.toDateString() === tomorrow.toDateString()) return "Tomorrow";
+
+  return `${date.getDate()} ${date.toLocaleString("default", {
+    month: "short",
+  })}`;
+}
+
+function isToday(dateStr: string) {
+  const d = new Date(dateStr);
+  const t = new Date();
+  return d.toDateString() === t.toDateString();
+}
+
+function isPast(dateStr: string) {
+  const d = new Date(dateStr);
+  const t = new Date();
+  t.setHours(0, 0, 0, 0);
+  return d < t;
+}
+
 export function Tasklayout({
   title,
+  duedate,
   completed = false,
   onClick,
   isOpen,
@@ -49,7 +80,23 @@ export function Tasklayout({
           className="flex items-center gap-3 w-full text-left active:cursor-grabbing"
           {...listeners}>
           {completed ? <CheckCircle2 size={18} /> : <Circle size={18} />}
-          <span className="truncate">{title}</span>
+          <div className="flex flex-col leading-tight">
+            <span className="truncate">{title}</span>
+
+            {duedate && (
+              <span
+                className={`text-xs flex items-center gap-1 mt-1 ${
+                  isToday(duedate)
+                    ? "text-green-500"
+                    : isPast(duedate)
+                      ? "text-red-500"
+                      : "text-muted-foreground"
+                }`}>
+                <CalendarDays size={12} className="relative top-[1px]" />
+                {formatDate(duedate)}
+              </span>
+            )}
+          </div>
         </button>
         <button
           onClick={(e) => {

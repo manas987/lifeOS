@@ -24,13 +24,18 @@ export function Tasks() {
     localStorage.setItem("tasks", JSON.stringify(taskslist));
   }, [taskslist]);
 
-  function addtask(title: string) {
+  const formatLocalDate = (date: Date) =>
+    `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+
+  function addtask(title: string, duedate?: Date) {
     const newtask: Tasktype = {
       id: Date.now(),
       title,
       completed: false,
-      createdAt: new Date().toISOString().slice(0, 10),
+      createdAt: formatLocalDate(new Date()),
+      duedate: duedate ? formatLocalDate(duedate) : undefined,
     };
+
     settasks((prev) => [...prev, newtask]);
   }
 
@@ -92,6 +97,7 @@ export function Tasks() {
             setOpen,
             deleteTask,
             handleDragEnd,
+            formatLocalDate,
           }}
         />
       </div>

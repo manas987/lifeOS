@@ -15,6 +15,8 @@ type Props = {
 export function Taskside({ addtask }: Props) {
   const [title, setTitle] = useState("");
   const [date, setDate] = useState<Date | undefined>();
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
   const linkClass = (isActive: boolean) =>
     `glass-card w-full p-4 block transition duration-150 ${
@@ -86,8 +88,13 @@ export function Taskside({ addtask }: Props) {
                 )}
               </button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar mode="single" selected={date} onSelect={setDate} />
+            <PopoverContent className="w-auto p-0 bg-white/90 backdrop-blur-lg border border-white/40">
+              <Calendar
+                mode="single"
+                selected={date}
+                onSelect={setDate}
+                disabled={(date) => date < today}
+              />
             </PopoverContent>
           </Popover>
         </div>

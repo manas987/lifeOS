@@ -39,6 +39,7 @@ export function Inbox() {
                 <Tasklayout
                   key={task.id}
                   title={task.title}
+                  duedate={task.duedate}
                   completed={task.completed}
                   onClick={() => toggletask(task.id)}
                   isOpen={open === task.id}
