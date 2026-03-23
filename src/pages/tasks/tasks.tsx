@@ -1,8 +1,6 @@
 import { Outlet } from "react-router-dom";
 import { Taskside } from "./tasksside";
 import { useEffect, useState } from "react";
-import type { DragEndEvent } from "@dnd-kit/core";
-import { arrayMove } from "@dnd-kit/sortable";
 
 export function Tasks() {
   const [open, setOpen] = useState<number | null>(null);
@@ -60,17 +58,38 @@ export function Tasks() {
     setOpen(null);
   }
 
-  function handleDragEnd(event: DragEndEvent) {
+  function handleDragEnd(event: any) {
     const { active, over } = event;
     if (!over) return;
-    if (active.id === over.id) return;
-    settasks((prev) => {
-      const oldIndex = prev.findIndex((task) => task.id === active.id);
-      const newIndex = prev.findIndex((task) => task.id === over.id);
-      return arrayMove(prev, oldIndex, newIndex);
-    });
-  }
 
+    const taskId = active.id;
+    let newDate: string | null = null;
+
+    if (typeof over.id === "string") {
+      newDate = over.id;
+    }
+
+    if (typeof over.id === "number") {
+      const targetTask = taskslist.find((t) => t.id === over.id);
+      if (targetTask?.duedate) {
+        newDate = targetTask.duedate;
+      }
+    }
+
+    if (newDate === "overdue") {
+      const d = new Date();
+      d.setDate(d.getDate() - 1);
+      newDate = formatLocalDate(d);
+    }
+
+    if (!newDate) return;
+
+    settasks((prev) =>
+      prev.map((task) =>
+        task.id === taskId ? { ...task, duedate: newDate } : task,
+      ),
+    );
+  }
   function undodelete() {
     if (!deleteundo) return;
     settasks((prev) => [...prev, deleteundo]);

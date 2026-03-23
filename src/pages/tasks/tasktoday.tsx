@@ -62,19 +62,23 @@ export function Today() {
             </p>
             <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
               <SortableContext items={overdueid}>
-                {dueTasks.map((task: any) => (
-                  <Tasklayout
-                    key={task.id}
-                    title={task.title}
-                    duedate={task.duedate}
-                    completed={task.completed}
-                    onClick={() => toggletask(task.id)}
-                    isOpen={open === task.id}
-                    onToggle={() => setOpen(open === task.id ? null : task.id)}
-                    onDelete={() => deleteTask(task.id)}
-                    id={task.id}
-                  />
-                ))}
+                <div className="flex flex-col gap-3">
+                  {dueTasks.map((task: any) => (
+                    <Tasklayout
+                      key={task.id}
+                      title={task.title}
+                      duedate={task.duedate}
+                      completed={task.completed}
+                      onClick={() => toggletask(task.id)}
+                      isOpen={open === task.id}
+                      onToggle={() =>
+                        setOpen(open === task.id ? null : task.id)
+                      }
+                      onDelete={() => deleteTask(task.id)}
+                      id={task.id}
+                    />
+                  ))}
+                </div>
               </SortableContext>
             </DndContext>
           </div>
@@ -87,19 +91,23 @@ export function Today() {
             </p>
             <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
               <SortableContext items={ids}>
-                {todayTasks.map((task: any) => (
-                  <Tasklayout
-                    key={task.id}
-                    title={task.title}
-                    duedate={task.duedate}
-                    completed={task.completed}
-                    onClick={() => toggletask(task.id)}
-                    isOpen={open === task.id}
-                    onToggle={() => setOpen(open === task.id ? null : task.id)}
-                    onDelete={() => deleteTask(task.id)}
-                    id={task.id}
-                  />
-                ))}
+                <div className="flex flex-col gap-3">
+                  {todayTasks.map((task: any) => (
+                    <Tasklayout
+                      key={task.id}
+                      title={task.title}
+                      duedate={task.duedate}
+                      completed={task.completed}
+                      onClick={() => toggletask(task.id)}
+                      isOpen={open === task.id}
+                      onToggle={() =>
+                        setOpen(open === task.id ? null : task.id)
+                      }
+                      onDelete={() => deleteTask(task.id)}
+                      id={task.id}
+                    />
+                  ))}
+                </div>
               </SortableContext>
             </DndContext>
           </div>

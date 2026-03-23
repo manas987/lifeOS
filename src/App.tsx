@@ -12,7 +12,7 @@ import { Completed } from "./pages/tasks/taskcompleted";
 
 function App() {
   return (
-    <div className="h-screen bg-gradient-to-br from-[#e4f4ff] to-[#f8c778]">
+    <div className="min-h-screen bg-gradient-to-br from-[#e4f4ff] to-[#f8c778]">
       {/* // <div
     //   className="h-screen bg-cover bg-center"
     //   style={{ backgroundImage: `url(${bg})` }}> */}
