@@ -7,9 +7,9 @@ type TaskProps = {
   duedate?: string;
   completed?: boolean;
   onClick?: () => void;
-  isOpen: boolean;
-  onToggle: () => void;
-  onDelete: () => void;
+  isOpen?: boolean;
+  onToggle?: () => void;
+  onDelete?: () => void;
   id: number;
 };
 
@@ -62,7 +62,7 @@ export function Tasklayout({
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
+    transition: isDragging ? "none" : transition,
   };
 
   return (
@@ -70,6 +70,7 @@ export function Tasklayout({
       ref={setNodeRef}
       style={style}
       {...attributes}
+      {...listeners}
       className="relative w-full group">
       <div
         className={`glass-card w-full p-4 flex items-center justify-between hover:!bg-white/80 transition duration-150 ${
@@ -77,8 +78,7 @@ export function Tasklayout({
         } ${isDragging ? "scale-105 shadow-xl opacity-90 z-50" : ""}`}>
         <button
           onClick={onClick}
-          className="flex items-center gap-3 w-full text-left active:cursor-grabbing"
-          {...listeners}>
+          className="flex items-center gap-3 w-full text-left active:cursor-grabbing">
           {completed ? <CheckCircle2 size={18} /> : <Circle size={18} />}
           <div className="flex flex-col leading-tight">
             <span className="truncate">{title}</span>
@@ -101,7 +101,7 @@ export function Tasklayout({
         <button
           onClick={(e) => {
             e.stopPropagation();
-            onToggle();
+            onToggle?.();
           }}
           className={`shrink-0 ml-2 transition-opacity duration-150 ${
             isOpen ? "opacity-100" : "opacity-0 group-hover:opacity-100"
@@ -119,7 +119,7 @@ export function Tasklayout({
             </button>
             <button
               className="p-2 text-left hover:bg-white/40 rounded text-red-400"
-              onClick={onDelete}>
+              onClick={() => onDelete?.()}>
               Delete
             </button>
           </div>

@@ -8,6 +8,8 @@ import {
   useDroppable,
 } from "@dnd-kit/core";
 import { SortableContext } from "@dnd-kit/sortable";
+import { DragOverlay } from "@dnd-kit/core";
+import { useState } from "react";
 
 export function Upcoming() {
   const {
@@ -20,6 +22,8 @@ export function Upcoming() {
     formatLocalDate,
   } = useOutletContext<any>();
   const today = formatLocalDate(new Date());
+
+  const [activeTask, setActiveTask] = useState<any>(null);
 
   const overduetasks = taskslist.filter(
     (task: any) => task.duedate < today && !task.completed,
@@ -41,6 +45,7 @@ export function Upcoming() {
     d.setDate(d.getDate() + i);
     days.push(formatLocalDate(d));
   }
+
   function formatHeader(dateStr: string) {
     const d = new Date(dateStr);
 
@@ -75,10 +80,31 @@ export function Upcoming() {
     );
   }
 
+  const grouped = new Map<string, any[]>();
+
+  for (const task of taskslist) {
+    if (!task.duedate || task.completed) continue;
+
+    if (!grouped.has(task.duedate)) {
+      grouped.set(task.duedate, []);
+    }
+
+    grouped.get(task.duedate)!.push(task);
+  }
+
   return (
     <div>
       <h2 className="text-3xl font-light mb-4">Upcoming</h2>
-      <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+      <DndContext
+        sensors={sensors}
+        onDragStart={(e) => {
+          const task = taskslist.find((t) => t.id === e.active.id);
+          setActiveTask(task);
+        }}
+        onDragEnd={(e) => {
+          handleDragEnd(e);
+          setActiveTask(null);
+        }}>
         <div className="flex flex-col overflow-visible">
           {overduetasks.length > 0 && (
             <div className="mb-4">
@@ -109,9 +135,7 @@ export function Upcoming() {
             </div>
           )}
           {days.map((date) => {
-            const taskfordate = taskslist.filter(
-              (task: any) => task.duedate === date && !task.completed,
-            );
+            const taskfordate = grouped.get(date) || [];
             return (
               <DroppableDay key={date} id={date}>
                 <div className="space-y-3">
@@ -120,21 +144,27 @@ export function Upcoming() {
                   </p>
                   <SortableContext items={taskfordate.map((t: any) => t.id)}>
                     <div className="flex flex-col gap-3 min-h-[20px]">
-                      {taskfordate.map((task: any) => (
-                        <Tasklayout
-                          key={task.id}
-                          title={task.title}
-                          duedate={task.duedate}
-                          completed={task.completed}
-                          onClick={() => toggletask(task.id)}
-                          isOpen={open === task.id}
-                          onToggle={() =>
-                            setOpen(open === task.id ? null : task.id)
-                          }
-                          onDelete={() => deleteTask(task.id)}
-                          id={task.id}
-                        />
-                      ))}
+                      {taskfordate.map((task: any) => {
+                        const isActive = activeTask?.id === task.id;
+
+                        return (
+                          <div style={{ opacity: isActive ? 0 : 1 }}>
+                            <Tasklayout
+                              key={task.id}
+                              title={task.title}
+                              duedate={task.duedate}
+                              completed={task.completed}
+                              onClick={() => toggletask(task.id)}
+                              isOpen={open === task.id}
+                              onToggle={() =>
+                                setOpen(open === task.id ? null : task.id)
+                              }
+                              onDelete={() => deleteTask(task.id)}
+                              id={task.id}
+                            />
+                          </div>
+                        );
+                      })}
                     </div>
                   </SortableContext>
                 </div>
@@ -142,6 +172,19 @@ export function Upcoming() {
             );
           })}
         </div>
+        <DragOverlay>
+          {activeTask ? (
+            <div className=" scale-105 opacity-95">
+              <Tasklayout
+                id={activeTask.id}
+                title={activeTask.title}
+                duedate={activeTask.duedate}
+                completed={activeTask.completed}
+                onClick={() => {}}
+              />
+            </div>
+          ) : null}
+        </DragOverlay>
       </DndContext>
     </div>
   );
