@@ -43,7 +43,7 @@ export function UseTaskLogic() {
           ? {
               ...t,
               title: newtitle,
-              duedate: newduedate ? formatLocalDate(newduedate) : t.duedate,
+              duedate: newduedate ? formatLocalDate(newduedate) : undefined,
             }
           : t,
       ),

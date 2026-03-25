@@ -59,30 +59,27 @@ export function Tasklayout({
       {...(isediting ? {} : listeners)}
       className="relative w-full group">
       {isediting ? (
-        <div className="glass-card flex flex-col gap-4 p-4 rounded-xl">
-          {/* Input */}
+        <div className="glass-card flex flex-col p-6 rounded-xl">
           <input
             type="text"
             value={editinput}
             onChange={(e) => seteditinput(e.target.value)}
             placeholder="Task name"
-            className="bg-transparent outline-none text-lg font-medium placeholder:text-muted-foreground"
+            className="bg-transparent outline-none text-lg font-medium mb-3 border-b"
           />
 
-          {/* Bottom row */}
           <div className="flex items-center justify-between">
-            {/* Left: Date */}
             <Popover>
               <PopoverTrigger asChild>
                 <button
                   type="button"
                   onClick={(e) => e.stopPropagation()}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/10 hover:bg-white/10 transition">
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg border glass-card border-white/10 hover:bg-white/10 transition">
                   <CalendarDays size={16} />
                   <span className="text-sm">
                     {editduedate
                       ? formatDate(formatLocalDate(editduedate))
-                      : "Today"}
+                      : "No Date"}
                   </span>
                 </button>
               </PopoverTrigger>
@@ -116,8 +113,6 @@ export function Tasklayout({
                 />
               </PopoverContent>
             </Popover>
-
-            {/* Right: Actions */}
             <div className="flex items-center gap-2">
               <button
                 type="button"
@@ -126,7 +121,7 @@ export function Tasklayout({
                   openedit?.();
                   e.stopPropagation();
                 }}
-                className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-sm transition">
+                className="px-3 py-1.5 rounded-lg glass-card hover:bg-white/20 text-sm transition">
                 Cancel
               </button>
 
@@ -140,7 +135,7 @@ export function Tasklayout({
                   openedit?.();
                   e.stopPropagation();
                 }}
-                className="px-4 py-1.5 rounded-lg bg-red-500 hover:bg-red-600 text-white text-sm font-medium transition">
+                className="px-4 py-1.5 rounded-lg glass-card text-black text-sm font-medium transition">
                 Save
               </button>
             </div>
