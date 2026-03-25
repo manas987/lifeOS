@@ -4,11 +4,13 @@ import { UseTaskLogic } from "./logic/tasklogic";
 
 export function Tasks() {
   const {
+    edittask,
     open,
     setOpen,
+    editingid,
+    seteditingid,
     deleteundo,
     taskslist,
-    formatLocalDate,
     addtask,
     toggletask,
     deleteTask,
@@ -24,14 +26,16 @@ export function Tasks() {
       <div className="flex-1 p-4 pl-9 overflow-visible">
         <Outlet
           context={{
+            edittask,
             taskslist,
             toggletask,
             open,
             setOpen,
+            editingid,
+            seteditingid,
             deleteTask,
             handleDragEnd,
             HandelReorder,
-            formatLocalDate,
             sensors,
           }}
         />

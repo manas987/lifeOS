@@ -7,11 +7,16 @@ import {
   type DragEndEvent,
 } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
+export function formatLocalDate(date: Date | string) {
+  const d = typeof date === "string" ? new Date(date) : date;
+
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
 
 export function UseTaskLogic() {
   const [open, setOpen] = useState<number | null>(null);
+  const [editingid, seteditingid] = useState<number | null>(null);
   const [deleteundo, setdeleteundo] = useState<Tasktype | null>(null);
-  const [edit, setedit] = useState<boolean>(false);
   const [taskslist, settasks] = useState<Tasktype[]>(() => {
     const saved = localStorage.getItem("tasks");
     return saved ? JSON.parse(saved) : [];
@@ -21,10 +26,6 @@ export function UseTaskLogic() {
     localStorage.setItem("tasks", JSON.stringify(taskslist));
   }, [taskslist]);
 
-  function formatLocalDate(date: Date) {
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-  }
-
   function addtask(title: string, duedate?: Date) {
     const newtask: Tasktype = {
       id: Date.now(),
@@ -33,6 +34,20 @@ export function UseTaskLogic() {
       duedate: duedate ? formatLocalDate(duedate) : undefined,
     };
     settasks((prev) => [...prev, newtask]);
+  }
+
+  function edittask(id: number, newtitle: string, newduedate?: Date) {
+    settasks((prev) =>
+      prev.map((t) =>
+        t.id === id
+          ? {
+              ...t,
+              title: newtitle,
+              duedate: newduedate ? formatLocalDate(newduedate) : t.duedate,
+            }
+          : t,
+      ),
+    );
   }
 
   function toggletask(id: number) {
@@ -121,15 +136,15 @@ export function UseTaskLogic() {
   );
 
   return {
+    edittask,
     open,
     setOpen,
-    edit,
-    setedit,
+    editingid,
+    seteditingid,
     deleteundo,
     setdeleteundo,
     taskslist,
     settasks,
-    formatLocalDate,
     addtask,
     toggletask,
     deleteTask,

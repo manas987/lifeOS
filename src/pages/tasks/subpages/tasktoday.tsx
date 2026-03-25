@@ -3,6 +3,7 @@ import { Tasklayout } from "../taskcard";
 import { DndContext, DragOverlay } from "@dnd-kit/core";
 import { SortableContext } from "@dnd-kit/sortable";
 import { useState } from "react";
+import { formatLocalDate } from "../logic/tasklogic";
 
 export function Today() {
   const {
@@ -12,7 +13,6 @@ export function Today() {
     setOpen,
     deleteTask,
     handleDragEnd,
-    formatLocalDate,
     sensors,
   } = useOutletContext<any>();
 

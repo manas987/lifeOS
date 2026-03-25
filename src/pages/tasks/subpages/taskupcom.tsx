@@ -4,7 +4,7 @@ import { DndContext, useDroppable } from "@dnd-kit/core";
 import { SortableContext } from "@dnd-kit/sortable";
 import { DragOverlay } from "@dnd-kit/core";
 import { useState } from "react";
-import { FormatHeader } from "../logic/tasklogic";
+import { FormatHeader, formatLocalDate } from "../logic/tasklogic";
 
 export function Upcoming() {
   const {
@@ -14,7 +14,6 @@ export function Upcoming() {
     setOpen,
     deleteTask,
     handleDragEnd,
-    formatLocalDate,
     sensors,
   } = useOutletContext<any>();
   const today = formatLocalDate(new Date());

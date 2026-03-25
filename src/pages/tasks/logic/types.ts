@@ -13,8 +13,11 @@ export type TaskProps = {
   onClick?: () => void;
   isOpen?: boolean;
   onToggle?: () => void;
+  isediting?: boolean;
   onDelete?: () => void;
   id: number;
+  openedit?: () => void;
+  edit?: (newtitle: string, newduedate: string | undefined) => void;
 };
 
 export type SideBarProps = {
