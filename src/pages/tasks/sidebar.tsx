@@ -7,14 +7,12 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@/components/ui/popover";
+import type { SideBarProps } from "./logic/types";
 
-type Props = {
-  addtask: (title: string, duedate?: Date) => void;
-};
-
-export function Taskside({ addtask }: Props) {
+export function Taskside({ addtask }: SideBarProps) {
   const [title, setTitle] = useState("");
   const [date, setDate] = useState<Date | undefined>();
+  const [calopen, setcalopen] = useState<boolean>(false);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -74,17 +72,23 @@ export function Taskside({ addtask }: Props) {
             onChange={(e) => setTitle(e.target.value)}
           />
 
-          <Popover>
+          <Popover open={calopen} onOpenChange={setcalopen}>
             <PopoverTrigger asChild>
               <button
                 type="button"
-                className="glass-card px-3 min-w-[55px] flex items-center justify-center whitespace-nowrap">
+                className={`glass-card px-3 min-w-[55px] flex items-center justify-center whitespace-nowrap gap-1 transition duration-150 hover:!bg-white ${
+                  date ? "font-medium" : ""
+                }`}>
                 {date ? (
-                  `${date.getDate()} ${date.toLocaleString("default", { month: "short" })}`
+                  <>
+                    <CalendarDays size={13} />
+                    <span className="text-sm">
+                      {date.getDate()}{" "}
+                      {date.toLocaleString("default", { month: "short" })}
+                    </span>
+                  </>
                 ) : (
-                  <div className="flex items-center opacity-80">
-                    <CalendarDays size={16} />
-                  </div>
+                  <CalendarDays size={16} className="opacity-80" />
                 )}
               </button>
             </PopoverTrigger>
@@ -92,7 +96,34 @@ export function Taskside({ addtask }: Props) {
               <Calendar
                 mode="single"
                 selected={date}
-                onSelect={setDate}
+                onSelect={(d) => {
+                  setDate(d);
+                  if (d) setcalopen(false);
+                }}
+                disabled={(date) => date < today}
+                formatters={{
+                  formatWeekdayName: (d) =>
+                    d.toLocaleString("default", { weekday: "narrow" }),
+                }}
+                classNames={{
+                  month: "space-y-3",
+                  caption_label: "text-xl text-gray-800",
+                  button_previous:
+                    "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-center",
+                  button_next:
+                    "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-center",
+                  weekdays: "flex mb-2 gap-1",
+                  weekday: "w-9 font-normal text-xs text-center text-gray-400",
+                  weeks: "space-y-1",
+                  week: "flex gap-1",
+                  day: "w-9 h-9 text-center p-0",
+                  day_button:
+                    "w-9 h-9 rounded-xl hover:bg-black/10 transition duration-100",
+                  selected:
+                    " [&>button]:hover:bg-black/10 [&>button]:font-semibold",
+                  disabled:
+                    "[&>button]:text-gray-300 [&>button]:hover:bg-transparent [&>button]:cursor-not-allowed",
+                }}
               />
             </PopoverContent>
           </Popover>

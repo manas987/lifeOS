@@ -1,46 +1,39 @@
 import { useOutletContext } from "react-router-dom";
-import { Tasklayout } from "./taskitem";
-import {
-  DndContext,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
+import { Tasklayout } from "../taskcard";
+import { DndContext } from "@dnd-kit/core";
 import { SortableContext } from "@dnd-kit/sortable";
 
-export function Completed() {
-  const { taskslist, toggletask, open, setOpen, deleteTask, handleDragEnd } =
-    useOutletContext<any>();
+export function Inbox() {
+  const {
+    taskslist,
+    toggletask,
+    open,
+    setOpen,
+    deleteTask,
+    HandelReorder,
+    sensors,
+  } = useOutletContext<any>();
 
-  const completedTasks = taskslist.filter((task: any) => task.completed);
+  const inboxtask = taskslist.filter((task: any) => !task.completed);
 
-  const ids = completedTasks.map((task: any) => task.id);
-
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8, // try 5–8
-      },
-    }),
-  );
+  const ids = inboxtask.map((task: any) => task.id);
 
   return (
     <div>
-      <h2 className="text-3xl font-light mb-4">Completed</h2>
-
+      <h2 className="text-3xl font-light mb-4">Inbox</h2>
       <div className="flex flex-col gap-3 overflow-visible">
-        {completedTasks.length === 0 ? (
+        {inboxtask.length === 0 ? (
           <div className="text-sm opacity-60 mt-10 text-center">
             No tasks yet
           </div>
         ) : (
-          <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+          <DndContext sensors={sensors} onDragEnd={HandelReorder}>
             <SortableContext items={ids}>
-              {completedTasks.map((task: any) => (
+              {inboxtask.map((task: any) => (
                 <Tasklayout
                   key={task.id}
-                  duedate={task.duedate}
                   title={task.title}
+                  duedate={task.duedate}
                   completed={task.completed}
                   onClick={() => toggletask(task.id)}
                   isOpen={open === task.id}

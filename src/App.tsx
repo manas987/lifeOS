@@ -5,17 +5,14 @@ import { Tasks } from "./pages/tasks/tasks";
 import { Finances } from "./pages/finance/finance";
 import { Habbits } from "./pages/habbits/habbits";
 import { Dashboard } from "./pages/dashboard/dashboard";
-import { Inbox } from "./pages/tasks/taskinbox";
-import { Today } from "./pages/tasks/tasktoday";
-import { Upcoming } from "./pages/tasks/taskupcom";
-import { Completed } from "./pages/tasks/taskcompleted";
+import { Inbox } from "./pages/tasks/subpages/taskinbox";
+import { Today } from "./pages/tasks/subpages/tasktoday";
+import { Upcoming } from "./pages/tasks/subpages/taskupcom";
+import { Completed } from "./pages/tasks/subpages/taskcompleted";
 
 function App() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#e4f4ff] to-[#f8c778]">
-      {/* // <div
-    //   className="h-screen bg-cover bg-center"
-    //   style={{ backgroundImage: `url(${bg})` }}> */}
       <Navbar />
       <Routes>
         <Route path="/dashboard" element={<Dashboard />} />

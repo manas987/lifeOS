@@ -1,15 +1,10 @@
 import { useOutletContext } from "react-router-dom";
-import { Tasklayout } from "./taskitem";
-import {
-  DndContext,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  useDroppable,
-} from "@dnd-kit/core";
+import { Tasklayout } from "../taskcard";
+import { DndContext, useDroppable } from "@dnd-kit/core";
 import { SortableContext } from "@dnd-kit/sortable";
 import { DragOverlay } from "@dnd-kit/core";
 import { useState } from "react";
+import { FormatHeader } from "../logic/tasklogic";
 
 export function Upcoming() {
   const {
@@ -20,24 +15,15 @@ export function Upcoming() {
     deleteTask,
     handleDragEnd,
     formatLocalDate,
+    sensors,
   } = useOutletContext<any>();
   const today = formatLocalDate(new Date());
-
-  const [activeTask, setActiveTask] = useState<any>(null);
 
   const overduetasks = taskslist.filter(
     (task: any) => task.duedate < today && !task.completed,
   );
 
   const dueid = overduetasks.map((task: any) => task.id);
-
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
-    }),
-  );
 
   const days: string[] = [];
   for (let i = 0; i < 60; i++) {
@@ -46,31 +32,10 @@ export function Upcoming() {
     days.push(formatLocalDate(d));
   }
 
-  function formatHeader(dateStr: string) {
-    const d = new Date(dateStr);
-
-    const day = d.getDate();
-    const month = d.toLocaleString("default", { month: "short" });
-    const weekday = d.toLocaleString("default", { weekday: "long" });
-
-    const todayDate = new Date();
-    const tomorrow = new Date();
-    tomorrow.setDate(todayDate.getDate() + 1);
-
-    const isToday = d.toDateString() === todayDate.toDateString();
-
-    const isTomorrow = d.toDateString() === tomorrow.toDateString();
-
-    let label = "";
-    if (isToday) label = "Today";
-    else if (isTomorrow) label = "Tomorrow";
-
-    return `${day} ${month}${label ? ` · ${label}` : ""} · ${weekday}`;
-  }
+  const [activeTask, setActiveTask] = useState<any>(null);
 
   function DroppableDay({ id, children }: any) {
     const { setNodeRef, isOver } = useDroppable({ id });
-
     return (
       <div
         ref={setNodeRef}
@@ -81,14 +46,11 @@ export function Upcoming() {
   }
 
   const grouped = new Map<string, any[]>();
-
   for (const task of taskslist) {
     if (!task.duedate || task.completed) continue;
-
     if (!grouped.has(task.duedate)) {
       grouped.set(task.duedate, []);
     }
-
     grouped.get(task.duedate)!.push(task);
   }
 
@@ -98,7 +60,7 @@ export function Upcoming() {
       <DndContext
         sensors={sensors}
         onDragStart={(e) => {
-          const task = taskslist.find((t) => t.id === e.active.id);
+          const task = taskslist.find((t: any) => t.id === e.active.id);
           setActiveTask(task);
         }}
         onDragEnd={(e) => {
@@ -140,13 +102,12 @@ export function Upcoming() {
               <DroppableDay key={date} id={date}>
                 <div className="space-y-3">
                   <p className="text-sm font-semibold text-gray-900 py-2 border-b border-gray-700 mb-3">
-                    {formatHeader(date)}
+                    {FormatHeader(date)}
                   </p>
                   <SortableContext items={taskfordate.map((t: any) => t.id)}>
                     <div className="flex flex-col gap-3 min-h-[20px]">
                       {taskfordate.map((task: any) => {
                         const isActive = activeTask?.id === task.id;
-
                         return (
                           <div style={{ opacity: isActive ? 0 : 1 }}>
                             <Tasklayout

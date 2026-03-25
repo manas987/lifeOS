@@ -1,108 +1,22 @@
 import { Outlet } from "react-router-dom";
-import { Taskside } from "./tasksside";
-import { useEffect, useState } from "react";
+import { Taskside } from "./sidebar";
+import { UseTaskLogic } from "./logic/tasklogic";
 
 export function Tasks() {
-  const [open, setOpen] = useState<number | null>(null);
-
-  type Tasktype = {
-    id: number;
-    title: string;
-    completed: boolean;
-    createdAt: string;
-    duedate?: string;
-  };
-
-  const [taskslist, settasks] = useState<Tasktype[]>(() => {
-    const saved = localStorage.getItem("tasks");
-    return saved ? JSON.parse(saved) : [];
-  });
-
-  useEffect(() => {
-    localStorage.setItem("tasks", JSON.stringify(taskslist));
-  }, [taskslist]);
-
-  const formatLocalDate = (date: Date) =>
-    `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-
-  function addtask(title: string, duedate?: Date) {
-    const newtask: Tasktype = {
-      id: Date.now(),
-      title,
-      completed: false,
-      createdAt: formatLocalDate(new Date()),
-      duedate: duedate ? formatLocalDate(duedate) : undefined,
-    };
-
-    settasks((prev) => [...prev, newtask]);
-  }
-
-  function toggletask(id: number) {
-    settasks((prev) =>
-      prev.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task,
-      ),
-    );
-  }
-
-  const [deleteundo, setdeleteundo] = useState<Tasktype | null>(null);
-
-  function deleteTask(id: number) {
-    const tempdeletestorage = taskslist.find((item) => item.id === id);
-    if (!tempdeletestorage) return;
-    setdeleteundo(null);
-    setTimeout(() => {
-      setdeleteundo(tempdeletestorage);
-    }, 10);
-    settasks((prev) => prev.filter((task) => task.id !== id));
-    setOpen(null);
-  }
-
-  function handleDragEnd(event: any) {
-    const { active, over } = event;
-    if (!over) return;
-
-    const taskId = active.id;
-    let newDate: string | null = null;
-
-    if (typeof over.id === "string") {
-      newDate = over.id;
-    }
-
-    if (typeof over.id === "number") {
-      const targetTask = taskslist.find((t) => t.id === over.id);
-      if (targetTask?.duedate) {
-        newDate = targetTask.duedate;
-      }
-    }
-
-    if (newDate === "overdue") {
-      const d = new Date();
-      d.setDate(d.getDate() - 1);
-      newDate = formatLocalDate(d);
-    }
-
-    if (!newDate) return;
-
-    settasks((prev) =>
-      prev.map((task) =>
-        task.id === taskId ? { ...task, duedate: newDate } : task,
-      ),
-    );
-  }
-  function undodelete() {
-    if (!deleteundo) return;
-    settasks((prev) => [...prev, deleteundo]);
-    setdeleteundo(null);
-  }
-
-  useEffect(() => {
-    if (!deleteundo) return;
-    const timer = setTimeout(() => {
-      setdeleteundo(null);
-    }, 4000);
-    return () => clearTimeout(timer);
-  }, [deleteundo]);
+  const {
+    open,
+    setOpen,
+    deleteundo,
+    taskslist,
+    formatLocalDate,
+    addtask,
+    toggletask,
+    deleteTask,
+    undodelete,
+    handleDragEnd,
+    HandelReorder,
+    sensors,
+  } = UseTaskLogic();
 
   return (
     <div className="flex">
@@ -116,7 +30,9 @@ export function Tasks() {
             setOpen,
             deleteTask,
             handleDragEnd,
+            HandelReorder,
             formatLocalDate,
+            sensors,
           }}
         />
       </div>

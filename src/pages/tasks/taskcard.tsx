@@ -1,45 +1,9 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Circle, CheckCircle2, Ellipsis, CalendarDays } from "lucide-react";
-
-type TaskProps = {
-  title: string;
-  duedate?: string;
-  completed?: boolean;
-  onClick?: () => void;
-  isOpen?: boolean;
-  onToggle?: () => void;
-  onDelete?: () => void;
-  id: number;
-};
-
-function formatDate(dateStr: string) {
-  const date = new Date(dateStr);
-  const today = new Date();
-
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-
-  if (date.toDateString() === today.toDateString()) return "Today";
-  if (date.toDateString() === tomorrow.toDateString()) return "Tomorrow";
-
-  return `${date.getDate()} ${date.toLocaleString("default", {
-    month: "short",
-  })}`;
-}
-
-function isToday(dateStr: string) {
-  const d = new Date(dateStr);
-  const t = new Date();
-  return d.toDateString() === t.toDateString();
-}
-
-function isPast(dateStr: string) {
-  const d = new Date(dateStr);
-  const t = new Date();
-  t.setHours(0, 0, 0, 0);
-  return d < t;
-}
+import type { TaskProps } from "./logic/types";
+import { formatDate } from "./logic/tasklogic";
+import { isPast, isToday } from "date-fns";
 
 export function Tasklayout({
   title,
