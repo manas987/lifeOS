@@ -100,7 +100,7 @@ export function Taskside({ addtask }: SideBarProps) {
                   setDate(d);
                   if (d) setcalopen(false);
                 }}
-                disabled={(date) => date < today}
+                // disabled={(date) => date < today}
                 formatters={{
                   formatWeekdayName: (d) =>
                     d.toLocaleString("default", { weekday: "narrow" }),

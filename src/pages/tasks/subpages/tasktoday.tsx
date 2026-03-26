@@ -7,6 +7,9 @@ import { formatLocalDate } from "../logic/tasklogic";
 
 export function Today() {
   const {
+    edittask,
+    editingid,
+    seteditingid,
     taskslist,
     toggletask,
     open,
@@ -73,6 +76,13 @@ export function Today() {
                           setOpen(open === task.id ? null : task.id)
                         }
                         onDelete={() => deleteTask(task.id)}
+                        isediting={editingid === task.id}
+                        openedit={() =>
+                          seteditingid(editingid === task.id ? null : task.id)
+                        }
+                        edit={(newtitle, newduedate) =>
+                          edittask(task.id, newtitle, newduedate)
+                        }
                         id={task.id}
                       />
                     </div>
@@ -103,6 +113,15 @@ export function Today() {
                           setOpen(open === task.id ? null : task.id)
                         }
                         onDelete={() => deleteTask(task.id)}
+                        isediting={task.id === editingid}
+                        openedit={() =>
+                          seteditingid(() =>
+                            task.id === editingid ? null : editingid,
+                          )
+                        }
+                        edit={(newtitle, newduedate) =>
+                          edittask(task.id, newtitle, newduedate)
+                        }
                         id={task.id}
                       />
                     </div>

@@ -5,6 +5,9 @@ import { SortableContext } from "@dnd-kit/sortable";
 
 export function Completed() {
   const {
+    edittask,
+    editingid,
+    seteditingid,
     taskslist,
     toggletask,
     open,
@@ -39,6 +42,13 @@ export function Completed() {
                   isOpen={open === task.id}
                   onToggle={() => setOpen(open === task.id ? null : task.id)}
                   onDelete={() => deleteTask(task.id)}
+                  isediting={task.id === editingid}
+                  openedit={() =>
+                    seteditingid(editingid === task.id ? null : task.id)
+                  }
+                  edit={(newtitle, newduedate) =>
+                    edittask(task.id, newtitle, newduedate)
+                  }
                   id={task.id}
                 />
               ))}

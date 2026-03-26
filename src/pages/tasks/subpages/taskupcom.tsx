@@ -8,6 +8,9 @@ import { FormatHeader, formatLocalDate } from "../logic/tasklogic";
 
 export function Upcoming() {
   const {
+    edittask,
+    editingid,
+    seteditingid,
     taskslist,
     toggletask,
     open,
@@ -87,6 +90,13 @@ export function Upcoming() {
                           setOpen(open === task.id ? null : task.id)
                         }
                         onDelete={() => deleteTask(task.id)}
+                        isediting={task.id === editingid}
+                        openedit={() =>
+                          seteditingid(task.id === editingid ? null : task.id)
+                        }
+                        edit={(newtitle, newduedate) =>
+                          edittask(task.id, newtitle, newduedate)
+                        }
                         id={task.id}
                       />
                     ))}
@@ -120,6 +130,15 @@ export function Upcoming() {
                                 setOpen(open === task.id ? null : task.id)
                               }
                               onDelete={() => deleteTask(task.id)}
+                              openedit={() =>
+                                seteditingid(
+                                  task.id === editingid ? null : task.id,
+                                )
+                              }
+                              isediting={task.id === editingid}
+                              edit={(newtitle, newduedate) => {
+                                edittask(task.id, newtitle, newduedate);
+                              }}
                               id={task.id}
                             />
                           </div>
