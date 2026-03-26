@@ -38,6 +38,8 @@ export function Tasklayout({
   const [editduedate, seteditduedate] = useState<Date | undefined>(
     duedate ? new Date(duedate) : undefined,
   );
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
   useEffect(() => {
     if (isediting) {
@@ -64,6 +66,15 @@ export function Tasklayout({
             type="text"
             value={editinput}
             onChange={(e) => seteditinput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && editinput.length > 0) {
+                edit?.(
+                  editinput,
+                  editduedate ? formatLocalDate(editduedate) : undefined,
+                );
+                openedit?.();
+              }
+            }}
             placeholder="Task name"
             className="bg-transparent outline-none text-lg font-medium mb-3 border-b"
           />
@@ -89,7 +100,7 @@ export function Tasklayout({
                   mode="single"
                   selected={editduedate}
                   onSelect={(date) => seteditduedate(date ?? undefined)}
-                  disabled={(date) => date < new Date()}
+                  disabled={(date) => date < today}
                   classNames={{
                     month: "space-y-3",
                     caption_label: "text-xl text-gray-800",
@@ -124,18 +135,20 @@ export function Tasklayout({
                 className="px-3 py-1.5 rounded-lg glass-card hover:bg-white/20 text-sm transition">
                 Cancel
               </button>
-
+              {/* 547365 my attendence site pin */}
               <button
                 type="button"
                 onClick={(e) => {
-                  edit?.(
-                    editinput,
-                    editduedate ? formatLocalDate(editduedate) : undefined,
-                  );
-                  openedit?.();
+                  if (editinput.length > 0) {
+                    edit?.(
+                      editinput,
+                      editduedate ? formatLocalDate(editduedate) : undefined,
+                    );
+                    openedit?.();
+                  }
                   e.stopPropagation();
                 }}
-                className="px-4 py-1.5 rounded-lg glass-card text-black text-sm font-medium transition">
+                className={`px-4 py-1.5 rounded-lg ${editinput.length > 0 ? "glass-card" : "bg-gray:950 line-through"} text-black text-sm font-medium transition`}>
                 Save
               </button>
             </div>

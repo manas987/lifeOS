@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { ChevronDown, CalendarDays } from "lucide-react";
+import { ChevronDown, CalendarDays, ChevronRight, Plus } from "lucide-react";
 import { useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -9,10 +9,20 @@ import {
 } from "@/components/ui/popover";
 import type { SideBarProps } from "./logic/types";
 
-export function Taskside({ addtask }: SideBarProps) {
+export function Taskside({
+  addtask,
+  addproj,
+  deleteproj,
+  editproj,
+  projlist,
+  currentlyon,
+}: SideBarProps) {
   const [title, setTitle] = useState("");
   const [date, setDate] = useState<Date | undefined>();
   const [calopen, setcalopen] = useState<boolean>(false);
+  const [projlistshow, toggleprojlistshow] = useState<boolean>(false);
+  const [addingproj, setaddingproj] = useState<boolean>(false);
+  const [projname, setprojname] = useState<string>("");
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -26,7 +36,6 @@ export function Taskside({ addtask }: SideBarProps) {
       <div className="p-1">
         <h1 className="text-5xl font-light">Tasks</h1>
       </div>
-
       <NavLink
         to="/tasks"
         end
@@ -56,7 +65,9 @@ export function Taskside({ addtask }: SideBarProps) {
         onSubmit={(e) => {
           e.preventDefault();
           if (!title.trim()) return;
-          addtask(title, date);
+          if (currentlyon) {
+            addtask(title, date, currentlyon);
+          } else addtask(title, date);
           setTitle("");
           setDate(undefined);
         }}
@@ -100,7 +111,7 @@ export function Taskside({ addtask }: SideBarProps) {
                   setDate(d);
                   if (d) setcalopen(false);
                 }}
-                // disabled={(date) => date < today}
+                disabled={(date) => date < today}
                 formatters={{
                   formatWeekdayName: (d) =>
                     d.toLocaleString("default", { weekday: "narrow" }),
@@ -136,12 +147,57 @@ export function Taskside({ addtask }: SideBarProps) {
         </button>
       </form>
 
-      <div className="glass-card w-full p-3 flex justify-between items-center hover:!bg-white transition duration-150">
+      <div className="glass-card w-full p-3 pl-4 flex justify-between items-center hover:!bg-white transition duration-150">
         Projects
-        <button className="hover:bg-[#dadada] rounded-full p-1">
-          <ChevronDown size={18} />
-        </button>
+        <div className=" ml-auto flex items-center gap-2">
+          <button
+            className="hover:bg-[#dadada] rounded-full p-1"
+            onClick={() => setaddingproj((prev) => !prev)}>
+            <Plus size={18} />
+          </button>
+          <button
+            className="hover:bg-[#dadada] rounded-full p-1"
+            onClick={() => toggleprojlistshow((prev) => !prev)}>
+            {projlistshow ? (
+              <ChevronDown size={18} />
+            ) : (
+              <ChevronRight size={18} />
+            )}
+          </button>
+        </div>
       </div>
+      {addingproj && (
+        <div className="glass-card w-full p-3 pl-4 flex flex-col gap-3 hover:!bg-white transition duration-150">
+          <input
+            type="text"
+            placeholder="Project name"
+            value={projname}
+            className="glass-card p-3 flex-1"
+            onChange={(e) => setprojname(e.target.value)}
+          />
+          <button
+            type="submit"
+            className="glass-card p-2 hover:!bg-white transition duration-150"
+            onClick={() => {
+              addproj(projname);
+              setprojname("");
+            }}>
+            Add
+          </button>
+        </div>
+      )}
+      {projlistshow && (
+        <div className="flex flex-col gap-3">
+          {projlist.map((proj) => (
+            <NavLink
+              key={proj}
+              to={`/tasks/project/${proj}`}
+              className={({ isActive }) => linkClass(isActive)}>
+              {proj}
+            </NavLink>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

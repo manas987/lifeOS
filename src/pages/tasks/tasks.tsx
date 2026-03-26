@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useParams } from "react-router-dom";
 import { Taskside } from "./sidebar";
 import { UseTaskLogic } from "./logic/tasklogic";
 
@@ -18,11 +18,22 @@ export function Tasks() {
     handleDragEnd,
     HandelReorder,
     sensors,
+    projlist,
+    addproj,
+    deleteproj,
+    editproj,
   } = UseTaskLogic();
-
+  const { projectName } = useParams();
   return (
     <div className="flex">
-      <Taskside addtask={addtask} />
+      <Taskside
+        addtask={addtask}
+        addproj={addproj}
+        deleteproj={deleteproj}
+        editproj={editproj}
+        projlist={projlist}
+        currentlyon={projectName}
+      />
       <div className="flex-1 p-4 pl-9 overflow-visible">
         <Outlet
           context={{

@@ -9,6 +9,7 @@ import { Inbox } from "./pages/tasks/subpages/taskinbox";
 import { Today } from "./pages/tasks/subpages/tasktoday";
 import { Upcoming } from "./pages/tasks/subpages/taskupcom";
 import { Completed } from "./pages/tasks/subpages/taskcompleted";
+import { ProjectPage } from "./pages/tasks/subpages/projects";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route path="today" element={<Today />} />
           <Route path="upcoming" element={<Upcoming />} />
           <Route path="completed" element={<Completed />} />
+          <Route path="project/:projectName" element={<ProjectPage />} />
         </Route>
 
         <Route path="/finances" element={<Finances />} />

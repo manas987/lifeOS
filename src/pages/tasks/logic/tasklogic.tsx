@@ -17,6 +17,10 @@ export function UseTaskLogic() {
   const [open, setOpen] = useState<number | null>(null);
   const [editingid, seteditingid] = useState<number | null>(null);
   const [deleteundo, setdeleteundo] = useState<Tasktype | null>(null);
+  const [projlist, setprojlist] = useState<string[]>(() => {
+    const saved = localStorage.getItem("projects");
+    return saved ? JSON.parse(saved) : [];
+  });
   const [taskslist, settasks] = useState<Tasktype[]>(() => {
     const saved = localStorage.getItem("tasks");
     return saved ? JSON.parse(saved) : [];
@@ -26,12 +30,37 @@ export function UseTaskLogic() {
     localStorage.setItem("tasks", JSON.stringify(taskslist));
   }, [taskslist]);
 
-  function addtask(title: string, duedate?: Date) {
+  useEffect(() => {
+    localStorage.setItem("projects", JSON.stringify(projlist));
+  }, [projlist]);
+
+  function addproj(newproj: string) {
+    const trimmed = newproj.trim();
+    if (!trimmed) return;
+    if (projlist.includes(newproj)) return;
+    if (projlist.includes(trimmed)) return;
+    setprojlist((prev) => [...prev, trimmed]);
+  }
+  function deleteproj(delproj: string) {
+    setprojlist((prev) => prev.filter((proj) => proj !== delproj));
+  }
+  function editproj(newprojname: string, oldprojname: string) {
+    const trimmed = newprojname.trim();
+    if (!trimmed) return;
+    if (projlist.includes(newprojname)) return;
+    if (projlist.includes(trimmed)) return;
+    setprojlist((prev) =>
+      prev.map((proj) => (proj === oldprojname ? trimmed : proj)),
+    );
+  }
+
+  function addtask(title: string, duedate?: Date, projname?: string) {
     const newtask: Tasktype = {
       id: Date.now(),
       title,
       completed: false,
       duedate: duedate ? formatLocalDate(duedate) : undefined,
+      project: projname ? projname : undefined,
     };
     settasks((prev) => [...prev, newtask]);
   }
@@ -83,7 +112,7 @@ export function UseTaskLogic() {
     return () => clearTimeout(timer);
   }, [deleteundo]);
 
-  function handleDragEnd(event: any) {
+  function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
     if (!over || active.id === over.id || over.id === "overdue") return;
 
@@ -152,6 +181,10 @@ export function UseTaskLogic() {
     handleDragEnd,
     HandelReorder,
     sensors,
+    projlist,
+    addproj,
+    deleteproj,
+    editproj,
   };
 }
 

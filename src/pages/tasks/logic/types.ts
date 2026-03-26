@@ -21,5 +21,10 @@ export type TaskProps = {
 };
 
 export type SideBarProps = {
-  addtask: (title: string, duedate?: Date) => void;
+  addtask: (title: string, duedate?: Date, currentlyon?: string) => void;
+  addproj: (title: string) => void;
+  deleteproj: (title: string) => void;
+  editproj: (newtitle: string, oldtitle: string) => void;
+  projlist: string[];
+  currentlyon: string | undefined;
 };
