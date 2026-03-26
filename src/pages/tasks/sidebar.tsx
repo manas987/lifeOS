@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { ChevronDown, CalendarDays, ChevronRight, Plus } from "lucide-react";
+import { ChevronDown, CalendarDays, ChevronRight, Plus, Ellipsis } from "lucide-react";
 import { useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -23,6 +23,9 @@ export function Taskside({
   const [projlistshow, toggleprojlistshow] = useState<boolean>(false);
   const [addingproj, setaddingproj] = useState<boolean>(false);
   const [projname, setprojname] = useState<string>("");
+  const [openproj, setopenproj] = useState<string | null>(null);
+  const [editingproj, seteditingproj] = useState<string | null>(null);
+  const [editprojval, seteditprojval] = useState<string>("");
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -63,6 +66,7 @@ export function Taskside({
 
       <form
         onSubmit={(e) => {
+          console.log(date);
           e.preventDefault();
           if (!title.trim()) return;
           if (currentlyon) {
@@ -189,12 +193,89 @@ export function Taskside({
       {projlistshow && (
         <div className="flex flex-col gap-3">
           {projlist.map((proj) => (
-            <NavLink
-              key={proj}
-              to={`/tasks/project/${proj}`}
-              className={({ isActive }) => linkClass(isActive)}>
-              {proj}
-            </NavLink>
+            <div key={proj} className="relative group">
+              {editingproj === proj ? (
+                <div className="glass-card p-3 flex flex-col gap-2">
+                  <input
+                    value={editprojval}
+                    onChange={(e) => seteditprojval(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && editprojval.trim()) {
+                        editproj(editprojval, proj);
+                        seteditingproj(null);
+                      }
+                    }}
+                    className="glass-card p-2 flex-1"
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => seteditingproj(null)}
+                      className="glass-card p-1.5 text-sm flex-1 hover:!bg-white transition">
+                      Cancel
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (editprojval.trim()) {
+                          editproj(editprojval, proj);
+                          seteditingproj(null);
+                        }
+                      }}
+                      className="glass-card p-1.5 text-sm flex-1 hover:!bg-white transition">
+                      Save
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <NavLink
+                  to={`/tasks/project/${proj}`}
+                  className={({ isActive }) => linkClass(isActive)}>
+                  <span className="flex items-center justify-between">
+                    {proj}
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setopenproj(openproj === proj ? null : proj);
+                      }}
+                      className={`transition-opacity duration-150 hover:bg-black/10 rounded-full p-0.5 ${
+                        openproj === proj
+                          ? "opacity-100"
+                          : "opacity-0 group-hover:opacity-100"
+                      }`}>
+                      <Ellipsis size={16} />
+                    </button>
+                  </span>
+                </NavLink>
+              )}
+
+              {openproj === proj && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setopenproj(null)}
+                  />
+                  <div className="absolute right-0 top-full mt-2 w-36 z-50 glass-card p-2 flex flex-col gap-1 shadow-lg rounded-xl">
+                    <button
+                      className="p-2 text-left hover:bg-white/40 rounded text-sm"
+                      onClick={() => {
+                        seteditingproj(proj);
+                        seteditprojval(proj);
+                        setopenproj(null);
+                      }}>
+                      Edit
+                    </button>
+                    <button
+                      className="p-2 text-left hover:bg-white/40 rounded text-sm text-red-400"
+                      onClick={() => {
+                        deleteproj(proj);
+                        setopenproj(null);
+                      }}>
+                      Delete
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           ))}
         </div>
       )}
