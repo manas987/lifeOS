@@ -17,7 +17,9 @@ export function Inbox() {
     sensors,
   } = useOutletContext<any>();
 
-  const inboxtask = taskslist.filter((task: any) => !task.completed);
+  const inboxtask = taskslist.filter(
+    (task: any) => !task.completed && !task.project,
+  );
 
   const ids = inboxtask.map((task: any) => task.id);
 

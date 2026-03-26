@@ -43,6 +43,7 @@ export function UseTaskLogic() {
   }
   function deleteproj(delproj: string) {
     setprojlist((prev) => prev.filter((proj) => proj !== delproj));
+    settasks((prev) => prev.filter((task) => task.project !== delproj));
   }
   function editproj(newprojname: string, oldprojname: string) {
     const trimmed = newprojname.trim();
