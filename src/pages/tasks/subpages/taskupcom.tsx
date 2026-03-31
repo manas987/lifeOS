@@ -4,7 +4,8 @@ import { DndContext, useDroppable } from "@dnd-kit/core";
 import { SortableContext } from "@dnd-kit/sortable";
 import { DragOverlay } from "@dnd-kit/core";
 import { useState } from "react";
-import { FormatHeader, formatLocalDate } from "../logic/tasklogic";
+import { FormatHeader, formatLocalDate } from "../logic/taskutils";
+import type { TasksContextType, Tasktype } from "../logic/types";
 
 export function Upcoming() {
   const {
@@ -18,14 +19,14 @@ export function Upcoming() {
     deleteTask,
     handleDragEnd,
     sensors,
-  } = useOutletContext<any>();
+  } = useOutletContext<TasksContextType>()!;
   const today = formatLocalDate(new Date());
 
   const overduetasks = taskslist.filter(
-    (task: any) => task.duedate < today && !task.completed,
+    (task: Tasktype) => task.duedate && task.duedate < today && !task.completed,
   );
 
-  const dueid = overduetasks.map((task: any) => task.id);
+  const dueid = overduetasks.map((task: Tasktype) => task.id);
 
   const days: string[] = [];
   for (let i = 0; i < 60; i++) {
@@ -34,9 +35,15 @@ export function Upcoming() {
     days.push(formatLocalDate(d));
   }
 
-  const [activeTask, setActiveTask] = useState<any>(null);
+  const [activeTask, setActiveTask] = useState<Tasktype | null>(null);
 
-  function DroppableDay({ id, children }: any) {
+  function DroppableDay({
+    id,
+    children,
+  }: {
+    id: string;
+    children: React.ReactNode;
+  }) {
     const { setNodeRef, isOver } = useDroppable({ id });
     return (
       <div
@@ -47,7 +54,7 @@ export function Upcoming() {
     );
   }
 
-  const grouped = new Map<string, any[]>();
+  const grouped = new Map<string, Tasktype[]>();
   for (const task of taskslist) {
     if (!task.duedate || task.completed) continue;
     if (!grouped.has(task.duedate)) {
@@ -62,8 +69,10 @@ export function Upcoming() {
       <DndContext
         sensors={sensors}
         onDragStart={(e) => {
-          const task = taskslist.find((t: any) => t.id === e.active.id);
-          setActiveTask(task);
+          const task = taskslist.find((t: Tasktype) => t.id === e.active.id);
+          if (task) {
+            setActiveTask(task);
+          }
         }}
         onDragEnd={(e) => {
           handleDragEnd(e);
@@ -78,11 +87,13 @@ export function Upcoming() {
               <DroppableDay id="overdue">
                 <SortableContext items={dueid}>
                   <div className="flex flex-col gap-2">
-                    {overduetasks.map((task: any) => (
+                    {overduetasks.map((task: Tasktype) => (
                       <Tasklayout
                         key={task.id}
                         title={task.title}
                         duedate={task.duedate}
+                        projectname={task.project}
+                        showProject={true}
                         completed={task.completed}
                         onClick={() => toggletask(task.id)}
                         isOpen={open === task.id}
@@ -95,7 +106,11 @@ export function Upcoming() {
                           seteditingid(task.id === editingid ? null : task.id)
                         }
                         edit={(newtitle, newduedate) =>
-                          edittask(task.id, newtitle, newduedate)
+                          edittask(
+                            task.id,
+                            newtitle,
+                            newduedate ? new Date(newduedate) : undefined,
+                          )
                         }
                         id={task.id}
                       />
@@ -113,9 +128,10 @@ export function Upcoming() {
                   <p className="text-sm font-semibold text-gray-900 py-2 border-b border-gray-700 mb-3">
                     {FormatHeader(date)}
                   </p>
-                  <SortableContext items={taskfordate.map((t: any) => t.id)}>
+                  <SortableContext
+                    items={taskfordate.map((t: Tasktype) => t.id)}>
                     <div className="flex flex-col gap-3 min-h-[20px]">
-                      {taskfordate.map((task: any) => {
+                      {taskfordate.map((task: Tasktype) => {
                         const isActive = activeTask?.id === task.id;
                         return (
                           <div style={{ opacity: isActive ? 0 : 1 }}>
@@ -123,6 +139,8 @@ export function Upcoming() {
                               key={task.id}
                               title={task.title}
                               duedate={task.duedate}
+                              projectname={task.project}
+                              showProject={true}
                               completed={task.completed}
                               onClick={() => toggletask(task.id)}
                               isOpen={open === task.id}
@@ -137,7 +155,11 @@ export function Upcoming() {
                               }
                               isediting={task.id === editingid}
                               edit={(newtitle, newduedate) => {
-                                edittask(task.id, newtitle, newduedate);
+                                edittask(
+                                  task.id,
+                                  newtitle,
+                                  newduedate ? new Date(newduedate) : undefined,
+                                );
                               }}
                               id={task.id}
                             />

@@ -2,10 +2,10 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Circle, CheckCircle2, Ellipsis, CalendarDays } from "lucide-react";
 import type { TaskProps } from "./logic/types";
-import { formatDate, formatLocalDate } from "./logic/tasklogic";
+import { formatDate, formatLocalDate } from "./logic/taskutils";
 import { isPast, isToday } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Popover,
   PopoverContent,
@@ -16,6 +16,8 @@ export function Tasklayout({
   title,
   duedate,
   completed = false,
+  projectname,
+  showProject,
   onClick,
   isOpen,
   onToggle,
@@ -41,12 +43,11 @@ export function Tasklayout({
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  useEffect(() => {
-    if (isediting) {
-      seteditinput(title);
-      seteditduedate(duedate ? new Date(duedate) : undefined);
-    }
-  }, [isediting, title, duedate]);
+  const startEditing = () => {
+    seteditinput(title);
+    seteditduedate(duedate ? new Date(duedate) : undefined);
+    openedit?.();
+  };
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -128,7 +129,6 @@ export function Tasklayout({
               <button
                 type="button"
                 onClick={(e) => {
-                  seteditinput(title);
                   openedit?.();
                   e.stopPropagation();
                 }}
@@ -163,22 +163,30 @@ export function Tasklayout({
             onClick={onClick}
             className="flex items-center gap-3 w-full text-left active:cursor-grabbing">
             {completed ? <CheckCircle2 size={18} /> : <Circle size={18} />}
-            <div className="flex flex-col leading-tight">
+            <div className="flex flex-col leading-tight w-full">
               <span className="truncate">{title}</span>
-
-              {duedate && (
-                <span
-                  className={`text-xs flex items-center gap-1 mt-1 ${
-                    isToday(duedate)
-                      ? "text-green-500"
-                      : isPast(duedate)
-                        ? "text-red-500"
-                        : "text-muted-foreground"
-                  }`}>
-                  <CalendarDays size={12} className="relative top-[1px]" />
-                  {formatDate(duedate)}
+              <div className="flex items-center justify-between ">
+                <span className="text-xs flex items-center gap-1 min-w-[70px]">
+                  {duedate && (
+                    <span
+                      className={`text-xs flex items-center gap-1 ${
+                        isToday(duedate)
+                          ? "text-green-500"
+                          : isPast(duedate)
+                            ? "text-red-500"
+                            : "text-muted-foreground"
+                      }`}>
+                      <CalendarDays size={12} className="relative top-[1px]" />
+                      {formatDate(duedate)}
+                    </span>
+                  )}
                 </span>
-              )}
+                {showProject && (
+                  <span className="text-xs text-muted-foreground">
+                    {projectname || "Inbox"} #
+                  </span>
+                )}
+              </div>
             </div>
           </button>
           <button
@@ -201,7 +209,7 @@ export function Tasklayout({
             <button
               className="p-2 text-left hover:bg-white/40 rounded"
               onClick={() => {
-                openedit?.();
+                startEditing();
                 onToggle?.();
               }}>
               Edit

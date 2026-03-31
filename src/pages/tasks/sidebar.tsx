@@ -41,7 +41,7 @@ export function Taskside({
     }`;
 
   return (
-    <div className="pl-5 rounded-3xl flex flex-col gap-3 w-80">
+    <div className="pl-5 rounded-3xl flex flex-col gap-3 w-80 sticky top-0">
       <div className="p-1">
         <h1 className="text-5xl font-light">Tasks</h1>
       </div>
@@ -191,6 +191,7 @@ export function Taskside({
             onClick={() => {
               addproj(projname);
               setprojname("");
+              setaddingproj(false);
             }}>
             Add
           </button>

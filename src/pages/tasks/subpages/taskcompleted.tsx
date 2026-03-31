@@ -2,6 +2,7 @@ import { useOutletContext } from "react-router-dom";
 import { Tasklayout } from "../taskcard";
 import { DndContext } from "@dnd-kit/core";
 import { SortableContext } from "@dnd-kit/sortable";
+import type { TasksContextType, Tasktype } from "../logic/types";
 
 export function Completed() {
   const {
@@ -15,10 +16,10 @@ export function Completed() {
     deleteTask,
     HandelReorder,
     sensors,
-  } = useOutletContext<any>();
+  } = useOutletContext<TasksContextType>()!;
 
-  const completedTasks = taskslist.filter((task: any) => task.completed);
-  const ids = completedTasks.map((task: any) => task.id);
+  const completedTasks = taskslist.filter((task: Tasktype) => task.completed);
+  const ids = completedTasks.map((task: Tasktype) => task.id);
 
   return (
     <div>
@@ -32,11 +33,13 @@ export function Completed() {
         ) : (
           <DndContext sensors={sensors} onDragEnd={HandelReorder}>
             <SortableContext items={ids}>
-              {completedTasks.map((task: any) => (
+              {completedTasks.map((task: Tasktype) => (
                 <Tasklayout
                   key={task.id}
                   duedate={task.duedate}
                   title={task.title}
+                  projectname={task.project}
+                  showProject={true}
                   completed={task.completed}
                   onClick={() => toggletask(task.id)}
                   isOpen={open === task.id}
@@ -47,7 +50,11 @@ export function Completed() {
                     seteditingid(editingid === task.id ? null : task.id)
                   }
                   edit={(newtitle, newduedate) =>
-                    edittask(task.id, newtitle, newduedate)
+                    edittask(
+                      task.id,
+                      newtitle,
+                      newduedate ? new Date(newduedate) : undefined,
+                    )
                   }
                   id={task.id}
                 />
