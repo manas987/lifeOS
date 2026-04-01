@@ -1,4 +1,4 @@
-import { Habitside } from "./sidebar";
+import { Habitside } from "./hsidebar";
 import { Outlet } from "react-router-dom";
 import { UseHabitLogic } from "./logic/logic";
 
@@ -7,8 +7,7 @@ export function Habits() {
 
   return (
     <div className="flex ">
-      <Habitside addhabit={habitLogic.addhabit} />
-
+      <Habitside />
       <div className="flex-1 p-4 pl-9 overflow-visible">
         <Outlet context={habitLogic} />
       </div>

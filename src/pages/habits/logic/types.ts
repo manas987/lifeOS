@@ -1,7 +1,12 @@
 export type Habit = {
   id: string;
   title: string;
-  createdAt: number;
+  repeatOn?: number[];
+  duration?: {
+    start: string;
+    end?: string;
+  };
+  linkedTaskIds?: string[];
   completedDates: string[];
 };
 
