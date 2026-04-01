@@ -1,42 +1,41 @@
+import { useOutletContext } from "react-router-dom";
 import { Detailedhabitcard } from "../habitscard";
+import type { Habit } from "../logic/types";
+
+type HabitContext = {
+  habitslist: Habit[];
+  open: string | null;
+  setOpen: (id: string | null) => void;
+  seteditingid: (id: string | null) => void;
+  deletehabit: (id: string) => void;
+};
 
 export function AllHabits() {
-  const dummyHabits = [
-    {
-      id: 1,
-      title: "Workout",
-      selectedDays: [1, 2, 3, 4, 5],
-      range: { from: new Date(), to: new Date() },
-    },
-    {
-      id: 2,
-      title: "Read",
-      selectedDays: [0, 6],
-      range: { from: new Date(), to: new Date() },
-    },
-    {
-      id: 3,
-      title: "Meditation",
-      selectedDays: [1, 3, 5],
-      range: {},
-    },
-    {
-      id: 4,
-      title: "Drink Water",
-      selectedDays: [0, 1, 2, 3, 4, 5, 6],
-      range: { from: new Date(), to: new Date() },
-    },
-  ];
+  const { habitslist, open, setOpen, seteditingid, deletehabit } =
+    useOutletContext<HabitContext>();
+
   return (
     <div>
-      <h2 className="text-3xl font-light mb-4">Habits-list</h2>
+      <h2 className="text-3xl font-light mb-4">Habits List</h2>
+
       <div className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-4">
-        {dummyHabits.map((h) => (
+        {habitslist.map((h) => (
           <Detailedhabitcard
             key={h.id}
             title={h.title}
-            range={h.range}
-            selectedDays={h.selectedDays}
+            selectedDays={h.repeatOn || []}
+            range={
+              h.duration
+                ? {
+                    from: new Date(h.duration.start),
+                    to: h.duration.end ? new Date(h.duration.end) : undefined,
+                  }
+                : undefined
+            }
+            menue={open === h.id}
+            togglemenue={() => setOpen(open === h.id ? null : h.id)}
+            startEditing={() => seteditingid(h.id)}
+            onDelete={() => deletehabit(h.id)}
           />
         ))}
       </div>

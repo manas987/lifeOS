@@ -1,14 +1,32 @@
 import { NavLink } from "react-router-dom";
 import { Addhabitcard } from "./habitscard";
-import { useState } from "react";
+import type { HabitsContextType } from "./logic/types";
 
-export function Habitside() {
+function getLocalDate() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+type Props = {
+  habitLogic: HabitsContextType;
+};
+
+export function Habitside({ habitLogic }: Props) {
+  const { habitslist, addhabit } = habitLogic;
   const linkClass = (isActive: boolean) =>
     `glass-card w-full p-4 block transition duration-150 ${
       isActive ? "!bg-black/80 text-white" : "hover:!bg-white"
     }`;
 
-  const [progress] = useState(20); // %
+  const today = getLocalDate();
+
+  const total = habitslist.length;
+
+  const completed = habitslist.filter((h) =>
+    h.completedDates.includes(today),
+  ).length;
+
+  const progress = total === 0 ? 0 : Math.round((completed / total) * 100);
+
   return (
     <div className="pl-5 rounded-3xl flex flex-col gap-3 w-80 sticky top-0">
       <div className="p-1">
@@ -42,7 +60,7 @@ export function Habitside() {
           />
         </div>
       </div>
-      <Addhabitcard />
+      <Addhabitcard onAdd={addhabit} />
     </div>
   );
 }

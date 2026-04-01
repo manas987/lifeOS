@@ -5,7 +5,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { CalendarDays, EllipsisVertical } from "lucide-react";
+import { CalendarDays, Ellipsis } from "lucide-react";
 import type { DateRange } from "react-day-picker";
 
 type HabitCardProps = {
@@ -33,7 +33,11 @@ export function HabbitCard({ title, completed, onToggle }: HabitCardProps) {
   );
 }
 
-export function Addhabitcard() {
+type AddHabitProps = {
+  onAdd: (title: string, selectedDays: number[], range?: DateRange) => void;
+};
+
+export function Addhabitcard({ onAdd }: AddHabitProps) {
   const days = ["S", "M", "T", "W", "T", "F", "S"];
 
   const [title, settitle] = useState("");
@@ -146,6 +150,15 @@ export function Addhabitcard() {
         </Popover>
       </div>
       <button
+        onClick={() => {
+          if (!title.trim()) return;
+
+          onAdd(title, selectedDays, range);
+
+          settitle("");
+          setSelectedDays([]);
+          setRange(undefined);
+        }}
         className="
          glass-card 
          w-full 
@@ -167,12 +180,20 @@ type DetailedHabitProps = {
   title: string;
   range?: { from?: Date; to?: Date };
   selectedDays: number[];
+  menue?: boolean;
+  togglemenue: () => void;
+  startEditing: () => void;
+  onDelete: () => void;
 };
 
 export function Detailedhabitcard({
   title,
   range,
   selectedDays,
+  menue,
+  togglemenue,
+  startEditing,
+  onDelete,
 }: DetailedHabitProps) {
   const days = ["S", "M", "T", "W", "T", "F", "S"];
 
@@ -185,13 +206,19 @@ export function Detailedhabitcard({
   }
 
   return (
-    <div className="glass-card w-full max-w-md mx-auto flex flex-col p-5 pt-1 pb-1 gap-4 rounded-2xl">
+    <div className="glass-card relative w-full max-w-md mx-auto flex flex-col p-5 pt-1 pb-1 gap-4 rounded-2xl">
       {/* Title */}
       <div className="flex justify-between items-center">
         <p className="bg-transparent border-b outline-none text-2xl pb-1">
           {title}
         </p>
-        <EllipsisVertical />
+        <button
+          onClick={() => {
+            togglemenue();
+          }}
+          className="hover:bg-white/70 rounded-lg p-2">
+          <Ellipsis />
+        </button>
       </div>
 
       {/* Repeat */}
@@ -224,10 +251,33 @@ export function Detailedhabitcard({
               ? `${format(range.from)} - ${format(range.to)}`
               : "No duration"}
           </span>
-
           <CalendarDays size={16} />
         </button>
       </div>
+      {menue && (
+        <>
+          {/* Overlay */}
+          <div className="fixed inset-0 z-40" onClick={togglemenue} />
+
+          {/* Menu */}
+          <div className="absolute right-2 top-12 z-50 w-36 glass-card p-2 flex flex-col gap-1 shadow-lg rounded-xl animate-in fade-in zoom-in-95">
+            <button
+              className="p-2 text-left hover:bg-white/40 rounded"
+              onClick={() => {
+                startEditing();
+                togglemenue();
+              }}>
+              Edit
+            </button>
+
+            <button
+              className="p-2 text-left hover:bg-white/40 rounded text-red-400"
+              onClick={onDelete}>
+              Delete
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 }

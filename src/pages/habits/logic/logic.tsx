@@ -1,48 +1,42 @@
 import { useEffect, useState } from "react";
 import type { Habit } from "./types";
+import type { DateRange } from "react-day-picker";
 
-// ✅ helper for LOCAL date (important)
 function getLocalDate() {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
-export function UseHabitLogic() {
+export function useHabitLogic() {
   const [open, setOpen] = useState<string | null>(null);
   const [editingid, seteditingid] = useState<string | null>(null);
   const [deleteundo, setdeleteundo] = useState<Habit | null>(null);
 
   const [habitslist, sethabits] = useState<Habit[]>(() => {
-    const saved = localStorage.getItem("habbits");
-    if (!saved) return [];
-
-    try {
-      const parsed = JSON.parse(saved);
-
-      return parsed.map((h: Habit) => ({
-        ...h,
-        completedDates: h.completedDates || [],
-      }));
-    } catch {
-      return [];
-    }
+    const saved = localStorage.getItem("habits");
+    return saved ? JSON.parse(saved) : [];
   });
 
-  // save
   useEffect(() => {
-    localStorage.setItem("habbits", JSON.stringify(habitslist));
+    localStorage.setItem("habits", JSON.stringify(habitslist));
   }, [habitslist]);
 
   // ADD
-  function addhabit(title: string) {
+  function addhabit(title: string, selectedDays: number[], range?: DateRange) {
     const trimmed = title.trim();
     if (!trimmed) return;
 
     const newhabit: Habit = {
       id: crypto.randomUUID(),
       title: trimmed,
-      createdAt: Date.now(),
       completedDates: [],
+      repeatOn: selectedDays,
+      duration: range
+        ? {
+            start: range.from?.toISOString() || "",
+            end: range.to?.toISOString(),
+          }
+        : undefined,
     };
 
     sethabits((prev) => [newhabit, ...prev]);
