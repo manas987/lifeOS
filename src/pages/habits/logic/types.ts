@@ -32,7 +32,7 @@ export type AddHabitProps = {
 export type DetailedHabitProps = {
   id: string;
   title: string;
-  range?: { from?: Date; to?: Date };
+  range?: DateRange;
   selectedDays: number[];
 
   onUpdate: (data: {
@@ -62,7 +62,7 @@ export type HabitContextindex = {
     data: {
       title: string;
       selectedDays: number[];
-      range?: { from?: Date; to?: Date };
+      range?: DateRange;
     },
   ) => void;
   reorderHabits: (event: DragEndEvent) => void;

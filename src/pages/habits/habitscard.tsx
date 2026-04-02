@@ -202,7 +202,7 @@ export function Detailedhabitcard({
   const days = ["S", "M", "T", "W", "T", "F", "S"];
   const [localTitle, setLocalTitle] = useState(title);
   const [localDays, setLocalDays] = useState(selectedDays);
-  const [localRange, setLocalRange] = useState(range);
+  const [localRange, setLocalRange] = useState<DateRange | undefined>(range);
 
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
@@ -355,12 +355,15 @@ export function Detailedhabitcard({
   );
 }
 
-export function HabitHeatmapCard() {
-  const [data, setData] = useState<Record<string, number>>({});
-  const [hovered, setHovered] = useState<DayData | null>(null);
-  const [selected, setSelected] = useState<DayData | null>(null);
+type HeatmapDay = {
+  date: string;
+  value: number;
+  day: number;
+  month: number;
+};
 
-  useEffect(() => {
+export function HabitHeatmapCard() {
+  const [data] = useState<Record<string, number>>(() => {
     const map: Record<string, number> = {};
     const today = new Date();
 
@@ -372,8 +375,10 @@ export function HabitHeatmapCard() {
       map[key] = Math.floor(Math.random() * 6);
     }
 
-    setData(map);
-  }, []);
+    return map;
+  });
+  const [hovered, setHovered] = useState<DayData | null>(null);
+  const [selected, setSelected] = useState<DayData | null>(null);
 
   function getColor(value: number) {
     if (value === 0) return "bg-black/10";
@@ -388,8 +393,8 @@ export function HabitHeatmapCard() {
     const start = new Date();
     start.setDate(today.getDate() - 364);
 
-    const weeks: any[] = [];
-    let currentWeek: any[] = [];
+    const weeks: HeatmapDay[][] = [];
+    let currentWeek: HeatmapDay[] = [];
 
     for (let i = 0; i < 365; i++) {
       const d = new Date(start);
@@ -456,7 +461,7 @@ export function HabitHeatmapCard() {
         <div className="flex gap-[4px]">
           {weeks.map((week, i) => (
             <div key={i} className="flex flex-col gap-[4px]">
-              {week.map((day: any) => (
+              {week.map((day: HeatmapDay) => (
                 <div
                   key={day.date}
                   onMouseEnter={() =>
