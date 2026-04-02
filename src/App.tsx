@@ -14,8 +14,7 @@ import { AllHabits } from "./pages/habits/pages/habbits";
 import { HabitsInbox } from "./pages/habits/pages/inbox";
 
 function App() {
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-[#e4f4ff] to-[#f8c778]">
+  return (<div className="min-h-screen bg-gradient-to-br from-[#e4f4ff] to-[#f8c778]">
       <Navbar />
       <Routes>
         <Route path="/dashboard" element={<Dashboard />} />

@@ -16,16 +16,36 @@ import type {
   HabitCardProps,
 } from "./logic/types";
 
-export function HabbitCard({ title, completed, onToggle }: HabitCardProps) {
+export function HabbitCard({
+  title,
+  completed,
+  onToggle,
+  streak,
+}: HabitCardProps) {
   return (
-    <div
-      className={`glass-card p-3 flex items-center gap-3 transition duration-150 cursor-pointer
-      ${completed ? "opacity-60 line-through" : "hover:!bg-white"}`}
-      onClick={onToggle}>
-      {completed ? <CircleCheckBig /> : <Circle />}
+    <div className="glass-card px-3 py-2 rounded-xl flex items-center justify-between transition-all duration-200 hover:shadow-md">
+      {/* Left section */}
+      <div
+        onClick={onToggle}
+        className={`flex items-center gap-3 cursor-pointer flex-1 p-2 rounded-lg transition-all duration-150
+        ${
+          completed
+            ? "opacity-50 line-through"
+            : "hover:bg-white/40 dark:hover:bg-white/10"
+        }`}>
+        <div
+          className={`transition-all ${
+            completed ? "text-green-500 scale-110" : "text-gray-500"
+          }`}>
+          {completed ? <CircleCheckBig size={20} /> : <Circle size={20} />}
+        </div>
 
-      {/* Title */}
-      <p className="text-sm truncate">{title}</p>
+        <p className="text-sm truncate">{title}</p>
+      </div>
+
+      <div className="flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-md bg-orange-100/70 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400">
+        Streak: {streak} days
+      </div>
     </div>
   );
 }
@@ -177,6 +197,7 @@ export function Detailedhabitcard({
   selectedDays,
   onUpdate,
   onDelete,
+  streak,
 }: DetailedHabitProps) {
   const days = ["S", "M", "T", "W", "T", "F", "S"];
   const [localTitle, setLocalTitle] = useState(title);
@@ -231,11 +252,17 @@ export function Detailedhabitcard({
           onChange={(e) => setLocalTitle(e.target.value)}
           className="bg-transparent border-b outline-none text-2xl pb-1 w-full"
         />
-        <button
-          onClick={onDelete}
-          className="hover:bg-red-100 text-red-500 rounded-lg p-2">
-          <Trash />
-        </button>
+
+        <div className="flex items-center gap-2">
+          <div className="text-xs px-2 py-1 rounded-md bg-orange-100/70 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400 whitespace-nowrap">
+            🔥 {streak}
+          </div>
+          <button
+            onClick={onDelete}
+            className="hover:bg-red-100 text-red-500 rounded-lg p-2">
+            <Trash size={20} />
+          </button>
+        </div>
       </div>
 
       {/* Repeat */}

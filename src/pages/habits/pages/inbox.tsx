@@ -12,7 +12,8 @@ export function HabitsInbox() {
   const today = getLocalDate();
   const todayDay = todayDate.getDay();
 
-  const { habitslist, togglehabit } = useOutletContext<HabitsContextType>();
+  const { habitslist, togglehabit, CountStreak } =
+    useOutletContext<HabitsContextType>();
 
   function isHabitActiveToday(h: Habit) {
     if (h.repeatOn && h.repeatOn.length > 0) {
@@ -73,6 +74,7 @@ export function HabitsInbox() {
                   title={h.title}
                   completed={false}
                   onToggle={() => togglehabit(h.id)}
+                  streak={CountStreak(h)}
                 />
               ))}
             </div>
@@ -101,6 +103,7 @@ export function HabitsInbox() {
                   title={h.title}
                   completed={true}
                   onToggle={() => togglehabit(h.id)}
+                  streak={CountStreak(h)}
                 />
               ))}
             </div>

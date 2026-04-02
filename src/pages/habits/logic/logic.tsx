@@ -138,6 +138,29 @@ export function useHabitLogic() {
     });
   }
 
+  function CountStreak(h: Habit) {
+    const completedddates = new Set(h.completedDates);
+    const todayDate = new Date();
+
+    let streak: number = 0;
+    for (let i = 0; i < 365; i++) {
+      const d = new Date(todayDate);
+      d.setDate(todayDate.getDate() - i);
+
+      const day = d.getDay();
+      const dateStr = getLocalDate(d);
+
+      if (h.repeatOn && !h.repeatOn.includes(day) && h.repeatOn.length > 0)
+        continue;
+
+      if (i === 0 && !completedddates.has(today)) continue;
+
+      if (completedddates.has(dateStr)) streak++;
+      else break;
+    }
+    return streak;
+  }
+
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -164,11 +187,12 @@ export function useHabitLogic() {
     undodelete,
     updateHabit,
     reorderHabits,
+    CountStreak,
     sensors,
   };
 }
 
-export function getLocalDate() {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+export function getLocalDate(d?: Date) {
+  const date = d ?? new Date();
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }

@@ -5,8 +5,14 @@ import { DndContext } from "@dnd-kit/core";
 import { SortableContext } from "@dnd-kit/sortable";
 
 export function AllHabits() {
-  const { habitslist, deletehabit, updateHabit, reorderHabits, sensors } =
-    useOutletContext<HabitContextindex>();
+  const {
+    habitslist,
+    deletehabit,
+    updateHabit,
+    reorderHabits,
+    sensors,
+    CountStreak,
+  } = useOutletContext<HabitContextindex>();
 
   const ids = habitslist.map((h) => h.id);
 
@@ -35,6 +41,7 @@ export function AllHabits() {
                 }
                 onUpdate={(data) => updateHabit(h.id, data)}
                 onDelete={() => deletehabit(h.id)}
+                streak={CountStreak(h)}
               />
             ))}
           </SortableContext>

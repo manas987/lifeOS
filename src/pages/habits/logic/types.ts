@@ -9,17 +9,20 @@ export type Habit = {
   linkedTaskIds?: string[];
   completedDates: string[];
 };
+import type { DragEndEvent } from "@dnd-kit/core";
 import type { DateRange } from "react-day-picker";
 
 export type HabitsContextType = {
   habitslist: Habit[];
   addhabit: (title: string, selectedDays: number[], range?: DateRange) => void;
   togglehabit: (id: string) => void;
+  CountStreak: (h: Habit) => number;
 };
 export type HabitCardProps = {
   title: string;
   completed: boolean;
   onToggle: () => void;
+  streak: number;
 };
 
 export type AddHabitProps = {
@@ -35,10 +38,11 @@ export type DetailedHabitProps = {
   onUpdate: (data: {
     title: string;
     selectedDays: number[];
-    range?: { from?: Date; to?: Date };
+    range?: DateRange;
   }) => void;
 
   onDelete: () => void;
+  streak: number;
 };
 
 export type DayData = {
@@ -61,6 +65,7 @@ export type HabitContextindex = {
       range?: { from?: Date; to?: Date };
     },
   ) => void;
-  reorderHabits: () => void;
+  reorderHabits: (event: DragEndEvent) => void;
   sensors: ReturnType<typeof import("@dnd-kit/core").useSensors>;
+  CountStreak: (h: Habit) => number;
 };
