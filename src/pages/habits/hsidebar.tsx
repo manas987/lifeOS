@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { Addhabitcard } from "./habitscard";
-import type { Propssidebar } from "./logic/types";
+import type { Habit, Propssidebar } from "./logic/types";
 
 function getLocalDate() {
   const d = new Date();
@@ -14,15 +14,33 @@ export function Habitside({ habitLogic }: Propssidebar) {
       isActive ? "!bg-black/80 text-white" : "hover:!bg-white"
     }`;
 
+  const todayDate = new Date();
+  const todayDay = todayDate.getDay();
   const today = getLocalDate();
 
-  const total = habitslist.length;
+  function isHabitActiveToday(h: Habit) {
+    if (h.repeatOn && h.repeatOn.length > 0) {
+      if (!h.repeatOn.includes(todayDay)) return false;
+    }
+    if (h.duration?.start) {
+      const start = new Date(h.duration.start);
+      const end = h.duration.end ? new Date(h.duration.end) : null;
+      if (todayDate < start) return false;
+      if (end && todayDate > end) return false;
+    }
+    return true;
+  }
 
-  const completed = habitslist.filter((h) =>
+  const todaysHabits = habitslist.filter(isHabitActiveToday);
+
+  const completedToday = todaysHabits.filter((h) =>
     h.completedDates.includes(today),
   ).length;
 
-  const progress = total === 0 ? 0 : Math.round((completed / total) * 100);
+  const totalToday = todaysHabits.length;
+
+  const progress =
+    totalToday === 0 ? 0 : Math.round((completedToday / totalToday) * 100);
 
   return (
     <div className="pl-5 rounded-3xl flex flex-col gap-3 w-80 sticky top-0">
