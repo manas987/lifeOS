@@ -5,7 +5,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { CalendarDays, Ellipsis } from "lucide-react";
+import { CalendarDays, Circle, CircleCheckBig, Trash } from "lucide-react";
 import type { DateRange } from "react-day-picker";
 
 type HabitCardProps = {
@@ -20,12 +20,7 @@ export function HabbitCard({ title, completed, onToggle }: HabitCardProps) {
       className={`glass-card p-3 flex items-center gap-3 transition duration-150 cursor-pointer
       ${completed ? "opacity-60 line-through" : "hover:!bg-white"}`}
       onClick={onToggle}>
-      {/* Circle */}
-      <div
-        className={`w-4 h-4 rounded-full border flex items-center justify-center
-        ${completed ? "bg-black border-black" : "border-black/40"}`}>
-        {completed && <div className="w-2 h-2 bg-white rounded-full" />}
-      </div>
+      {completed ? <CircleCheckBig /> : <Circle />}
 
       {/* Title */}
       <p className="text-sm truncate">{title}</p>
@@ -133,7 +128,7 @@ export function Addhabitcard({ onAdd }: AddHabitProps) {
                 weekday: "w-9 font-normal text-xs text-center text-gray-400",
                 weeks: "space-y-1",
                 week: "flex ",
-                day: "w-9 h-9 text-center p-0",
+                day: "w-10 h-9 text-center p-0",
                 day_button:
                   "w-9 h-9 rounded-xl hover:bg-black/10 transition duration-100 flex items-center justify-center",
                 today: "[&>button]:border [&>button]:border-black/40",
@@ -180,9 +175,13 @@ type DetailedHabitProps = {
   title: string;
   range?: { from?: Date; to?: Date };
   selectedDays: number[];
-  menue?: boolean;
-  togglemenue: () => void;
-  startEditing: () => void;
+
+  onUpdate: (data: {
+    title: string;
+    selectedDays: number[];
+    range?: { from?: Date; to?: Date };
+  }) => void;
+
   onDelete: () => void;
 };
 
@@ -190,12 +189,32 @@ export function Detailedhabitcard({
   title,
   range,
   selectedDays,
-  menue,
-  togglemenue,
-  startEditing,
+  onUpdate,
   onDelete,
 }: DetailedHabitProps) {
   const days = ["S", "M", "T", "W", "T", "F", "S"];
+  const [localTitle, setLocalTitle] = useState(title);
+  const [localDays, setLocalDays] = useState(selectedDays);
+  const [localRange, setLocalRange] = useState(range);
+
+  useEffect(() => {
+    if (
+      localTitle === title &&
+      JSON.stringify(localDays) === JSON.stringify(selectedDays) &&
+      JSON.stringify(localRange) === JSON.stringify(range)
+    )
+      return;
+
+    const timeout = setTimeout(() => {
+      onUpdate({
+        title: localTitle,
+        selectedDays: localDays,
+        range: localRange,
+      });
+    }, 500);
+
+    return () => clearTimeout(timeout);
+  }, [localTitle, localDays, localRange, onUpdate]);
 
   function format(date?: Date) {
     if (!date) return "";
@@ -209,15 +228,15 @@ export function Detailedhabitcard({
     <div className="glass-card relative w-full max-w-md mx-auto flex flex-col p-5 pt-1 pb-1 gap-4 rounded-2xl">
       {/* Title */}
       <div className="flex justify-between items-center">
-        <p className="bg-transparent border-b outline-none text-2xl pb-1">
-          {title}
-        </p>
+        <input
+          value={localTitle}
+          onChange={(e) => setLocalTitle(e.target.value)}
+          className="bg-transparent border-b outline-none text-2xl pb-1 w-full"
+        />
         <button
-          onClick={() => {
-            togglemenue();
-          }}
-          className="hover:bg-white/70 rounded-lg p-2">
-          <Ellipsis />
+          onClick={onDelete}
+          className="hover:bg-red-100 text-red-500 rounded-lg p-2">
+          <Trash />
         </button>
       </div>
 
@@ -227,16 +246,23 @@ export function Detailedhabitcard({
 
         <div className="flex gap-2">
           {days.map((day, index) => (
-            <div
+            <button
               key={index}
+              onClick={() =>
+                setLocalDays((prev) =>
+                  prev.includes(index)
+                    ? prev.filter((d) => d !== index)
+                    : [...prev, index],
+                )
+              }
               className={`w-10 h-8 rounded-full border flex items-center justify-center text-sm transition
-              ${
-                selectedDays.includes(index)
-                  ? "border-green-500 border-2"
-                  : "hover:bg-white/30"
-              }`}>
+      ${
+        localDays.includes(index)
+          ? "border-green-500 border-2"
+          : "hover:bg-white/30"
+      }`}>
               {day}
-            </div>
+            </button>
           ))}
         </div>
       </div>
@@ -245,39 +271,61 @@ export function Detailedhabitcard({
       <div className="flex flex-col gap-2">
         <span className="text-lg">Duration</span>
 
-        <button className="glass-card flex items-center justify-between px-4 py-2 rounded-xl text-sm hover:bg-white/30 transition">
-          <span>
-            {range?.from
-              ? `${format(range.from)} - ${format(range.to)}`
-              : "No duration"}
-          </span>
-          <CalendarDays size={16} />
-        </button>
+        <Popover>
+          <PopoverTrigger asChild>
+            <button className="glass-card flex items-center justify-between px-4 py-2 rounded-xl text-sm hover:bg-white/30 transition">
+              <span>
+                {localRange?.from
+                  ? `${format(localRange.from)} - ${format(localRange.to)}`
+                  : "Select duration"}
+              </span>
+
+              <CalendarDays size={16} />
+            </button>
+          </PopoverTrigger>
+
+          <PopoverContent className="w-auto p-0 bg-white/90 backdrop-blur-lg border border-white/40">
+            <Calendar
+              mode="range"
+              selected={localRange}
+              onSelect={setLocalRange}
+              numberOfMonths={1}
+              disabled={(date) => {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                const d = new Date(date);
+                d.setHours(0, 0, 0, 0);
+
+                return d < today;
+              }}
+              classNames={{
+                month: "space-y-3",
+                caption_label: "text-xl text-gray-800",
+                button_previous:
+                  "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-center",
+                button_next:
+                  "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-center",
+                weekdays: "flex mb-2 gap-1",
+                weekday: "w-9 font-normal text-xs text-center text-gray-400",
+                weeks: "space-y-1",
+                week: "flex ",
+                day: "w-10 h-9 text-center",
+                day_button:
+                  "w-9 h-9 rounded-xl hover:bg-black/10 transition duration-100 flex items-center justify-center",
+                today: "[&>button]:border [&>button]:border-black/40",
+                range_middle: "bg-black/10",
+                range_start:
+                  "bg-black/10 rounded-l-xl [&>button]:bg-black [&>button]:text-white",
+                range_end:
+                  "bg-black/10 rounded-r-xl [&>button]:bg-black [&>button]:text-white",
+                disabled:
+                  "[&>button]:text-gray-300 [&>button]:hover:bg-transparent [&>button]:cursor-not-allowed",
+              }}
+            />
+          </PopoverContent>
+        </Popover>
       </div>
-      {menue && (
-        <>
-          {/* Overlay */}
-          <div className="fixed inset-0 z-40" onClick={togglemenue} />
-
-          {/* Menu */}
-          <div className="absolute right-2 top-12 z-50 w-36 glass-card p-2 flex flex-col gap-1 shadow-lg rounded-xl animate-in fade-in zoom-in-95">
-            <button
-              className="p-2 text-left hover:bg-white/40 rounded"
-              onClick={() => {
-                startEditing();
-                togglemenue();
-              }}>
-              Edit
-            </button>
-
-            <button
-              className="p-2 text-left hover:bg-white/40 rounded text-red-400"
-              onClick={onDelete}>
-              Delete
-            </button>
-          </div>
-        </>
-      )}
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { useHabitLogic } from "./logic/logic";
 
 export function Habits() {
   const habitLogic = useHabitLogic();
+  const { deleteundo, undodelete } = habitLogic;
 
   return (
     <div className="flex">
@@ -11,6 +12,17 @@ export function Habits() {
 
       <div className="flex-1 p-4 pl-9 overflow-visible">
         <Outlet context={habitLogic} />
+      </div>
+      <div
+        className={`fixed bottom-5 left-5 glass-card p-3 flex gap-3 transition-all duration-300 ease-out rounded-xl shadow-lg
+  ${deleteundo ? "translate-x-0 opacity-100" : "-translate-x-full opacity-0"}`}>
+        <span className="text-sm">Habit deleted</span>
+
+        <button
+          onClick={undodelete}
+          className="text-red-500 hover:underline text-sm">
+          Undo
+        </button>
       </div>
     </div>
   );

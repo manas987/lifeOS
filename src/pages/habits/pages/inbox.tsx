@@ -2,11 +2,14 @@ import { useState } from "react";
 import { HabbitCard, HabitHeatmapCard } from "../habitscard";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useOutletContext } from "react-router-dom";
-import type { HabitsContextType } from "../logic/types";
+import type { Habit, HabitsContextType } from "../logic/types";
 
 export function HabitsInbox() {
   const [openpending, setopenpending] = useState(true);
   const [opencompleted, setopencomplted] = useState(false);
+  const todayDate = new Date();
+  const today = getLocalDate();
+  const todayDay = todayDate.getDay(); // 0–6
 
   const { habitslist, togglehabit } = useOutletContext<HabitsContextType>();
 
@@ -15,13 +18,26 @@ export function HabitsInbox() {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
   }
 
-  const today = getLocalDate();
+  function isHabitActiveToday(h: Habit) {
+    if (h.repeatOn && h.repeatOn.length > 0) {
+      if (!h.repeatOn.includes(todayDay)) return false;
+    }
+    if (h.duration?.start) {
+      const start = new Date(h.duration.start);
+      const end = h.duration.end ? new Date(h.duration.end) : null;
+      if (todayDate < start) return false;
+      if (end && todayDate > end) return false;
+    }
+    return true;
+  }
 
-  const pendingHabits = habitslist.filter(
+  const todaysHabits = habitslist.filter(isHabitActiveToday);
+
+  const pendingHabits = todaysHabits.filter(
     (h) => !h.completedDates.includes(today),
   );
 
-  const completedHabits = habitslist.filter((h) =>
+  const completedHabits = todaysHabits.filter((h) =>
     h.completedDates.includes(today),
   );
 

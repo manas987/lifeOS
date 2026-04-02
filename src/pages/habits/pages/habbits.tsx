@@ -4,14 +4,20 @@ import type { Habit } from "../logic/types";
 
 type HabitContext = {
   habitslist: Habit[];
-  open: string | null;
-  setOpen: (id: string | null) => void;
-  seteditingid: (id: string | null) => void;
   deletehabit: (id: string) => void;
+
+  updateHabit: (
+    id: string,
+    data: {
+      title: string;
+      selectedDays: number[];
+      range?: { from?: Date; to?: Date };
+    },
+  ) => void;
 };
 
 export function AllHabits() {
-  const { habitslist, open, setOpen, seteditingid, deletehabit } =
+  const { habitslist, deletehabit, updateHabit } =
     useOutletContext<HabitContext>();
 
   return (
@@ -32,9 +38,7 @@ export function AllHabits() {
                   }
                 : undefined
             }
-            menue={open === h.id}
-            togglemenue={() => setOpen(open === h.id ? null : h.id)}
-            startEditing={() => seteditingid(h.id)}
+            onUpdate={(data) => updateHabit(h.id, data)} // ✅ CRITICAL
             onDelete={() => deletehabit(h.id)}
           />
         ))}

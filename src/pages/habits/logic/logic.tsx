@@ -42,13 +42,30 @@ export function useHabitLogic() {
     sethabits((prev) => [newhabit, ...prev]);
   }
 
-  // EDIT
-  function edithabit(id: string, newtitle: string) {
-    const trimmed = newtitle.trim();
-    if (!trimmed) return;
-
+  function updateHabit(
+    id: string,
+    data: {
+      title: string;
+      selectedDays: number[];
+      range?: { from?: Date; to?: Date };
+    },
+  ) {
     sethabits((prev) =>
-      prev.map((h) => (h.id === id ? { ...h, title: trimmed } : h)),
+      prev.map((h) => {
+        if (h.id !== id) return h;
+
+        return {
+          ...h,
+          title: data.title,
+          repeatOn: data.selectedDays,
+          duration: data.range
+            ? {
+                start: data.range.from?.toISOString() || "",
+                end: data.range.to?.toISOString(),
+              }
+            : undefined,
+        };
+      }),
     );
   }
 
@@ -89,12 +106,14 @@ export function useHabitLogic() {
 
   function undodelete() {
     if (!deleteundo) return;
-    sethabits((prev) => [deleteundo, ...prev]);
+
+    sethabits((prev) => [...prev, deleteundo]);
     setdeleteundo(null);
   }
 
   useEffect(() => {
     if (!deleteundo) return;
+
     const timer = setTimeout(() => {
       setdeleteundo(null);
     }, 4000);
@@ -102,7 +121,6 @@ export function useHabitLogic() {
     return () => clearTimeout(timer);
   }, [deleteundo]);
 
-  // ✅ derive completed
   const today = getLocalDate();
 
   const habitsWithState = habitslist.map((h) => ({
@@ -115,7 +133,6 @@ export function useHabitLogic() {
     sethabits,
 
     addhabit,
-    edithabit,
     deletehabit,
     togglehabit,
 
@@ -127,5 +144,6 @@ export function useHabitLogic() {
 
     deleteundo,
     undodelete,
+    updateHabit,
   };
 }
