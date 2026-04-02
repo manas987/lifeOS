@@ -7,12 +7,14 @@ import {
 } from "@/components/ui/popover";
 import { CalendarDays, Circle, CircleCheckBig, Trash } from "lucide-react";
 import type { DateRange } from "react-day-picker";
-
-type HabitCardProps = {
-  title: string;
-  completed: boolean;
-  onToggle: () => void;
-};
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import type {
+  AddHabitProps,
+  DayData,
+  DetailedHabitProps,
+  HabitCardProps,
+} from "./logic/types";
 
 export function HabbitCard({ title, completed, onToggle }: HabitCardProps) {
   return (
@@ -27,10 +29,6 @@ export function HabbitCard({ title, completed, onToggle }: HabitCardProps) {
     </div>
   );
 }
-
-type AddHabitProps = {
-  onAdd: (title: string, selectedDays: number[], range?: DateRange) => void;
-};
 
 export function Addhabitcard({ onAdd }: AddHabitProps) {
   const days = ["S", "M", "T", "W", "T", "F", "S"];
@@ -171,21 +169,9 @@ export function Addhabitcard({ onAdd }: AddHabitProps) {
     </div>
   );
 }
-type DetailedHabitProps = {
-  title: string;
-  range?: { from?: Date; to?: Date };
-  selectedDays: number[];
-
-  onUpdate: (data: {
-    title: string;
-    selectedDays: number[];
-    range?: { from?: Date; to?: Date };
-  }) => void;
-
-  onDelete: () => void;
-};
 
 export function Detailedhabitcard({
+  id,
   title,
   range,
   selectedDays,
@@ -196,6 +182,9 @@ export function Detailedhabitcard({
   const [localTitle, setLocalTitle] = useState(title);
   const [localDays, setLocalDays] = useState(selectedDays);
   const [localRange, setLocalRange] = useState(range);
+
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id });
 
   useEffect(() => {
     if (
@@ -214,7 +203,7 @@ export function Detailedhabitcard({
     }, 500);
 
     return () => clearTimeout(timeout);
-  }, [localTitle, localDays, localRange, onUpdate]);
+  }, [localTitle, localDays, localRange, onUpdate, title, selectedDays, range]);
 
   function format(date?: Date) {
     if (!date) return "";
@@ -223,9 +212,18 @@ export function Detailedhabitcard({
       month: "short",
     });
   }
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
 
   return (
-    <div className="glass-card relative w-full max-w-md mx-auto flex flex-col p-5 pt-1 pb-1 gap-4 rounded-2xl">
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className="glass-card relative w-full max-w-md mx-auto flex flex-col p-5 pt-1 pb-1 gap-4 rounded-2xl">
       {/* Title */}
       <div className="flex justify-between items-center">
         <input
@@ -330,17 +328,11 @@ export function Detailedhabitcard({
   );
 }
 
-type DayData = {
-  date: string;
-  value: number;
-};
-
 export function HabitHeatmapCard() {
   const [data, setData] = useState<Record<string, number>>({});
   const [hovered, setHovered] = useState<DayData | null>(null);
   const [selected, setSelected] = useState<DayData | null>(null);
 
-  // 🔥 dummy full year data
   useEffect(() => {
     const map: Record<string, number> = {};
     const today = new Date();
@@ -448,7 +440,7 @@ export function HabitHeatmapCard() {
                     setSelected({ date: day.date, value: day.value })
                   }
                   className={`
-                    w-[15px] h-[15px] rounded-[4px] cursor-pointer
+                    w-[14px] h-[15px] rounded-[4px] cursor-pointer
                     ${getColor(day.value)}
                     transition-all duration-200
                     hover:scale-110

@@ -1,16 +1,13 @@
 import { NavLink } from "react-router-dom";
 import { Addhabitcard } from "./habitscard";
-import type { HabitsContextType } from "./logic/types";
+import type { Propssidebar } from "./logic/types";
 
 function getLocalDate() {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
-type Props = {
-  habitLogic: HabitsContextType;
-};
 
-export function Habitside({ habitLogic }: Props) {
+export function Habitside({ habitLogic }: Propssidebar) {
   const { habitslist, addhabit } = habitLogic;
   const linkClass = (isActive: boolean) =>
     `glass-card w-full p-4 block transition duration-150 ${

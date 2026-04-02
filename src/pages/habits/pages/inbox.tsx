@@ -3,20 +3,16 @@ import { HabbitCard, HabitHeatmapCard } from "../habitscard";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useOutletContext } from "react-router-dom";
 import type { Habit, HabitsContextType } from "../logic/types";
+import { getLocalDate } from "../logic/logic";
 
 export function HabitsInbox() {
   const [openpending, setopenpending] = useState(true);
   const [opencompleted, setopencomplted] = useState(false);
   const todayDate = new Date();
   const today = getLocalDate();
-  const todayDay = todayDate.getDay(); // 0–6
+  const todayDay = todayDate.getDay();
 
   const { habitslist, togglehabit } = useOutletContext<HabitsContextType>();
-
-  function getLocalDate() {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-  }
 
   function isHabitActiveToday(h: Habit) {
     if (h.repeatOn && h.repeatOn.length > 0) {
