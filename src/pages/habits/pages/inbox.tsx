@@ -38,6 +38,7 @@ export function HabitsInbox() {
     h.completedDates.includes(today),
   );
   const [quote, setquote] = useState<string>("");
+  const [quotewrite, setquotewriter] = useState<string>("");
   useEffect(() => {
     async function getData() {
       try {
@@ -45,6 +46,7 @@ export function HabitsInbox() {
         const quote = await fetch(`https://dummyjson.com/quotes/${random}`);
         const useablequote = await quote.json();
         setquote(useablequote.quote);
+        setquotewriter(useablequote.author);
       } catch {
         setquote("Failed to load");
       }
@@ -53,20 +55,21 @@ export function HabitsInbox() {
   }, []);
 
   return (
-    <div>
+    <div className="relative">
       <h2 className="text-3xl font-light mb-4">Inbox</h2>
 
       <div className="flex flex-col gap-4">
-        <div className="flex gap-4">
-          <HabitHeatmapCard habitlist={habitslist} />
-
-          <div className="glass-card w-full p-4 text-1xl font-thin">
-            {quote}
+        <div className="flex gap-4 items-stretch">
+          <div className="shrink-0 w-[64%]">
+            <HabitHeatmapCard habitlist={habitslist} />
+          </div>
+          <div className="glass-card w-[36%] p-4 text-1xl font-thin">
+            {quote} -"{quotewrite}"
           </div>
         </div>
 
         {/* Pending */}
-        <div className="glass-card w-full p-4">
+        <div className="glass-card p-4">
           <div className="flex justify-between items-center">
             <h2 className="text-3xl font-extralight">Today Pending</h2>
 
@@ -95,7 +98,7 @@ export function HabitsInbox() {
         </div>
 
         {/* Completed */}
-        <div className="glass-card w-full p-4">
+        <div className="glass-card  p-4">
           <div className="flex justify-between items-center">
             <h2 className="text-3xl font-extralight">Completed</h2>
 

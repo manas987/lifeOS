@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
@@ -355,12 +355,14 @@ export function Detailedhabitcard({
     </div>
   );
 }
-
 export function HabitHeatmapCard({ habitlist }: { habitlist: Habit[] }) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const isDragging = useRef(false);
+  const startX = useRef(0);
+  const scrollLeftRef = useRef(0);
+
   const completeddates = habitlist.flatMap((temp) => temp.completedDates);
-
   const data: Map<string, number> = new Map();
-
   for (const date of completeddates) {
     data.set(date, (data.get(date) ?? 0) + 1);
   }
@@ -369,8 +371,7 @@ export function HabitHeatmapCard({ habitlist }: { habitlist: Habit[] }) {
   const today = new Date(getLocalDate());
   const start = new Date(today);
   start.setDate(today.getDate() - 52 * 7);
-  const dayOfWeek = start.getDay();
-  start.setDate(start.getDate() - dayOfWeek);
+  start.setDate(start.getDate() - start.getDay());
 
   const cur = new Date(start);
   for (let w = 0; w < 53; w++) {
@@ -381,33 +382,100 @@ export function HabitHeatmapCard({ habitlist }: { habitlist: Habit[] }) {
     }
     weeks.push(week);
   }
+
+  const todayStr = getLocalDate(today);
+
   function getColor(value: number) {
     if (value === 0) return "bg-black/10";
-    if (value === 2) return "bg-green-300";
-    if (value === 4) return "bg-green-400";
+    if (value <= 2) return "bg-green-300";
+    if (value <= 4) return "bg-green-400";
     return "bg-green-500";
   }
-  const todayStr = getLocalDate(today);
-  console.log(data);
+
+  function onMouseDown(e: React.MouseEvent) {
+    isDragging.current = true;
+    startX.current = e.pageX;
+    scrollLeftRef.current = scrollRef.current?.scrollLeft || 0;
+    if (scrollRef.current) scrollRef.current.style.cursor = "grabbing";
+  }
+  function onMouseMove(e: React.MouseEvent) {
+    if (!isDragging.current || !scrollRef.current) return;
+    e.preventDefault();
+    scrollRef.current.scrollLeft =
+      scrollLeftRef.current - (e.pageX - startX.current);
+  }
+  function onMouseUp() {
+    isDragging.current = false;
+    if (scrollRef.current) scrollRef.current.style.cursor = "grab";
+  }
+
   return (
-    <div className="flex gap-[3px] glass-card p-4">
-      {weeks.map((week, wi) => (
-        <div key={wi} className="flex flex-col gap-[3px]">
-          {week.map((dateStr) => {
-            const value = data.get(dateStr) || 0;
-            return (
-              <div key={dateStr} className="relative group">
-                <div
-                  className={`w-[14px] h-[14px] rounded-sm ${dateStr > todayStr ? "bg-transparent" : getColor(value)}`}
-                />
-                <div className="absolute bottom-full z-50 mb-2 hidden group-hover:block text-xs px-2 py-1 rounded bg-black text-white whitespace-nowrap ">
-                  {value} habbits on {dateStr}
-                </div>
+    <div className="glass-card p-4 pl-5 pt-3 min-w-0 w-full">
+      <div
+        ref={scrollRef}
+        onMouseDown={onMouseDown}
+        onMouseMove={onMouseMove}
+        onMouseUp={onMouseUp}
+        onMouseLeave={onMouseUp}
+        className="overflow-x-auto cursor-grab select-none">
+        <div className="min-w-max flex gap-1">
+          {/* Weekday labels */}
+          <div className="flex flex-col text-[10px] text-muted-foreground mt-[16px] gap-[4px]">
+            {["Sun", "", "Tue", "", "Thu", "", "Sat"].map((label, i) => (
+              <div key={i} className="h-[14px] flex items-center">
+                {label}
               </div>
-            );
-          })}
+            ))}
+          </div>
+
+          {/* Month labels + grid */}
+          <div className="flex flex-col">
+            {/* Month labels */}
+            <div className="flex gap-[3px] mb-1">
+              {weeks.map((week, wi) => {
+                const currentMonth = week[0].slice(5, 7);
+                const prevMonth = wi > 0 ? weeks[wi - 1][0].slice(5, 7) : null;
+                const showLabel = wi > 0 && currentMonth !== prevMonth;
+                const label = new Date(week[0]).toLocaleString("default", {
+                  month: "short",
+                });
+                return (
+                  <div
+                    key={wi}
+                    className="w-[14px] text-[10px] text-muted-foreground">
+                    {showLabel ? label : ""}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Grid */}
+            <div className="flex gap-[3px]">
+              {weeks.map((week, wi) => (
+                <div key={wi} className="flex flex-col gap-[4px]">
+                  {week.map((dateStr) => {
+                    const value = data.get(dateStr) || 0;
+                    return (
+                      <div key={dateStr} className="relative group">
+                        <div
+                          className={`w-[14px] h-[14px] rounded-sm ${
+                            dateStr > todayStr
+                              ? "bg-transparent"
+                              : getColor(value)
+                          }`}
+                        />
+                        <div className="absolute bottom-full z-50 mb-2 hidden group-hover:block text-xs px-2 py-1 rounded bg-black text-white whitespace-nowrap pointer-events-none">
+                          {value} habits on {dateStr}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-      ))}
+      </div>
     </div>
   );
 }

@@ -9,8 +9,8 @@ export function Habits() {
   return (
     <div className="flex">
       <Habitside habitLogic={habitLogic} />
-
-      <div className="flex-1 p-4 pl-9 overflow-visible">
+      <div className="flex-1 p-4 pl-9 overflow-visible min-w-80">
+        {/*/holy min width dont touch even god doesnt know how it works */}
         <Outlet context={habitLogic} />
       </div>
       <div
