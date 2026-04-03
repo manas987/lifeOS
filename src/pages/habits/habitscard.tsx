@@ -11,10 +11,11 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type {
   AddHabitProps,
-  DayData,
   DetailedHabitProps,
+  Habit,
   HabitCardProps,
 } from "./logic/types";
+import { getLocalDate } from "./logic/logic";
 
 export function HabbitCard({
   title,
@@ -355,163 +356,58 @@ export function Detailedhabitcard({
   );
 }
 
-type HeatmapDay = {
-  date: string;
-  value: number;
-  day: number;
-  month: number;
-};
+export function HabitHeatmapCard({ habitlist }: { habitlist: Habit[] }) {
+  const completeddates = habitlist.flatMap((temp) => temp.completedDates);
 
-export function HabitHeatmapCard() {
-  const [data] = useState<Record<string, number>>(() => {
-    const map: Record<string, number> = {};
-    const today = new Date();
+  const data: Map<string, number> = new Map();
 
-    for (let i = 0; i < 365; i++) {
-      const d = new Date();
-      d.setDate(today.getDate() - i);
+  for (const date of completeddates) {
+    data.set(date, (data.get(date) ?? 0) + 1);
+  }
 
-      const key = d.toISOString().split("T")[0];
-      map[key] = Math.floor(Math.random() * 6);
+  const weeks: string[][] = [];
+  const today = new Date(getLocalDate());
+  const start = new Date(today);
+  start.setDate(today.getDate() - 52 * 7);
+  const dayOfWeek = start.getDay();
+  start.setDate(start.getDate() - dayOfWeek);
+
+  const cur = new Date(start);
+  for (let w = 0; w < 53; w++) {
+    const week: string[] = [];
+    for (let d = 0; d < 7; d++) {
+      week.push(getLocalDate(cur));
+      cur.setDate(cur.getDate() + 1);
     }
-
-    return map;
-  });
-  const [hovered, setHovered] = useState<DayData | null>(null);
-  const [selected, setSelected] = useState<DayData | null>(null);
-
+    weeks.push(week);
+  }
   function getColor(value: number) {
     if (value === 0) return "bg-black/10";
-    if (value < 2) return "bg-green-300";
-    if (value < 4) return "bg-green-500";
-    return "bg-green-700";
+    if (value === 2) return "bg-green-300";
+    if (value === 4) return "bg-green-400";
+    return "bg-green-500";
   }
-
-  // 🔥 build weeks
-  function buildWeeks() {
-    const today = new Date();
-    const start = new Date();
-    start.setDate(today.getDate() - 364);
-
-    const weeks: HeatmapDay[][] = [];
-    let currentWeek: HeatmapDay[] = [];
-
-    for (let i = 0; i < 365; i++) {
-      const d = new Date(start);
-      d.setDate(start.getDate() + i);
-
-      const key = d.toISOString().split("T")[0];
-
-      currentWeek.push({
-        date: key,
-        value: data[key] || 0,
-        day: d.getDay(),
-        month: d.getMonth(),
-      });
-
-      if (d.getDay() === 6) {
-        weeks.push(currentWeek);
-        currentWeek = [];
-      }
-    }
-
-    if (currentWeek.length) weeks.push(currentWeek);
-
-    return weeks;
-  }
-
-  const weeks = buildWeeks();
-
-  // 🔥 month labels
-  const monthLabels = weeks.map((week) => {
-    const d = new Date(week[0].date);
-    return d.toLocaleString("default", { month: "short" });
-  });
-
-  const uniqueMonths = monthLabels.map((m, i) =>
-    i === 0 || m !== monthLabels[i - 1] ? m : "",
-  );
-
+  const todayStr = getLocalDate(today);
+  console.log(data);
   return (
-    <div className="glass-card max-w-5xl p-4 pb- flex flex-col  overflow-x-auto relative">
-      {/* Header */}
-      <div className="flex justify-between text-sm">
-        <span className="text-muted-foreground">Consistency</span>
-        <span className="text-xs opacity-70">Last 1 year</span>
-      </div>
-
-      {/* Month row */}
-      <div className="flex gap-[4px] ml-8 text-xs text-muted-foreground">
-        {uniqueMonths.map((m, i) => (
-          <div key={i} className="w-[22px] text-center">
-            {m}
-          </div>
-        ))}
-      </div>
-
-      <div className="flex relative">
-        {/* Weekday labels */}
-        <div className="flex flex-col justify-between mr-2 mt-4 text-xs text-muted-foreground h-[90px]">
-          <span>Mon</span>
-          <span>Wed</span>
-          <span>Fri</span>
-        </div>
-
-        {/* Heatmap */}
-        <div className="flex gap-[4px]">
-          {weeks.map((week, i) => (
-            <div key={i} className="flex flex-col gap-[4px]">
-              {week.map((day: HeatmapDay) => (
+    <div className="flex gap-[3px] glass-card p-4">
+      {weeks.map((week, wi) => (
+        <div key={wi} className="flex flex-col gap-[3px]">
+          {week.map((dateStr) => {
+            const value = data.get(dateStr) || 0;
+            return (
+              <div key={dateStr} className="relative group">
                 <div
-                  key={day.date}
-                  onMouseEnter={() =>
-                    setHovered({ date: day.date, value: day.value })
-                  }
-                  onMouseLeave={() => setHovered(null)}
-                  onClick={() =>
-                    setSelected({ date: day.date, value: day.value })
-                  }
-                  className={`
-                    w-[14px] h-[15px] rounded-[4px] cursor-pointer
-                    ${getColor(day.value)}
-                    transition-all duration-200
-                    hover:scale-110
-                  `}
+                  className={`w-[14px] h-[14px] rounded-sm ${dateStr > todayStr ? "bg-transparent" : getColor(value)}`}
                 />
-              ))}
-            </div>
-          ))}
+                <div className="absolute bottom-full z-50 mb-2 hidden group-hover:block text-xs px-2 py-1 rounded bg-black text-white whitespace-nowrap ">
+                  {value} habbits on {dateStr}
+                </div>
+              </div>
+            );
+          })}
         </div>
-
-        {/* 🔥 Tooltip */}
-        {hovered && (
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-8 text-xs px-2 py-1 rounded bg-black text-white whitespace-nowrap pointer-events-none">
-            {hovered.value} habits on {hovered.date}
-          </div>
-        )}
-      </div>
-
-      {/* 🔥 Selected Preview */}
-      {selected && (
-        <div className="text-xs text-muted-foreground mt-2">
-          <span className="font-medium text-black">
-            {selected.value} habits
-          </span>{" "}
-          completed on {selected.date}
-        </div>
-      )}
-
-      {/* Legend */}
-      <div className="flex justify-end items-center gap-2 text-xs text-muted-foreground">
-        <span>Less</span>
-        <div className="flex gap-1">
-          <div className="w-3 h-3 bg-black/10 rounded-[2px]" />
-          <div className="w-3 h-3 bg-green-300 rounded-[2px]" />
-          <div className="w-3 h-3 bg-green-500 rounded-[2px]" />
-          <div className="w-3 h-3 bg-green-700 rounded-[2px]" />
-        </div>
-        <span>More</span>
-      </div>
+      ))}
     </div>
   );
 }

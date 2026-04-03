@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { HabbitCard, HabitHeatmapCard } from "../habitscard";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useOutletContext } from "react-router-dom";
@@ -37,6 +37,20 @@ export function HabitsInbox() {
   const completedHabits = todaysHabits.filter((h) =>
     h.completedDates.includes(today),
   );
+  const [quote, setquote] = useState<string>("");
+  useEffect(() => {
+    async function getData() {
+      try {
+        const random = Math.floor(Math.random() * (25 - 1 + 1) + 1);
+        const quote = await fetch(`https://dummyjson.com/quotes/${random}`);
+        const useablequote = await quote.json();
+        setquote(useablequote.quote);
+      } catch {
+        setquote("Failed to load");
+      }
+    }
+    getData();
+  }, []);
 
   return (
     <div>
@@ -44,11 +58,10 @@ export function HabitsInbox() {
 
       <div className="flex flex-col gap-4">
         <div className="flex gap-4">
-          <HabitHeatmapCard />
+          <HabitHeatmapCard habitlist={habitslist} />
 
-          <div className="glass-card w-full p-4 text-4xl font-thin">
-            "Discipline is just doing the same thing the right way whether
-            anyone's watching or not."
+          <div className="glass-card w-full p-4 text-1xl font-thin">
+            {quote}
           </div>
         </div>
 

@@ -6,7 +6,6 @@ export type Habit = {
     start: string;
     end?: string;
   };
-  linkedTaskIds?: string[];
   completedDates: string[];
 };
 import type { DragEndEvent } from "@dnd-kit/core";
