@@ -1,11 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { Addhabitcard } from "./habitscard";
 import type { Habit, Propssidebar } from "./logic/types";
-
-function getLocalDate() {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
+import { getLocalDate } from "./logic/logic";
 
 export function Habitside({ habitLogic }: Propssidebar) {
   const { habitslist, addhabit } = habitLogic;

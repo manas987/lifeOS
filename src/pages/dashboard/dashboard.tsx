@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export function Dashboard() {
+export function Dashboar() {
   const [user] = useState(null);
   return (
     <div className="pl-5 p-1 rounded-3xl flex flex-col gap-3 w-60">
