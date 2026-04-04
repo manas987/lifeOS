@@ -408,6 +408,11 @@ export function HabitHeatmapCard({ habitlist }: { habitlist: Habit[] }) {
     isDragging.current = false;
     if (scrollRef.current) scrollRef.current.style.cursor = "grab";
   }
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollLeft = scrollRef.current.scrollWidth;
+    }
+  }, []);
 
   return (
     <div className="glass-card p-4 pl-5 pt-3 min-w-0 w-full">
@@ -420,8 +425,8 @@ export function HabitHeatmapCard({ habitlist }: { habitlist: Habit[] }) {
         className="overflow-x-auto cursor-grab select-none">
         <div className="min-w-max flex gap-1">
           {/* Weekday labels */}
-          <div className="flex flex-col text-[10px] text-muted-foreground mt-[16px] gap-[4px]">
-            {["Sun", "", "Tue", "", "Thu", "", "Sat"].map((label, i) => (
+          <div className="flex flex-col text-[10px] text-muted-foreground mt-[18px] gap-[4px]">
+            {["", "Mon", "", "Wed", "", "Fri", ""].map((label, i) => (
               <div key={i} className="h-[14px] flex items-center">
                 {label}
               </div>

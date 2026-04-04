@@ -12,12 +12,9 @@ export function FinanceSideBar() {
 
   return (
     <div className="pl-5 rounded-3xl flex flex-col gap-3 w-80 sticky top-0">
-      {/* Title */}
       <div className="p-1">
         <h1 className="text-5xl font-light">Finances</h1>
       </div>
-
-      {/* Navigation */}
       <NavLink
         to="/finances"
         end
@@ -42,11 +39,8 @@ export function FinanceSideBar() {
         className={({ isActive }) => linkClass(isActive)}>
         Subscriptions
       </NavLink>
-
-      {/* Add Transaction Card */}
       <div className="glass-card p-4 pt-1 flex flex-col gap-3">
         <h3 className="text-lg font-light -mb-1 -mt-1">Add Transaction</h3>
-        {/* Amount */}
         <input
           type="number"
           value={amount}
@@ -54,7 +48,6 @@ export function FinanceSideBar() {
           placeholder="Amount"
           className="glass-card p-3"
         />
-        {/* Title */}
         <input
           type="text"
           value={title}
@@ -62,7 +55,6 @@ export function FinanceSideBar() {
           placeholder="Name"
           className="glass-card p-3 text-sm"
         />
-        {/* Mode */}
         <div className="flex gap-2">
           <button className="flex-1 glass-card p-2 hover:!bg-white">
             Expense
@@ -74,27 +66,26 @@ export function FinanceSideBar() {
             Transfer
           </button>
         </div>
-        {/* Category */}
-        <button className="glass-card p-3 pt-2 pb-2 flex justify-between items-center hover:!bg-white">
-          <span>Category</span>
-          <span>{">"}</span>
+        <button className="glass-card p-3 pt-2 pb-2 hover:!bg-white w-full">
+          <div className="flex justify-between items-center">
+            <span>Category</span>
+            <span>{">"}</span>
+          </div>
         </button>
-        {/* Date */}
-        <button className="glass-card p-3 pt-2 pb-2  hover:!bg-white">
-          Date (Today / Custom)
+        <button className="glass-card p-3 pt-2 pb-2 text-left hover:!bg-white">
+          Date
         </button>
-        {/* Account */}
-        <button className="glass-card p-3 pt-2 pb-2  flex justify-between items-center hover:!bg-white">
-          <span>Account</span>
-          <span>{">"}</span>
+        <button className="glass-card p-3 pt-2 pb-2 hover:!bg-white w-full">
+          <div className="flex justify-between items-center">
+            <span>Account</span>
+            <span>{">"}</span>
+          </div>
         </button>
-        {/* Notes */}
         <textarea
           placeholder="Add note..."
-          className="glass-card p-5 resize-none text-center"
+          className="glass-card p-5 resize-none text-left"
           rows={2}
         />
-        {/* Add Button */}
         <button className="glass-card p-3 pt-2  hover:!bg-white transition -mb-14">
           Add
         </button>

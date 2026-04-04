@@ -59,12 +59,14 @@ export function HabitsInbox() {
       <h2 className="text-3xl font-light mb-4">Inbox</h2>
 
       <div className="flex flex-col gap-4">
-        <div className="flex gap-4 items-stretch">
-          <div className="shrink-0 w-[64%]">
+        <div className="flex gap-4">
+          <div className="flex-2 min-w-0 max-w-fit">
             <HabitHeatmapCard habitlist={habitslist} />
           </div>
-          <div className="glass-card w-[36%] p-4 text-1xl font-thin">
-            {quote} -"{quotewrite}"
+          <div className="flex-1 glass-card shrink-0 p-4 font-thin">
+            <div className="h-full overflow-y-auto min-w-40 break-words">
+              {quote} -"{quotewrite}"
+            </div>
           </div>
         </div>
 
