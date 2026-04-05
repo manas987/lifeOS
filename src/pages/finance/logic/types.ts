@@ -25,6 +25,12 @@ export type DetailRecentTransactionsCardprops = {
   ) => void;
 };
 
+export type Subscription = {
+  id: string;
+  name: string;
+  
+};
+
 export type Category = {
   id: string;
   name: string;

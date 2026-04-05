@@ -117,18 +117,22 @@ export function useFinanceLogic() {
     }
   }
 
-  function addCategory(name: string, type: "income" | "expense") {
+  function addCategory(name: string, type: "income" | "expense"): string {
+    const id = String(Date.now());
+
     const newCategory: Category = {
-      id: String(Date.now()),
+      id,
       name,
       type,
     };
 
     setCategories((prev) => [...prev, newCategory]);
+
+    return id;
   }
 
-  function addAccount(id: string, name: string) {
-    if (!name.trim()) return;
+  function addAccount(name: string): string {
+    const id = String(Date.now());
 
     const newAccount: Account = {
       id,
@@ -137,6 +141,8 @@ export function useFinanceLogic() {
     };
 
     setAccounts((prev) => [...prev, newAccount]);
+
+    return id;
   }
 
   function updateTransaction(id: string, newTransaction: Transaction) {
@@ -187,8 +193,6 @@ export function useFinanceLogic() {
       }),
     );
   }
-  const totalBalance = accounts.reduce((sum, a) => sum + a.balance, 0);
-
   return {
     transactions,
     accounts,
@@ -198,6 +202,7 @@ export function useFinanceLogic() {
     addCategory,
     addAccount,
     updateTransaction,
+    setSubscriptions,
   };
 }
 
