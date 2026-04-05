@@ -46,6 +46,12 @@ export function Dashboard() {
     { name: "ads", amount: "nigga" },
     { name: "ads", amount: "nigga" },
     { name: "ads", amount: "nigga" },
+    { name: "ads", amount: "nigga" },
+    { name: "ads", amount: "nigga" },
+    { name: "ads", amount: "nigga" },
+    { name: "ads", amount: "nigga" },
+    { name: "ads", amount: "nigga" },
+    { name: "ads", amount: "nigga" },
   ];
   const insight =
     "idkkidkkidkkidkkidkkidkkidkkidkkidkki aasdlkfj nigga nigga idkkidkkidkkidkkidkkidkkidkkidkkidkk";
@@ -127,15 +133,26 @@ export function Dashboard() {
   return (
     <div>
       <h2 className="text-3xl font-light mb-4">Dashboard</h2>
-      <div className="grid grid-cols-3 gap-3">
+
+      <div className="grid grid-cols-3 grid-rows-[auto_] gap-3">
+        {/* Row 1 */}
         <DashboardSummaryCard data={SummaryData} />
         <CategoriesCard data={categories} />
         <SubscriptionsCard data={subscriptions} />
-        <div className="flex flex-col gap-3">
-          <AccountsCard data={accounts} />
-          <QuickInsightCard insight={insight} />
+
+        {/* Row 2 LEFT */}
+        <div className="flex flex-col gap-3 h-full">
+          <div className="flex-1 min-h-0">
+            <AccountsCard data={accounts} />
+          </div>
+
+          <div className="shrink-0">
+            <QuickInsightCard insight={insight} />
+          </div>
         </div>
-        <div className="col-span-2 ">
+
+        {/* Row 2 RIGHT */}
+        <div className="col-span-2 h-full">
           <RecentTransactionsCard data={transactions} />
         </div>
       </div>

@@ -126,9 +126,9 @@ type AccountItem = {
 
 export function AccountsCard({ data }: { data: AccountItem[] }) {
   return (
-    <div className="glass-card p-3 pt-1 rounded-3xl w-full flex flex-col gap-3">
+    <div className="glass-card p-4 pt-1 rounded-3xl w-full h-full flex flex-col gap-3">
       <h3 className="text-xl font-medium text-black/80">Accounts</h3>
-      <div className="flex flex-col h-[390px] -mb-44 overflow-y-auto pr-1 gap-2">
+      <div className="flex flex-col h-[310px] -mb-[225px] overflow-y-auto pr-1 gap-1">
         {data.map((acc, i) => (
           <div
             key={i}
@@ -262,107 +262,6 @@ export function RecentTransactionsCard({ data }: { data: TransactionItem[] }) {
   );
 }
 
-export function DetailRecentTransactionsCard({
-  data,
-}: {
-  data: TransactionItem[];
-}) {
-  const [rows, setRows] = useState(data);
-
-  const [editing, setEditing] = useState<{
-    row: number;
-    field: keyof TransactionItem;
-  } | null>(null);
-
-  const handleChange = <K extends keyof TransactionItem>(
-    rowIndex: number,
-    field: K,
-    value: TransactionItem[K],
-  ) => {
-    setRows((prev) =>
-      prev.map((row, i) => (i === rowIndex ? { ...row, [field]: value } : row)),
-    );
-  };
-
-  return (
-    <div className="glass-card p-4 pt-1 rounded-3xl w-full flex flex-col gap-3">
-      <h3 className="text-xl font-medium text-black/80">Recent Transactions</h3>
-      <div className="grid grid-cols-[1.2fr_1fr_1fr_1fr_1fr_0.5fr] text-sm text-black/50 px-2">
-        <span>Title</span>
-        <span>Amount</span>
-        <span>Category</span>
-        <span>Date</span>
-        <span>Mode</span>
-        <span>Account</span>
-      </div>
-
-      <div className="h-[1px] bg-black/10" />
-      <div className="flex flex-col  pr-1">
-        {rows.length === 0 ? (
-          <span className="text-sm text-black/50 px-2">No transactions</span>
-        ) : (
-          rows.map((t, i) => (
-            <div
-              key={i}
-              className="grid grid-cols-[1.2fr_1fr_1fr_1fr_1fr_0.5fr] items-center px-2 py-2 rounded-lg hover:bg-black/5 text-sm">
-              {(
-                [
-                  "title",
-                  "amount",
-                  "category",
-                  "date",
-                  "mode",
-                  "account",
-                ] as (keyof TransactionItem)[]
-              ).map((field) => {
-                const isEditing =
-                  editing?.row === i && editing?.field === field;
-
-                const value =
-                  t[field] ??
-                  (field === "amount" || field === "mode" || field === "account"
-                    ? ""
-                    : "Not defined");
-
-                return (
-                  <div
-                    key={field}
-                    className={`truncate ${
-                      field === "amount" ? " tabular-nums font-medium" : ""
-                    } ${
-                      field === "mode"
-                        ? t.mode === "income"
-                          ? "text-green-600"
-                          : "text-red-500"
-                        : ""
-                    }`}
-                    onClick={() => setEditing({ row: i, field })}>
-                    {isEditing ? (
-                      <input
-                        autoFocus
-                        value={value}
-                        onChange={(e) => handleChange(i, field, e.target.value)}
-                        onBlur={() => setEditing(null)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            setEditing(null);
-                          }
-                        }}
-                        className="w-full bg-transparent outline-none text-sm"
-                      />
-                    ) : (
-                      value || "Not defined"
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          ))
-        )}
-      </div>
-    </div>
-  );
-}
 export function DebtCard() {
   const [name, setName] = useState("");
   const [amount, setAmount] = useState(0);

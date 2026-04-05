@@ -1,0 +1,207 @@
+import { useEffect, useState } from "react";
+import type { Account, Category, Subscription, Transaction } from "./types";
+
+export function useFinanceLogic() {
+  const [transactions, setTransactions] = useState<Transaction[]>(() => {
+    const saved = localStorage.getItem("transactions");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const [accounts, setAccounts] = useState<Account[]>(() => {
+    const saved = localStorage.getItem("accounts");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const [subscriptions, setSubscriptions] = useState<Subscription[]>(() => {
+    const saved = localStorage.getItem("subscriptions");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const [categories, setCategories] = useState<Category[]>(() => {
+    const saved = localStorage.getItem("categories");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem("transactions", JSON.stringify(transactions));
+  }, [transactions]);
+
+  useEffect(() => {
+    localStorage.setItem("accounts", JSON.stringify(accounts));
+  }, [accounts]);
+
+  useEffect(() => {
+    localStorage.setItem("subscriptions", JSON.stringify(subscriptions));
+  }, [subscriptions]);
+
+  useEffect(() => {
+    localStorage.setItem("categories", JSON.stringify(categories));
+  }, [categories]);
+
+  //addtransaction
+  function addTransaction(
+    amount: number,
+    mode: "income" | "expense" | "transfer",
+    accountId: string,
+    date: string,
+    toAccountId?: string,
+    title?: string,
+    category?: string,
+    note?: string,
+  ) {
+    if (!amount || amount <= 0) return;
+    if (mode == "transfer") {
+      if (accountId === toAccountId) return;
+      const temp: Transaction = {
+        id: String(Date.now()),
+        amount,
+        mode: "transfer",
+        accountId,
+        toAccountId,
+        date,
+        title,
+        category,
+        note,
+      };
+      setTransactions((prev) => [temp, ...prev]);
+      setAccounts((prev) =>
+        prev.map((acc) => {
+          let bal = acc.balance;
+          if (acc.id === accountId) bal -= amount;
+          if (acc.id === toAccountId) bal += amount;
+          return { ...acc, balance: bal };
+        }),
+      );
+    } else {
+      if (mode === "income") {
+        const temp: Transaction = {
+          id: String(Date.now()),
+          amount,
+          mode: "income",
+          accountId,
+          toAccountId,
+          date,
+          title,
+          category,
+          note,
+        };
+        setTransactions((prev) => [temp, ...prev]);
+        setAccounts((prev) =>
+          prev.map((acc) => {
+            let bal = acc.balance;
+            if (acc.id === accountId) bal += amount;
+            return { ...acc, balance: bal };
+          }),
+        );
+      } else {
+        const temp: Transaction = {
+          id: String(Date.now()),
+          amount,
+          mode: "expense",
+          accountId,
+          toAccountId,
+          date,
+          title,
+          category,
+          note,
+        };
+        setTransactions((prev) => [temp, ...prev]);
+        setAccounts((prev) =>
+          prev.map((acc) => {
+            let bal = acc.balance;
+            if (acc.id === accountId) bal -= amount;
+            return { ...acc, balance: bal };
+          }),
+        );
+      }
+    }
+  }
+
+  function addCategory(name: string, type: "income" | "expense") {
+    const newCategory: Category = {
+      id: String(Date.now()),
+      name,
+      type,
+    };
+
+    setCategories((prev) => [...prev, newCategory]);
+  }
+
+  function addAccount(id: string, name: string) {
+    if (!name.trim()) return;
+
+    const newAccount: Account = {
+      id,
+      name,
+      balance: 0,
+    };
+
+    setAccounts((prev) => [...prev, newAccount]);
+  }
+
+  function updateTransaction(id: string, newTransaction: Transaction) {
+    setTransactions((prev) =>
+      prev.map((temp) => (id === temp.id ? newTransaction : temp)),
+    );
+
+    const oldtran = transactions.find((t) => t.id === id);
+
+    setAccounts((prev) =>
+      prev.map((acc) => {
+        let balance = acc.balance;
+        if (oldtran?.mode === "income" && acc.id === oldtran.accountId) {
+          balance -= oldtran.amount;
+        }
+
+        if (oldtran?.mode === "expense" && acc.id === oldtran.accountId) {
+          balance += oldtran.amount;
+        }
+
+        if (oldtran?.mode === "transfer") {
+          if (acc.id === oldtran.accountId) balance += oldtran.amount;
+          if (acc.id === oldtran.toAccountId) balance -= oldtran.amount;
+        }
+
+        if (
+          newTransaction.mode === "income" &&
+          acc.id === newTransaction.accountId
+        ) {
+          balance += newTransaction.amount;
+        }
+
+        if (
+          newTransaction.mode === "expense" &&
+          acc.id === newTransaction.accountId
+        ) {
+          balance -= newTransaction.amount;
+        }
+
+        if (newTransaction.mode === "transfer") {
+          if (acc.id === newTransaction.accountId)
+            balance -= newTransaction.amount;
+
+          if (acc.id === newTransaction.toAccountId)
+            balance += newTransaction.amount;
+        }
+        return { ...acc, balance };
+      }),
+    );
+  }
+  const totalBalance = accounts.reduce((sum, a) => sum + a.balance, 0);
+
+  return {
+    transactions,
+    accounts,
+    subscriptions,
+    categories,
+    addTransaction,
+    addCategory,
+    addAccount,
+    updateTransaction,
+  };
+}
+
+export function getLocalDate(d?: Date) {
+  const date = d ?? new Date();
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}

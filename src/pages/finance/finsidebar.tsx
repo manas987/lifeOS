@@ -1,20 +1,113 @@
 import { NavLink } from "react-router-dom";
 import { useState } from "react";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import type { Account, Category } from "./logic/types";
+import {
+  PopoverContent,
+  PopoverTrigger,
+  Popover,
+} from "@/components/ui/popover";
+import { CalendarDays, Plus, Check } from "lucide-react";
 
-export function FinanceSideBar() {
+type Sidebarprops = {
+  addTransaction: (
+    amount: number,
+    mode: "income" | "expense" | "transfer",
+    accountId: string,
+    date: string,
+    title?: string,
+    category?: string,
+    note?: string,
+    toAccountId?: string,
+  ) => void;
+  categories: Category[];
+  accounts: Account[];
+  addAccount: (name: string) => string;
+  addcategory: (name: string, mode: "income" | "expense") => string;
+};
+
+export function FinanceSideBar({
+  addTransaction,
+  categories,
+  addcategory,
+  accounts,
+  addAccount,
+}: Sidebarprops) {
   const [amount, setAmount] = useState("");
   const [title, setTitle] = useState("");
+  const [note, setNote] = useState("");
+
+  const [mode, setMode] = useState<"expense" | "income" | "transfer">(
+    "expense",
+  );
+
+  const [categoryId, setCategoryId] = useState("");
+  const [account, setAccount] = useState("");
+  const [toAccountId, setToAccountId] = useState("");
+
+  const [date, setDate] = useState<Date | undefined>(new Date());
+
+  const [showCategory, setShowCategory] = useState(false);
+  const [showAccount, setShowAccount] = useState(false);
+  const [showToAccount, setShowToAccount] = useState(false);
+
+  const [addingCategory, setAddingCategory] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState("");
+
+  const [addingAccount, setAddingAccount] = useState(false);
+  const [newAccountName, setNewAccountName] = useState("");
+
+  const filteredCategories = categories.filter((c) => c.type === mode);
+
+  const selectedCategory = categories.find((c) => c.id === categoryId);
+  const selectedAccount = accounts.find((a) => a.id === account);
+  const selectedToAccount = accounts.find((a) => a.id === toAccountId);
 
   const linkClass = (isActive: boolean) =>
     `glass-card w-full p-4 block transition duration-150 ${
       isActive ? "!bg-black/80 text-white" : "hover:!bg-white"
     }`;
 
+  function handleModeChange(nextMode: "expense" | "income" | "transfer") {
+    setMode(nextMode);
+    setCategoryId("");
+    setToAccountId("");
+    setShowCategory(false);
+    setShowAccount(false);
+    setShowToAccount(false);
+    setAddingCategory(false);
+    setNewCategoryName("");
+  }
+
+  function handleAddCategory() {
+    const name = newCategoryName.trim();
+    if (!name) return;
+
+    const id = addcategory(name, mode === "income" ? "income" : "expense");
+    setCategoryId(id);
+    setNewCategoryName("");
+    setAddingCategory(false);
+    setShowCategory(false);
+  }
+
+  function handleAddAccount() {
+    const name = newAccountName.trim();
+    if (!name) return;
+
+    const id = addAccount(name);
+    setAccount(id);
+    setNewAccountName("");
+    setAddingAccount(false);
+    setShowAccount(false);
+  }
+
   return (
-    <div className="pl-5 rounded-3xl flex flex-col gap-3 w-80 sticky top-0">
+    <div className="pl-5 rounded-3xl flex flex-col gap-3 w-80 sticky top-0 overflow-visible">
       <div className="p-1">
         <h1 className="text-5xl font-light">Finances</h1>
       </div>
+
       <NavLink
         to="/finances"
         end
@@ -39,8 +132,10 @@ export function FinanceSideBar() {
         className={({ isActive }) => linkClass(isActive)}>
         Subscriptions
       </NavLink>
-      <div className="glass-card p-4 pt-1 flex flex-col gap-3">
+
+      <div className="glass-card p-4 pt-1 flex flex-col gap-3 overflow-visible">
         <h3 className="text-lg font-light -mb-1 -mt-1">Add Transaction</h3>
+
         <input
           type="number"
           value={amount}
@@ -48,6 +143,7 @@ export function FinanceSideBar() {
           placeholder="Amount"
           className="glass-card p-3"
         />
+
         <input
           type="text"
           value={title}
@@ -55,38 +151,223 @@ export function FinanceSideBar() {
           placeholder="Name"
           className="glass-card p-3 text-sm"
         />
+
         <div className="flex gap-2">
-          <button className="flex-1 glass-card p-2 hover:!bg-white">
-            Expense
-          </button>
-          <button className="flex-1 glass-card p-2 hover:!bg-white">
-            Income
-          </button>
-          <button className="flex-1 glass-card p-2 hover:!bg-white">
-            Transfer
-          </button>
+          {(["expense", "income", "transfer"] as const).map((m) => (
+            <button
+              key={m}
+              onClick={() => handleModeChange(m)}
+              className={`flex-1 glass-card p-2 ${
+                mode === m ? "!bg-black/80 text-white" : "hover:!bg-white"
+              }`}>
+              {m}
+            </button>
+          ))}
         </div>
-        <button className="glass-card p-3 pt-2 pb-2 hover:!bg-white w-full">
-          <div className="flex justify-between items-center">
-            <span>Category</span>
-            <span>{">"}</span>
+
+        <Popover>
+          <PopoverTrigger asChild>
+            <button className="glass-card flex items-center justify-between px-4 py-2 rounded-xl text-sm hover:!bg-white transition">
+              <span>{date ? format(date, "dd MMM yyyy") : "Select date"}</span>
+              <CalendarDays size={16} />
+            </button>
+          </PopoverTrigger>
+
+          <PopoverContent className="w-auto p-0 bg-white/90 backdrop-blur-lg border border-white/40">
+            <Calendar mode="single" selected={date} onSelect={setDate} />
+          </PopoverContent>
+        </Popover>
+
+        {mode !== "transfer" && (
+          <div className="relative overflow-visible">
+            <button
+              onClick={() => setShowCategory((p) => !p)}
+              className="glass-card p-3 pt-2 pb-2 hover:!bg-white w-full">
+              <div className="flex justify-between items-center">
+                <span>{selectedCategory?.name || "Category"}</span>
+                <span>{">"}</span>
+              </div>
+            </button>
+
+            {showCategory && (
+              <div className="absolute left-0 top-full mt-2 z-50 w-full rounded-2xl border border-white/40 bg-white/90 backdrop-blur-lg shadow-xl overflow-hidden">
+                <div className="max-h-64 overflow-y-auto">
+                  {filteredCategories.map((c) => (
+                    <button
+                      key={c.id}
+                      onClick={() => {
+                        setCategoryId(c.id);
+                        setShowCategory(false);
+                        setAddingCategory(false);
+                        setNewCategoryName("");
+                      }}
+                      className="w-full px-3 py-2 text-left hover:bg-black/5 flex items-center justify-between">
+                      <span>{c.name}</span>
+                      {c.id === categoryId && <Check size={14} />}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="h-px bg-black/10" />
+
+                {!addingCategory ? (
+                  <button
+                    onClick={() => setAddingCategory(true)}
+                    className="w-full px-3 py-2 text-left hover:bg-black/5 flex items-center gap-2">
+                    <Plus size={14} />
+                    Add category
+                  </button>
+                ) : (
+                  <div className="p-3 flex gap-2">
+                    <input
+                      autoFocus
+                      value={newCategoryName}
+                      onChange={(e) => setNewCategoryName(e.target.value)}
+                      placeholder="New category"
+                      className="glass-card flex-1 p-2 text-sm"
+                    />
+                    <button
+                      onClick={handleAddCategory}
+                      className="glass-card px-3 py-2 text-sm">
+                      Add
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
-        </button>
-        <button className="glass-card p-3 pt-2 pb-2 text-left hover:!bg-white">
-          Date
-        </button>
-        <button className="glass-card p-3 pt-2 pb-2 hover:!bg-white w-full">
-          <div className="flex justify-between items-center">
-            <span>Account</span>
-            <span>{">"}</span>
+        )}
+
+        <div className="relative overflow-visible">
+          <button
+            onClick={() => setShowAccount((p) => !p)}
+            className="glass-card p-3 pt-2 pb-2 hover:!bg-white w-full">
+            <div className="flex justify-between items-center">
+              <span>{selectedAccount?.name || "Account"}</span>
+              <span>{">"}</span>
+            </div>
+          </button>
+
+          {showAccount && (
+            <div className="absolute left-0 top-full mt-2 z-50 w-full rounded-2xl border border-white/40 bg-white/90 backdrop-blur-lg shadow-xl overflow-hidden">
+              <div className="max-h-64 overflow-y-auto">
+                {accounts.map((acc) => (
+                  <button
+                    key={acc.id}
+                    onClick={() => {
+                      setAccount(acc.id);
+                      setShowAccount(false);
+                      setAddingAccount(false);
+                      setNewAccountName("");
+                    }}
+                    className="w-full px-3 py-2 text-left hover:bg-black/5 flex items-center justify-between">
+                    <span>{acc.name}</span>
+                    <span className="text-xs text-black/40 tabular-nums">
+                      {acc.balance}
+                    </span>
+                  </button>
+                ))}
+              </div>
+
+              <div className="h-px bg-black/10" />
+
+              {!addingAccount ? (
+                <button
+                  onClick={() => setAddingAccount(true)}
+                  className="w-full px-3 py-2 text-left hover:bg-black/5 flex items-center gap-2">
+                  <Plus size={14} />
+                  Add account
+                </button>
+              ) : (
+                <div className="p-3 flex gap-2">
+                  <input
+                    autoFocus
+                    value={newAccountName}
+                    onChange={(e) => setNewAccountName(e.target.value)}
+                    placeholder="New account"
+                    className="glass-card flex-1 p-2 text-sm"
+                  />
+                  <button
+                    onClick={handleAddAccount}
+                    className="glass-card px-3 py-2 text-sm">
+                    Add
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {mode === "transfer" && (
+          <div className="relative overflow-visible">
+            <button
+              onClick={() => setShowToAccount((p) => !p)}
+              className="glass-card p-3 pt-2 pb-2 hover:!bg-white w-full">
+              <div className="flex justify-between items-center">
+                <span>{selectedToAccount?.name || "To Account"}</span>
+                <span>{">"}</span>
+              </div>
+            </button>
+
+            {showToAccount && (
+              <div className="absolute left-0 top-full mt-2 z-50 w-full rounded-2xl border border-white/40 bg-white/90 backdrop-blur-lg shadow-xl overflow-hidden">
+                <div className="max-h-64 overflow-y-auto">
+                  {accounts
+                    .filter((a) => a.id !== account)
+                    .map((acc) => (
+                      <button
+                        key={acc.id}
+                        onClick={() => {
+                          setToAccountId(acc.id);
+                          setShowToAccount(false);
+                        }}
+                        className="w-full px-3 py-2 text-left hover:bg-black/5 flex items-center justify-between">
+                        <span>{acc.name}</span>
+                        {acc.id === toAccountId && <Check size={14} />}
+                      </button>
+                    ))}
+                </div>
+              </div>
+            )}
           </div>
-        </button>
+        )}
+
         <textarea
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
           placeholder="Add note..."
           className="glass-card p-5 resize-none text-left"
           rows={2}
         />
-        <button className="glass-card p-3 pt-2  hover:!bg-white transition -mb-14">
+
+        <button
+          className="glass-card p-3 pt-2 hover:!bg-white transition -mb-14"
+          onClick={() => {
+            if (!amount || Number(amount) <= 0 || !account || !date) return;
+            if (
+              mode === "transfer" &&
+              (!toAccountId || account === toAccountId)
+            )
+              return;
+
+            addTransaction(
+              Number(amount),
+              mode,
+              account,
+              date.toISOString().slice(0, 10),
+              title,
+              mode === "transfer" ? undefined : categoryId,
+              note,
+              mode === "transfer" ? toAccountId : undefined,
+            );
+
+            setAmount("");
+            setTitle("");
+            setCategoryId("");
+            setAccount("");
+            setNote("");
+            setToAccountId("");
+          }}>
           Add
         </button>
       </div>
