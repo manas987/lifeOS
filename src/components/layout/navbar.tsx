@@ -34,7 +34,7 @@ export function Navbar() {
           {/* Navigation */}
           <div className="bg-[#f1f1f1] rounded-full flex">
             <NavLink
-              to="/dashboard"
+              to=""
               className={({ isActive }) =>
                 `rounded-full p-3 pr-5 pl-5 transition-colors duration-150 ${
                   isActive

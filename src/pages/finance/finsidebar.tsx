@@ -311,10 +311,14 @@ export function FinanceSideBar({
                       </button>
 
                       <button
-                        disabled={transactions.some(
-                          (t) =>
-                            t.accountId === acc.id || t.toAccountId === acc.id,
-                        )}
+                        disabled={transactions.some((t) => {
+                          if (t.mode === "transfer") {
+                            return (
+                              t.accountId === acc.id || t.toAccountId === acc.id
+                            );
+                          }
+                          return t.accountId === acc.id;
+                        })}
                         onClick={(e) => {
                           e.stopPropagation();
                           deleteAccount(acc.id);
