@@ -261,21 +261,33 @@ export function useFinanceLogic() {
   function deleteSubscription(id: string) {
     setSubscriptions((prev) => prev.filter((s) => s.id !== id));
   }
+  function updateCategory(id: string, name: string) {
+    setCategories((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, name } : c)),
+    );
+  }
+  function deleteCategory(id: string) {
+    setCategories((prev) => prev.filter((c) => c.id !== id));
+  }
 
   return {
     transactions,
     accounts,
     subscriptions,
     categories,
+
     addTransaction,
     addSubscription,
     addCategory,
     addAccount,
+
     updateTransaction,
+    updateAccount,
+    updateCategory,
 
     deleteTransaction,
-    updateAccount,
     deleteAccount,
+    deleteCategory,
 
     updateSubscription,
     deleteSubscription,

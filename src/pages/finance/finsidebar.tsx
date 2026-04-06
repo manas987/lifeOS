@@ -2,13 +2,13 @@ import { NavLink } from "react-router-dom";
 import { useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
-import type { Account, Category } from "./logic/types";
+import type { Account, Category, Transaction } from "./logic/types";
 import {
   PopoverContent,
   PopoverTrigger,
   Popover,
 } from "@/components/ui/popover";
-import { CalendarDays, Plus, Check } from "lucide-react";
+import { CalendarDays, Plus, Check, Trash, Pencil } from "lucide-react";
 
 type Sidebarprops = {
   addTransaction: (
@@ -16,15 +16,20 @@ type Sidebarprops = {
     mode: "income" | "expense" | "transfer",
     accountId: string,
     date: string,
+    toAccountId?: string,
     title?: string,
     category?: string,
     note?: string,
-    toAccountId?: string,
   ) => void;
   categories: Category[];
   accounts: Account[];
   addAccount: (name: string) => string;
   addcategory: (name: string, mode: "income" | "expense") => string;
+  transactions: Transaction[];
+  updateAccount: (id: string, name: string) => void;
+  deleteAccount: (id: string) => void;
+  updateCategory: (id: string, name: string) => void;
+  deleteCategory: (id: string) => void;
 };
 
 export function FinanceSideBar({
@@ -33,6 +38,11 @@ export function FinanceSideBar({
   addcategory,
   accounts,
   addAccount,
+  transactions,
+  updateAccount,
+  deleteAccount,
+  updateCategory,
+  deleteCategory,
 }: Sidebarprops) {
   const [amount, setAmount] = useState("");
   const [title, setTitle] = useState("");
@@ -193,18 +203,42 @@ export function FinanceSideBar({
               <div className="absolute left-0 top-full mt-2 z-50 w-full rounded-2xl border border-white/40 bg-white/90 backdrop-blur-lg shadow-xl overflow-hidden">
                 <div className="max-h-64 overflow-y-auto">
                   {filteredCategories.map((c) => (
-                    <button
+                    <div
                       key={c.id}
+                      className={`w-full px-3 py-2 text-left flex items-center justify-between hover:bg-black/5 ${
+                        c.id === categoryId ? "bg-black/10" : ""
+                      }`}
                       onClick={() => {
                         setCategoryId(c.id);
                         setShowCategory(false);
                         setAddingCategory(false);
                         setNewCategoryName("");
-                      }}
-                      className="w-full px-3 py-2 text-left hover:bg-black/5 flex items-center justify-between">
+                      }}>
                       <span>{c.name}</span>
-                      {c.id === categoryId && <Check size={14} />}
-                    </button>
+
+                      <div className="flex gap-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const name = prompt("Edit category", c.name);
+                            if (!name) return;
+                            updateCategory(c.id, name);
+                          }}>
+                          <Pencil size={14} />
+                        </button>
+
+                        <button
+                          disabled={c.id === categoryId}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteCategory(c.id);
+
+                            if (categoryId === c.id) setCategoryId("");
+                          }}>
+                          <Trash size={14} />
+                        </button>
+                      </div>
+                    </div>
                   ))}
                 </div>
 
@@ -252,20 +286,47 @@ export function FinanceSideBar({
             <div className="absolute left-0 top-full mt-2 z-50 w-full rounded-2xl border border-white/40 bg-white/90 backdrop-blur-lg shadow-xl overflow-hidden">
               <div className="max-h-64 overflow-y-auto">
                 {accounts.map((acc) => (
-                  <button
+                  <div
                     key={acc.id}
+                    className={`w-full px-3 py-2 text-left flex items-center justify-between hover:bg-black/5 ${
+                      acc.id === account ? "bg-black/10" : ""
+                    }`}
                     onClick={() => {
                       setAccount(acc.id);
                       setShowAccount(false);
                       setAddingAccount(false);
                       setNewAccountName("");
-                    }}
-                    className="w-full px-3 py-2 text-left hover:bg-black/5 flex items-center justify-between">
+                    }}>
                     <span>{acc.name}</span>
-                    <span className="text-xs text-black/40 tabular-nums">
-                      {acc.balance}
-                    </span>
-                  </button>
+
+                    <div className="flex gap-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const name = prompt("Edit account", acc.name);
+                          if (!name) return;
+                          updateAccount(acc.id, name);
+                        }}>
+                        <Pencil size={14} />
+                      </button>
+
+                      <button
+                        disabled={transactions.some(
+                          (t) =>
+                            t.accountId === acc.id || t.toAccountId === acc.id,
+                        )}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteAccount(acc.id);
+
+                          if (account === acc.id) setAccount("");
+
+                          if (toAccountId === acc.id) setToAccountId("");
+                        }}>
+                        <Trash size={14} />
+                      </button>
+                    </div>
+                  </div>
                 ))}
               </div>
 
@@ -315,16 +376,44 @@ export function FinanceSideBar({
                   {accounts
                     .filter((a) => a.id !== account)
                     .map((acc) => (
-                      <button
+                      <div
                         key={acc.id}
+                        className={`w-full px-3 py-2 text-left flex items-center justify-between hover:bg-black/5 ${
+                          acc.id === toAccountId ? "bg-black/10" : ""
+                        }`}
                         onClick={() => {
                           setToAccountId(acc.id);
                           setShowToAccount(false);
-                        }}
-                        className="w-full px-3 py-2 text-left hover:bg-black/5 flex items-center justify-between">
+                        }}>
                         <span>{acc.name}</span>
-                        {acc.id === toAccountId && <Check size={14} />}
-                      </button>
+
+                        <div className="flex items-center gap-2">
+                          {acc.id === toAccountId && <Check size={14} />}
+
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const name = prompt("Edit account", acc.name);
+                              if (!name) return;
+                              updateAccount(acc.id, name);
+                            }}>
+                            <Pencil size={14} />
+                          </button>
+
+                          <button
+                            disabled={transactions.some(
+                              (t) =>
+                                t.accountId === acc.id ||
+                                t.toAccountId === acc.id,
+                            )}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteAccount(acc.id);
+                            }}>
+                            <Trash size={14} />
+                          </button>
+                        </div>
+                      </div>
                     ))}
                 </div>
               </div>
@@ -355,10 +444,10 @@ export function FinanceSideBar({
               mode,
               account,
               date.toISOString().slice(0, 10),
+              mode === "transfer" ? toAccountId : undefined,
               title,
               mode === "transfer" ? undefined : categoryId,
               note,
-              mode === "transfer" ? toAccountId : undefined,
             );
 
             setAmount("");
