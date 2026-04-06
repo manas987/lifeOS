@@ -38,7 +38,6 @@ export function useFinanceLogic() {
     localStorage.setItem("categories", JSON.stringify(categories));
   }, [categories]);
 
-  //addtransaction
   function addTransaction(
     amount: number,
     mode: "income" | "expense" | "transfer",
@@ -193,15 +192,94 @@ export function useFinanceLogic() {
       }),
     );
   }
+
+  function deleteTransaction(id: string) {
+    const t = transactions.find((tx) => tx.id === id);
+    if (!t) return;
+    setAccounts((prev) =>
+      prev.map((acc) => {
+        let balance = acc.balance;
+
+        if (t.mode === "income" && acc.id === t.accountId) {
+          balance -= t.amount;
+        }
+
+        if (t.mode === "expense" && acc.id === t.accountId) {
+          balance += t.amount;
+        }
+
+        if (t.mode === "transfer") {
+          if (acc.id === t.accountId) balance += t.amount;
+          if (acc.id === t.toAccountId) balance -= t.amount;
+        }
+
+        return { ...acc, balance };
+      }),
+    );
+    setTransactions((prev) => prev.filter((tx) => tx.id !== id));
+  }
+  function updateAccount(id: string, name: string) {
+    if (!name.trim()) return;
+
+    setAccounts((prev) =>
+      prev.map((acc) => (acc.id === id ? { ...acc, name } : acc)),
+    );
+  }
+  function deleteAccount(id: string) {
+    const used = transactions.some(
+      (t) => t.accountId === id || t.toAccountId === id,
+    );
+
+    if (used) return; // block
+
+    setAccounts((prev) => prev.filter((acc) => acc.id !== id));
+  }
+
+  function addSubscription(
+    name: string,
+    amount: number,
+    nextDue: string,
+    repeatEvery: string,
+  ) {
+    const id = String(Date.now());
+
+    const sub: Subscription = {
+      id,
+      name,
+      amount,
+      nextDue,
+      repeatEvery,
+    };
+
+    setSubscriptions((prev) => [...prev, sub]);
+  }
+
+  function updateSubscription(id: string, updated: Subscription) {
+    setSubscriptions((prev) => prev.map((s) => (s.id === id ? updated : s)));
+  }
+
+  function deleteSubscription(id: string) {
+    setSubscriptions((prev) => prev.filter((s) => s.id !== id));
+  }
+
   return {
     transactions,
     accounts,
     subscriptions,
     categories,
     addTransaction,
+    addSubscription,
     addCategory,
     addAccount,
     updateTransaction,
+
+    deleteTransaction,
+    updateAccount,
+    deleteAccount,
+
+    updateSubscription,
+    deleteSubscription,
+
     setSubscriptions,
   };
 }

@@ -28,7 +28,9 @@ export type DetailRecentTransactionsCardprops = {
 export type Subscription = {
   id: string;
   name: string;
-  
+  amount: number;
+  nextDue: string;
+  repeatEvery: string;
 };
 
 export type Category = {
