@@ -8,142 +8,132 @@ import {
   type TransactionItem,
 } from "../financecards";
 
+import { useOutletContext } from "react-router-dom";
+import type {
+  Account,
+  Category,
+  Subscription,
+  Transaction,
+} from "../logic/types";
+
+type FinanceContextType = {
+  transactions: Transaction[];
+  accounts: Account[];
+  categories: Category[];
+  subscriptions: Subscription[];
+};
+
 export function Dashboard() {
+  const { transactions, accounts, categories, subscriptions } =
+    useOutletContext<FinanceContextType>();
+
+  // ======================
+  // TOTALS
+  // ======================
+
+  const totalExpense = transactions
+    .filter((t) => t.mode === "expense")
+    .reduce((sum, t) => sum + t.amount, 0);
+
+  const totalIncome = transactions
+    .filter((t) => t.mode === "income")
+    .reduce((sum, t) => sum + t.amount, 0);
+
   const SummaryData = {
-    totalBalance: "$70k",
-    thisMonthIncome: "idk",
-    thisMonthExpense: "idk",
-    savingsPercent: "idk",
+    totalBalance: `₹${accounts
+      .reduce((sum, a) => sum + a.balance, 0)
+      .toLocaleString()}`,
+
+    thisMonthIncome: `₹${totalIncome.toLocaleString()}`,
+
+    thisMonthExpense: `₹${totalExpense.toLocaleString()}`,
+
+    savingsPercent:
+      totalIncome === 0
+        ? "0%"
+        : `${Math.round(((totalIncome - totalExpense) / totalIncome) * 100)}%`,
   };
-  const categories = [
-    { name: "Food", value: 40 },
-    { name: "Travel", value: 20 },
-    { name: "Shopping", value: 10 },
-    { name: "Shopping", value: 10 },
 
-    { name: "Shopping", value: 10 },
-    { name: "Food", value: 40 },
-    { name: "Travel", value: 20 },
-    { name: "Shopping", value: 10 },
-    { name: "Shopping", value: 10 },
+  // ======================
+  // CATEGORY DATA (% based)
+  // ======================
 
-    { name: "Shopping", value: 10 },
-  ];
-  const subscriptions = [
-    { name: "Spotify", amount: "₹149" },
-    { name: "Netflix", amount: "₹199" },
+  const categoriesData = categories.map((c) => {
+    const total = transactions
+      .filter((t) => t.category === c.id && t.mode === c.type)
+      .reduce((sum, t) => sum + t.amount, 0);
 
-    { name: "Netflix", amount: "₹199" },
+    const base = c.type === "expense" ? totalExpense : totalIncome;
 
-    { name: "Netflix", amount: "₹199" },
+    return {
+      name: c.name,
+      value: base ? (total / base) * 100 : 0,
+      type: c.type,
+    };
+  });
 
-    { name: "Netflix", amount: "₹199" },
-  ];
-  const accounts = [
-    { name: "ads", amount: "nigga" },
-    { name: "ads", amount: "nigga" },
-    { name: "ads", amount: "nigga" },
-    { name: "ads", amount: "nigga" },
-    { name: "ads", amount: "nigga" },
-    { name: "ads", amount: "nigga" },
-    { name: "ads", amount: "nigga" },
-    { name: "ads", amount: "nigga" },
-    { name: "ads", amount: "nigga" },
-    { name: "ads", amount: "nigga" },
-    { name: "ads", amount: "nigga" },
-    { name: "ads", amount: "nigga" },
-  ];
+  // ======================
+  // ACCOUNT MAP
+  // ======================
+
+  const accountMap: Record<string, string> = Object.fromEntries(
+    accounts.map((a) => [a.id, a.name]),
+  );
+
+  // ======================
+  // TRANSACTIONS (UI FORMAT)
+  // ======================
+  const transactionItems: TransactionItem[] = transactions.map((t) => ({
+    title: t.title,
+    amount: `₹${t.amount}`, // better UI
+    category: t.category,
+    date: t.date,
+    mode: t.mode === "transfer" ? "expense" : t.mode, // optional
+    account:
+      t.mode === "transfer"
+        ? `${accountMap[t.accountId] || "Unknown"} → ${
+            accountMap[t.toAccountId || ""] || "Unknown"
+          }`
+        : accountMap[t.accountId] || "Unknown",
+  }));
+
+  // ======================
+  // DIRECT DATA
+  // ======================
+  const accountsData = accounts.map((a) => ({
+    name: a.name,
+    amount: `₹${a.balance.toLocaleString()}`,
+  }));
+  const subscriptionsData = subscriptions.map((s) => ({
+    name: s.name,
+    amount: `₹${s.amount}`,
+  }));
+
+  // ======================
+  // STATIC INSIGHT
+  // ======================
+
   const insight =
-    "idkkidkkidkkidkkidkkidkkidkkidkkidkki aasdlkfj nigga nigga idkkidkkidkkidkkidkkidkkidkkidkkidkk";
+    "idkkidkkidkkidkkidkkidkkidkkidkkidkki aasdlkfj idkkidkkidkkidkkidkkidkkidkkidkkidkk";
 
-  const transactions: TransactionItem[] = [
-    {
-      title: "Swiggy",
-      amount: "₹250",
-      mode: "expense",
-      account: "Cash",
-    },
-    {
-      amount: "₹18,000",
-      mode: "income",
-      account: "Bank",
-      category: "Salary",
-    },
-    {
-      amount: "₹18,000",
-      mode: "income",
-      account: "Bank",
-      category: "Salary",
-    },
-    {
-      amount: "₹18,000",
-      mode: "income",
-      account: "Bank",
-      category: "Salary",
-    },
-    {
-      amount: "₹18,000",
-      mode: "income",
-      account: "Bank",
-      category: "Salary",
-    },
-    {
-      amount: "₹18,000",
-      mode: "income",
-      account: "Bank",
-      category: "Salary",
-    },
-    {
-      title: "Swiggy",
-      amount: "₹250",
-      mode: "expense",
-      account: "Cash",
-    },
-    {
-      amount: "₹18,000",
-      mode: "income",
-      account: "Bank",
-      category: "Salary",
-    },
-    {
-      amount: "₹18,000",
-      mode: "income",
-      account: "Bank",
-      category: "Salary",
-    },
-    {
-      amount: "₹18,000",
-      mode: "income",
-      account: "Bank",
-      category: "Salary",
-    },
-    {
-      amount: "₹18,000",
-      mode: "income",
-      account: "Bank",
-      category: "Salary",
-    },
-    {
-      amount: "₹18,000",
-      mode: "income",
-      account: "Bank",
-      category: "Salary",
-    },
-  ];
+  // ======================
+  // UI
+  // ======================
+
   return (
     <div>
       <h2 className="text-3xl font-light mb-4">Dashboard</h2>
 
-      <div className="grid grid-cols-3 grid-rows-[auto_] gap-3">
+      <div className="grid grid-cols-3 gap-3">
         {/* Row 1 */}
         <DashboardSummaryCard data={SummaryData} />
-        <CategoriesCard data={categories} />
-        <SubscriptionsCard data={subscriptions} />
+        <CategoriesCard data={categoriesData} />
+        <SubscriptionsCard data={subscriptionsData} />
 
         {/* Row 2 LEFT */}
         <div className="flex flex-col gap-3 h-full">
           <div className="flex-1 min-h-0">
-            <AccountsCard data={accounts} />
+            <AccountsCard data={accountsData} />
           </div>
 
           <div className="shrink-0">
@@ -153,7 +143,7 @@ export function Dashboard() {
 
         {/* Row 2 RIGHT */}
         <div className="col-span-2 h-full">
-          <RecentTransactionsCard data={transactions} />
+          <RecentTransactionsCard data={transactionItems} />
         </div>
       </div>
     </div>

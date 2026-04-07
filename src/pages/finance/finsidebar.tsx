@@ -73,6 +73,8 @@ export function FinanceSideBar({
   const selectedCategory = categories.find((c) => c.id === categoryId);
   const selectedAccount = accounts.find((a) => a.id === account);
   const selectedToAccount = accounts.find((a) => a.id === toAccountId);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
   const linkClass = (isActive: boolean) =>
     `glass-card w-full p-4 block transition duration-150 ${
@@ -184,7 +186,31 @@ export function FinanceSideBar({
           </PopoverTrigger>
 
           <PopoverContent className="w-auto p-0 bg-white/90 backdrop-blur-lg border border-white/40">
-            <Calendar mode="single" selected={date} onSelect={setDate} />
+            <Calendar
+              mode="single"
+              selected={date}
+              onSelect={setDate}
+              disabled={(date) => date < today}
+              classNames={{
+                month: "space-y-3",
+                caption_label: "text-xl text-gray-800",
+                button_previous:
+                  "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-center",
+                button_next:
+                  "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-center",
+                weekdays: "flex mb-2 gap-1",
+                weekday: "w-9 font-normal text-xs text-center text-gray-400",
+                weeks: "space-y-1",
+                week: "flex gap-1",
+                day: "w-9 h-9 text-center p-0",
+                day_button:
+                  "w-9 h-9 rounded-xl hover:bg-black/10 transition duration-100",
+                selected:
+                  " [&>button]:hover:bg-black/10 [&>button]:font-semibold",
+                disabled:
+                  "[&>button]:text-gray-300 [&>button]:hover:bg-transparent [&>button]:cursor-not-allowed",
+              }}
+            />
           </PopoverContent>
         </Popover>
 
@@ -392,8 +418,7 @@ export function FinanceSideBar({
                         <span>{acc.name}</span>
 
                         <div className="flex items-center gap-2">
-                          {acc.id === toAccountId && <Check size={14} />}
-
+                          {acc.id === toAccountId && <Check size={14} />}ƒ
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
@@ -403,7 +428,6 @@ export function FinanceSideBar({
                             }}>
                             <Pencil size={14} />
                           </button>
-
                           <button
                             disabled={transactions.some(
                               (t) =>

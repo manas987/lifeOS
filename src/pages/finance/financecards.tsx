@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { InboxIcon } from "lucide-react";
 
 type SummaryData = {
   totalBalance: string;
@@ -12,26 +13,28 @@ export function DashboardSummaryCard({ data }: { data: SummaryData }) {
       <h3 className="text-xl font-medium text-black/80">Overview</h3>
       <div className="flex flex-col">
         <span className="text-sm text-black/60">Total Balance</span>
-        <span className="text-3xl font-semibold">{data.totalBalance}</span>
+        <span className="text-3xl font-semibold">
+          {data.totalBalance || "₹0"}
+        </span>
       </div>
       <div className="h-[1px] bg-black/10" />
       <div className="grid grid-cols-2 gap-2 text-sm sm:text-base">
         <div className="flex flex-col">
           <span className="text-black/60">Income</span>
           <span className="font-medium text-green-600">
-            {data.thisMonthIncome}
+            {data.thisMonthIncome || "₹0"}
           </span>
         </div>
 
         <div className="flex flex-col">
           <span className="text-black/60">Expense</span>
           <span className="font-medium text-red-500">
-            {data.thisMonthExpense}
+            {data.thisMonthExpense || "₹0"}
           </span>
         </div>
         <div className="flex flex-col col-span-2">
           <span className="text-black/60">Savings</span>
-          <span className="font-medium">{data.savingsPercent}</span>
+          <span className="font-medium">{data.savingsPercent || "₹0"}</span>
         </div>
       </div>
     </div>
@@ -40,36 +43,87 @@ export function DashboardSummaryCard({ data }: { data: SummaryData }) {
 type CategoryItem = {
   name: string;
   value: number;
+  type: "income" | "expense";
 };
-
 export function CategoriesCard({ data }: { data: CategoryItem[] }) {
+  const expense = data.filter((d) => d.type === "expense");
+  const income = data.filter((d) => d.type === "income");
+  const isEmpty = data.length === 0;
+
   return (
-    <div className="glass-card p-3 pt-1 rounded-3xl w-full flex flex-col gap-3 ">
+    <div className="glass-card p-3 pt-1 rounded-3xl w-full flex flex-col gap-3">
       <div className="flex items-center justify-between">
         <h3 className="text-xl font-medium text-black/80">Categories</h3>
         <span className="text-sm text-black/50">This month</span>
       </div>
 
-      <div className="flex flex-col h-[200px] overflow-y-auto pr-1 gap-3 -mb-52">
-        {data.map((item, key) => (
-          <div
-            key={key}
-            className="grid grid-cols-[80px_1fr_42px] items-center gap-2">
-            <span className="text-lg leading-none">{item.name}</span>
+      {isEmpty ? (
+        <div className="flex items-center justify-center h-[200px] text-sm text-black/50">
+          No category data yet
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-4">
+          {/* EXPENSE */}
+          <div className="flex flex-col h-[200px] overflow-y-auto pr-1 gap-3">
+            <span className="text-sm text-red-500 font-medium">Expense</span>
 
-            <div className="h-5 rounded-md bg-black/10 overflow-hidden">
-              <div
-                className="h-full bg-black/85 rounded-md"
-                style={{ width: `${item.value}%` }}
-              />
-            </div>
+            {expense.length === 0 ? (
+              <span className="text-xs text-black/40">No expense data</span>
+            ) : (
+              expense.map((item, key) => (
+                <div
+                  key={key}
+                  className="grid grid-cols-[80px_1fr_42px] items-center gap-2">
+                  <span className="text-lg leading-none truncate">
+                    {item.name}
+                  </span>
 
-            <span className="text-lg text-right tabular-nums">
-              {item.value}%
-            </span>
+                  <div className="h-5 rounded-md bg-black/10 overflow-hidden">
+                    <div
+                      className="h-full bg-black/85 rounded-md"
+                      style={{ width: `${item.value}%` }}
+                    />
+                  </div>
+
+                  <span className="text-lg text-right tabular-nums">
+                    {item.value}%
+                  </span>
+                </div>
+              ))
+            )}
           </div>
-        ))}
-      </div>
+
+          {/* INCOME */}
+          <div className="flex flex-col h-[200px] overflow-y-auto pr-1 gap-3">
+            <span className="text-sm text-green-600 font-medium">Income</span>
+
+            {income.length === 0 ? (
+              <span className="text-xs text-black/40">No income data</span>
+            ) : (
+              income.map((item, key) => (
+                <div
+                  key={key}
+                  className="grid grid-cols-[80px_1fr_42px] items-center gap-2">
+                  <span className="text-lg leading-none truncate">
+                    {item.name}
+                  </span>
+
+                  <div className="h-5 rounded-md bg-black/10 overflow-hidden">
+                    <div
+                      className="h-full bg-black/85 rounded-md"
+                      style={{ width: `${item.value}%` }}
+                    />
+                  </div>
+
+                  <span className="text-lg text-right tabular-nums">
+                    {item.value}%
+                  </span>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -129,15 +183,20 @@ export function AccountsCard({ data }: { data: AccountItem[] }) {
     <div className="glass-card p-4 pt-1 rounded-3xl w-full h-full flex flex-col gap-3">
       <h3 className="text-xl font-medium text-black/80">Accounts</h3>
       <div className="flex flex-col h-[310px] -mb-[225px] overflow-y-auto pr-1 gap-1">
-        {data.map((acc, i) => (
-          <div
-            key={i}
-            className="flex justify-between items-center px-2 py-1.5 rounded-lg hover:bg-black/5 transition">
-            <span className="text-lg">{acc.name}</span>
-
-            <span className="font-semibold tabular-nums">{acc.amount}</span>
+        {data.length === 0 ? (
+          <div className="flex flex-1 items-center justify-center text-sm text-black/50">
+            No accounts yet
           </div>
-        ))}
+        ) : (
+          data.map((acc, i) => (
+            <div
+              key={i}
+              className="flex justify-between items-center px-2 py-1.5 rounded-lg hover:bg-black/5 transition">
+              <span className="text-lg">{acc.name}</span>
+              <span className="font-semibold tabular-nums">{acc.amount}</span>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
@@ -197,7 +256,10 @@ export function RecentTransactionsCard({ data }: { data: TransactionItem[] }) {
       <div className="h-[1px] bg-black/10" />
       <div className="flex flex-col h-[390px] overflow-y-auto pr-1">
         {rows.length === 0 ? (
-          <span className="text-sm text-black/50 px-2">No transactions</span>
+          <div className="flex flex-col items-center justify-center gap-2 py-6 text-black/30">
+            <InboxIcon />
+            <span className="text-sm">No transactions yet</span>
+          </div>
         ) : (
           rows.map((t, i) => (
             <div
