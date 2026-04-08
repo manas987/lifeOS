@@ -201,14 +201,14 @@ export function Dashboar() {
     <div className="flex flex-col gap-3 pb-8 min-w-0 p-4">
       {/* ── HEADER ── */}
       <div className="flex items-center justify-between">
-        <h1 className="text-4xl font-light">Welcome back</h1>
+        <h1 className="text-4xl font-light ">Welcome back</h1>
         <div className="flex gap-1 glass-card p-1">
           {tabs.map((t) => (
             <button
               key={t}
               onClick={() => setActiveTab(t)}
               className={`px-3 py-1 rounded-xl text-sm transition capitalize ${
-                activeTab === t ? "!bg-black/80 text-white" : "hover:!bg-white"
+                activeTab === t ? "!bg-black/80 text-white" : "hover:!bg-white "
               }`}>
               {t}
             </button>
@@ -217,7 +217,7 @@ export function Dashboar() {
       </div>
 
       {/* ── ROW 1: STAT CARDS ── */}
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-4 gap-3 ">
         <StatCard
           label="Total balance"
           value={`₹${totalBalance.toLocaleString()}`}

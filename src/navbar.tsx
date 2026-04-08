@@ -13,7 +13,7 @@ export function Navbar() {
 
         <div className="flex gap-1">
           {/* Navigation */}
-          <div className="bg-[#f1f1f1] rounded-full flex">
+          <div className="bg-[#f1f1f1] rounded-full flex dark:bg-black">
             <NavLink
               to=""
               className={({ isActive }) =>
@@ -67,7 +67,7 @@ export function Navbar() {
           <div className="flex gap-1">
             <button
               onClick={() => setmode((prev: any) => !prev)}
-              className="bg-[#f1f1f1] rounded-full p-3 hover:bg-[#dadada] transition-colors duration-150">
+              className="bg-[#f1f1f1] rounded-full p-3 hover:bg-[#dadada] transition-colors duration-150 dark:bg-black">
               {mode ? <MoonStar /> : <Sun />}
             </button>
           </div>

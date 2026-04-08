@@ -11,9 +11,9 @@ type SummaryData = {
 export function DashboardSummaryCard({ data }: { data: SummaryData }) {
   return (
     <div className="glass-card p-4 pt-1 pb-1 rounded-3xl w-full flex flex-col gap-2">
-      <h3 className="text-xl font-medium text-black/80">Overview</h3>
+      <h3 className="text-xl font-medium text-black/80 dark:text-white/80">Overview</h3>
       <div className="flex flex-col">
-        <span className="text-sm text-black/60">Total Balance</span>
+        <span className="text-sm text-black/60 dark:text-white/60">Total Balance</span>
         <span className="text-3xl font-semibold">
           {data.totalBalance || "₹0"}
         </span>
@@ -21,20 +21,20 @@ export function DashboardSummaryCard({ data }: { data: SummaryData }) {
       <div className="h-[1px] bg-black/50" />
       <div className="grid grid-cols-2 gap-2 text-sm sm:text-base">
         <div className="flex flex-col">
-          <span className="text-black/60">Income</span>
+          <span className="text-black/60 dark:text-white/60">Income</span>
           <span className="font-medium text-green-600">
             {data.thisMonthIncome || "₹0"}
           </span>
         </div>
 
         <div className="flex flex-col">
-          <span className="text-black/60">Expense</span>
+          <span className="text-black/60 dark:text-white/60">Expense</span>
           <span className="font-medium text-red-500">
             {data.thisMonthExpense || "₹0"}
           </span>
         </div>
         <div className="flex flex-col col-span-2">
-          <span className="text-black/60">Savings</span>
+          <span className="text-black/60 dark:text-white/60">Savings</span>
           <span className="font-medium">{data.savingsPercent || "₹0"}</span>
         </div>
       </div>
@@ -54,12 +54,12 @@ export function CategoriesCard({ data }: { data: CategoryItem[] }) {
   return (
     <div className="glass-card p-3 pt-1 rounded-3xl w-full flex flex-col gap-3">
       <div className="flex items-center justify-between">
-        <h3 className="text-xl font-medium text-black/80">Categories</h3>
-        <span className="text-sm text-black/50">This month</span>
+        <h3 className="text-xl font-medium text-black/80 dark:text-white/80">Categories</h3>
+        <span className="text-sm text-black/50 dark:text-white/50">This month</span>
       </div>
 
       {isEmpty ? (
-        <div className="flex items-center justify-center h-[200px] text-sm text-black/50">
+        <div className="flex items-center justify-center h-[200px] text-sm text-black/50 dark:text-white/50">
           No category data yet
         </div>
       ) : (
@@ -69,7 +69,7 @@ export function CategoriesCard({ data }: { data: CategoryItem[] }) {
             <span className="text-sm text-red-500 font-medium">Expense</span>
 
             {expense.length === 0 ? (
-              <span className="text-xs text-black/40">No expense data</span>
+              <span className="text-xs text-black/40 dark:text-white/40">No expense data</span>
             ) : (
               expense.map((item, key) => (
                 <div>
@@ -102,7 +102,7 @@ export function CategoriesCard({ data }: { data: CategoryItem[] }) {
             <span className="text-sm text-green-600 font-medium">Income</span>
 
             {income.length === 0 ? (
-              <span className="text-xs text-black/40">No income data</span>
+              <span className="text-xs text-black/40 dark:text-white/40">No income data</span>
             ) : (
               income.map((item, key) => (
                 <div>
@@ -144,12 +144,12 @@ export function SubscriptionsCard({ data }: { data: SubscriptionItem[] }) {
   return (
     <div className="glass-card p-3 pt-1 rounded-3xl w-full flex flex-col gap-3 ">
       <div className="flex justify-between items-center">
-        <h3 className="text-xl font-medium text-black/80">Subscriptions</h3>
-        <span className="text-sm text-black/50">{data.length} active</span>
+        <h3 className="text-xl font-medium text-black/80 dark:text-white/80">Subscriptions</h3>
+        <span className="text-sm text-black/50 dark:text-white/50">{data.length} active</span>
       </div>
       <div className="flex flex-col h-[250px] overflow-y-scroll pr-1">
         {data.length === 0 ? (
-          <span className="text-sm text-black/50">No active subscriptions</span>
+          <span className="text-sm text-black/50 dark:text-white/50">No active subscriptions</span>
         ) : (
           data.map((sub) => (
             <div>
@@ -169,7 +169,7 @@ export function SubscriptionsCard({ data }: { data: SubscriptionItem[] }) {
       <div className="h-[1px] bg-black/50" />
 
       <div className="flex justify-between items-center text-sm -mb-32">
-        <span className="text-black/60">Total</span>
+        <span className="text-black/60 dark:text-white/60">Total</span>
         <span className="font-medium">
           ₹
           {data
@@ -192,10 +192,10 @@ type AccountItem = {
 export function AccountsCard({ data }: { data: AccountItem[] }) {
   return (
     <div className="glass-card p-4 pt-1 rounded-3xl w-full h-full flex flex-col gap-3">
-      <h3 className="text-xl font-medium text-black/80">Accounts</h3>
+      <h3 className="text-xl font-medium text-black/80 dark:text-white/80">Accounts</h3>
       <div className="flex flex-col h-[310px] -mb-[225px] overflow-y-auto pr-1 gap-1">
         {data.length === 0 ? (
-          <div className="flex flex-1 items-center justify-center text-sm text-black/50">
+          <div className="flex flex-1 items-center justify-center text-sm text-black/50 dark:text-white/50">
             No accounts yet
           </div>
         ) : (
@@ -219,9 +219,9 @@ export function AccountsCard({ data }: { data: AccountItem[] }) {
 export function QuickInsightCard({ insight }: { insight: string }) {
   return (
     <div className="glass-card p-4 pt-1 rounded-3xl w-full flex flex-col gap-3">
-      <h3 className="text-xl font-medium text-black/80">Quick Insight</h3>
+      <h3 className="text-xl font-medium text-black/80 dark:text-white/80">Quick Insight</h3>
 
-      <p className="text-base text-black/70 break-words">
+      <p className="text-base text-black/70 dark:text-white/70 break-words">
         {insight || "No insights available yet."}
       </p>
     </div>
@@ -251,10 +251,10 @@ export function RecentTransactionsCard({
 }) {
   return (
     <div className="glass-card p-4 pt-1 rounded-3xl w-full flex flex-col gap-3">
-      <h3 className="text-xl font-medium text-black/80">Recent Transactions</h3>
+      <h3 className="text-xl font-medium text-black/80 dark:text-white/80">Recent Transactions</h3>
 
       {/* HEADER */}
-      <div className="grid grid-cols-[1.2fr_1fr_1fr_1fr_1fr_0.5fr] text-sm text-black/50 px-2">
+      <div className="grid grid-cols-[1.2fr_1fr_1fr_1fr_1fr_0.5fr] text-sm text-black/50 dark:text-white/50 px-2">
         <span>Title</span>
         <span>Amount</span>
         <span>Category</span>
@@ -268,10 +268,10 @@ export function RecentTransactionsCard({
       {/* BODY */}
       <div className="flex flex-col h-[370px] overflow-y-auto pr-1">
         {data.length === 0 ? (
-          <div className="flex flex-col items-center justify-center gap-2 py-6 text-black/30">
+          <div className="flex flex-col items-center justify-center gap-2 py-6 text-black/30 dark:text-white/30">
             <InboxIcon />
             <span className="text-sm">No transactions yet</span>
-            <span className="text-xs text-black/30">
+            <span className="text-xs text-black/30 dark:text-white/30">
               Add your first income or expense
             </span>
           </div>

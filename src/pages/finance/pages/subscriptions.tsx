@@ -130,7 +130,7 @@ export function Subscriptions() {
     <div>
       <h2 className="mb-4 text-3xl font-light">Subscriptions</h2>
 
-      <div className="mb-4 flex items-center justify-between text-sm text-black/50">
+      <div className="mb-4 flex items-center justify-between text-sm text-black/50 dark:text-white/50">
         <span>{totalActive} active</span>
         <span>Monthly total: {formatMoney(monthlyTotal)}</span>
       </div>
@@ -153,7 +153,7 @@ export function Subscriptions() {
       </div>
 
       {subscriptions.length === 0 && (
-        <div className="mt-6 text-sm text-black/50">
+        <div className="mt-6 text-sm text-black/50 dark:text-white/50">
           No subscriptions yet. Add one to start tracking recurring payments.
         </div>
       )}
@@ -195,7 +195,7 @@ function SubscriptionCard({
       />
 
       <div className="flex flex-col gap-1">
-        <span className="text-xs text-black/50">Amount</span>
+        <span className="text-xs text-black/50 dark:text-white/50">Amount</span>
         <input
           type="number"
           value={data.amount === 0 ? "" : data.amount}
@@ -210,7 +210,7 @@ function SubscriptionCard({
       </div>
 
       <div className="flex flex-col gap-1">
-        <span className="text-xs text-black/50">Next due</span>
+        <span className="text-xs text-black/50 dark:text-white/50">Next due</span>
         <input
           type="date"
           value={data.nextDue}
@@ -220,7 +220,7 @@ function SubscriptionCard({
       </div>
 
       <div className="flex flex-col gap-1">
-        <span className="text-xs text-black/50">Repeats</span>
+        <span className="text-xs text-black/50 dark:text-white/50">Repeats</span>
         <select
           value={data.repeatEvery}
           onChange={(e) =>
@@ -236,7 +236,7 @@ function SubscriptionCard({
       </div>
 
       <div className="flex items-center justify-between text-sm">
-        <span className="text-black/60">
+        <span className="text-black/60 dark:text-white/60">
           {data.active ? "Active" : "Paused"}
         </span>
         <span
@@ -245,7 +245,7 @@ function SubscriptionCard({
               ? "font-medium text-red-500"
               : due !== null && due <= 3
                 ? "font-medium text-yellow-600"
-                : "font-medium text-black/80"
+                : "font-medium text-black/80 dark:text-white/80"
           }>
           {due === null
             ? "No due date"
@@ -288,7 +288,7 @@ function SubscriptionCard({
         </button>
       </div>
 
-      <div className="text-sm text-black/60">{formatMoney(data.amount)}</div>
+      <div className="text-sm text-black/60 dark:text-white/60">{formatMoney(data.amount)}</div>
     </div>
   );
 }
@@ -303,8 +303,8 @@ function AddNewCard({
   return (
     <button onClick={onClick} className="glass-card ">
       <div className="h-[305px] w-[300px] rounded-3xl flex items-center justify-center flex-col gap-2 text-center transition hover:bg-white/40">
-        <Plus size={28} className="text-black/60" />
-        <span className="text-base text-black/60">{label}</span>
+        <Plus size={28} className="text-black/60 dark:text-white/60" />
+        <span className="text-base text-black/60 dark:text-white/60">{label}</span>
       </div>
     </button>
   );

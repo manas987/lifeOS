@@ -125,7 +125,7 @@ export function Upcoming() {
             return (
               <DroppableDay key={date} id={date}>
                 <div className="space-y-3">
-                  <p className="text-sm font-semibold text-gray-900 py-2 border-b border-gray-700 mb-3">
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white py-2 border-b border-gray-700 mb-3">
                     {FormatHeader(date)}
                   </p>
                   <SortableContext

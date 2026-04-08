@@ -103,7 +103,7 @@ export function Today() {
 
           {(todayTasks.length > 0 || dueTasks.length > 0) && (
             <div>
-              <p className="text-sm font-semibold text-gray-800 pb-2 border-b border-gray-700 mb-4">
+              <p className="text-sm font-semibold text-gray-800 dark:text-white pb-2 border-b border-gray-700 mb-4">
                 {todayHeader}
               </p>
               <SortableContext items={ids}>

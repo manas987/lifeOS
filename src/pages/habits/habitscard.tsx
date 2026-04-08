@@ -36,7 +36,9 @@ export function HabbitCard({
         }`}>
         <div
           className={`transition-all ${
-            completed ? "text-green-500 scale-110" : "text-gray-500"
+            completed
+              ? "text-green-500 scale-110"
+              : "text-gray-500 dark:text-white"
           }`}>
           {completed ? <CircleCheckBig size={20} /> : <Circle size={20} />}
         </div>
@@ -138,13 +140,14 @@ export function Addhabitcard({ onAdd }: AddHabitProps) {
               }}
               classNames={{
                 month: "space-y-3",
-                caption_label: "text-xl text-gray-800",
+                caption_label: "text-xl text-gray-800 dark:text-white",
                 button_previous:
                   "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-center",
                 button_next:
                   "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-center",
                 weekdays: "flex mb-2 gap-1",
-                weekday: "w-9 font-normal text-xs text-center text-gray-400",
+                weekday:
+                  "w-9 font-normal text-xs text-center text-gray-400 dark:text-white",
                 weeks: "space-y-1",
                 week: "flex ",
                 day: "w-10 h-9 text-center p-0",
@@ -157,7 +160,7 @@ export function Addhabitcard({ onAdd }: AddHabitProps) {
                 range_end:
                   "bg-black/10 rounded-r-xl [&>button]:bg-black [&>button]:text-white",
                 disabled:
-                  "[&>button]:text-gray-300 [&>button]:hover:bg-transparent [&>button]:cursor-not-allowed",
+                  "[&>button]:text-gray-300 dark:[&>button]:text-white/30 [&>button]:hover:bg-transparent [&>button]:cursor-not-allowed",
               }}
             />
           </PopoverContent>
@@ -327,13 +330,14 @@ export function Detailedhabitcard({
               }}
               classNames={{
                 month: "space-y-3",
-                caption_label: "text-xl text-gray-800",
+                caption_label: "text-xl text-gray-800 dark:text-white",
                 button_previous:
                   "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-center",
                 button_next:
                   "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-center",
                 weekdays: "flex mb-2 gap-1",
-                weekday: "w-9 font-normal text-xs text-center text-gray-400",
+                weekday:
+                  "w-9 font-normal text-xs text-center text-gray-400 dark:text-white",
                 weeks: "space-y-1",
                 week: "flex ",
                 day: "w-10 h-9 text-center",
@@ -346,7 +350,7 @@ export function Detailedhabitcard({
                 range_end:
                   "bg-black/10 rounded-r-xl [&>button]:bg-black [&>button]:text-white",
                 disabled:
-                  "[&>button]:text-gray-300 [&>button]:hover:bg-transparent [&>button]:cursor-not-allowed",
+                  "[&>button]:text-gray-300 dark:[&>button]:text-white/30 [&>button]:hover:bg-transparent [&>button]:cursor-not-allowed",
               }}
             />
           </PopoverContent>

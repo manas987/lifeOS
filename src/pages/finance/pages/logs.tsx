@@ -87,7 +87,7 @@ function GlassDropdown({
   }, [open]);
 
   return (
-    <>
+    <div className="max-w-min">
       <button
         ref={triggerRef}
         type="button"
@@ -95,11 +95,17 @@ function GlassDropdown({
           e.stopPropagation();
           setOpen((p) => !p);
         }}
-        className="flex w-full items-center justify-between rounded-xl border border-white/30 bg-white/35 px-2 py-1.5 text-left text-sm text-black/80 backdrop-blur-md transition hover:bg-white/45">
-        <span className={!selected ? "italic text-black/35" : ""}>
+        className="flex w-full items-center justify-between rounded-xl border border-white/30 bg-white/35 px-2 py-1.5 text-left text-sm text-black/80 dark:text-white/80 backdrop-blur-md transition hover:bg-white/45">
+        <span
+          className={
+            !selected ? "italic text-black/35 dark:text-white/35" : ""
+          }>
           {selected?.label || placeholder}
         </span>
-        <ChevronDown size={14} className="shrink-0 text-black/50" />
+        <ChevronDown
+          size={14}
+          className="shrink-0 text-black/50 dark:text-white/50"
+        />
       </button>
 
       {open &&
@@ -112,10 +118,10 @@ function GlassDropdown({
               ...menuStyle,
               zIndex: 99999,
             }}
-            className="overflow-hidden rounded-xl border border-white/30 bg-white/55 shadow-[0_12px_35px_rgba(0,0,0,0.14)] backdrop-blur-xl">
+            className="overflow-hidden rounded-xl border border-white/30 bg-white/55 backdrop-blur-xl">
             <div className="max-h-52 overflow-y-auto">
               {options.length === 0 ? (
-                <div className="px-3 py-2 text-sm italic text-black/35">
+                <div className="px-3 py-2 w-3 text-sm italic text-black/35 dark:text-white/35">
                   empty
                 </div>
               ) : (
@@ -130,8 +136,8 @@ function GlassDropdown({
                     }}
                     className={`block w-full px-3 py-2 text-left text-sm transition hover:bg-white/45 ${
                       opt.value === value
-                        ? "bg-white/35 text-black/90"
-                        : "text-black/80"
+                        ? "bg-white/35 text-black/90 dark:text-white/90"
+                        : "text-black/80 dark:text-white/80"
                     }`}>
                     {opt.label}
                   </button>
@@ -141,7 +147,7 @@ function GlassDropdown({
           </div>,
           document.body,
         )}
-    </>
+    </div>
   );
 }
 
@@ -160,18 +166,18 @@ export function Logs() {
   } | null>(null);
 
   const inputClass =
-    "w-full rounded-xl border border-white/30 bg-white/30 px-2 py-1.5 text-sm text-black/80 outline-none backdrop-blur-md transition focus:border-white/50 focus:bg-white/45";
+    "max-w-[180px] rounded-xl border border-white/30 bg-white/30 px-2 py-1.5 text-sm text-black/80 dark:text-white/80 outline-none backdrop-blur-md transition focus:border-white/50 focus:bg-white/45";
 
   return (
     <div>
       <h2 className="mb-4 text-3xl font-light">Logs</h2>
 
       <div className="glass-card flex w-full flex-col gap-3 overflow-visible rounded-3xl p-4">
-        <h3 className="text-xl font-medium text-black/80">
+        <h3 className="text-xl font-medium text-black/80 dark:text-white/80">
           Recent Transactions
         </h3>
 
-        <div className="grid grid-cols-[1.3fr_1fr_1fr_1fr_1fr_1fr_10px] px-2 text-sm text-black/50">
+        <div className="grid grid-cols-[1.3fr_1fr_1fr_1fr_1fr_1fr_10px] px-2 text-sm text-black/50 dark:text-white/50">
           <span>Title</span>
           <span>Amount</span>
           <span>Category</span>
@@ -185,7 +191,9 @@ export function Logs() {
 
         <div className="flex max-h-full flex-col overflow-y-auto overflow-x-visible pr-1">
           {transactions.length === 0 && (
-            <span className="px-2 text-sm text-black/50">No transactions</span>
+            <span className="px-2 text-sm text-black/50 dark:text-white/50">
+              No transactions
+            </span>
           )}
 
           {transactions.map((t) => {
@@ -218,7 +226,9 @@ export function Logs() {
                       />
                     ) : (
                       t.title || (
-                        <span className="italic text-black/30">empty</span>
+                        <span className="italic text-black/30 dark:text-white/30">
+                          empty
+                        </span>
                       )
                     )}
                   </div>
@@ -252,7 +262,7 @@ export function Logs() {
                         setEditing({ id: t.id, field: "category" });
                       }
                     }}
-                    className="min-w-0">
+                    className="min-w-0 ">
                     {rowEditing("category") ? (
                       <div onClick={(e) => e.stopPropagation()}>
                         {filteredCategories.length > 0 ? (
@@ -271,12 +281,16 @@ export function Logs() {
                             }}
                           />
                         ) : (
-                          <span className="italic text-black/30">empty</span>
+                          <span className="italic text-black/30 dark:text-white/30">
+                            empty
+                          </span>
                         )}
                       </div>
                     ) : (
                       categories.find((c) => c.id === t.category)?.name || (
-                        <span className="italic text-black/30">empty</span>
+                        <span className="italic text-black/30 dark:text-white/30">
+                          empty
+                        </span>
                       )
                     )}
                   </div>
@@ -285,7 +299,7 @@ export function Logs() {
                     {rowEditing("date") ? (
                       <Popover>
                         <PopoverTrigger asChild>
-                          <button className="glass-card flex w-full items-center justify-between rounded-xl px-3 py-1.5 text-sm transition hover:!bg-white">
+                          <button className="glass-card flex w-[130px] items-center justify-between rounded-xl px-3 py-1.5 text-sm transition hover:!bg-white">
                             <span>
                               {t.date
                                 ? format(parseISO(t.date), "dd MMM yyyy")
@@ -311,13 +325,15 @@ export function Logs() {
                             }}
                             classNames={{
                               month: "space-y-3",
-                              caption_label: "text-xl text-gray-800",
+                              caption_label:
+                                "text-xl text-gray-800 dark:text-white",
                               button_previous:
                                 "h-8 w-10 flex items-center justify-center rounded-lg hover:bg-black/10",
                               button_next:
                                 "h-8 w-10 flex items-center justify-center rounded-lg hover:bg-black/10",
                               weekdays: "mb-2 flex gap-1",
-                              weekday: "w-9 text-center text-xs text-gray-400",
+                              weekday:
+                                "w-9 text-center text-xs text-gray-400 dark:text-white",
                               weeks: "space-y-1",
                               week: "flex gap-1",
                               day: "h-9 w-9 p-0 text-center",
@@ -332,7 +348,9 @@ export function Logs() {
                     ) : t.date ? (
                       format(parseISO(t.date), "dd MMM")
                     ) : (
-                      <span className="italic text-black/30">empty</span>
+                      <span className="italic text-black/30 dark:text-white/30">
+                        empty
+                      </span>
                     )}
                   </div>
 
@@ -393,7 +411,9 @@ export function Logs() {
                       />
                     ) : (
                       accounts.find((a) => a.id === t.accountId)?.name || (
-                        <span className="italic text-black/30">empty</span>
+                        <span className="italic text-black/30 dark:text-white/30">
+                          empty
+                        </span>
                       )
                     )}
                   </div>

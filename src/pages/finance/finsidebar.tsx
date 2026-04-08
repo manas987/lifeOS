@@ -190,13 +190,14 @@ export function FinanceSideBar({
               onSelect={setDate}
               classNames={{
                 month: "space-y-3",
-                caption_label: "text-xl text-gray-800",
+                caption_label: "text-xl text-gray-800 dark:text-white",
                 button_previous:
                   "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-center",
                 button_next:
                   "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-center",
                 weekdays: "flex mb-2 gap-1",
-                weekday: "w-9 font-normal text-xs text-center text-gray-400",
+                weekday:
+                  "w-9 font-normal text-xs text-center text-gray-400 dark:text-white",
                 weeks: "space-y-1",
                 week: "flex gap-1",
                 day: "w-9 h-9 text-center p-0",
@@ -205,7 +206,7 @@ export function FinanceSideBar({
                 selected:
                   " [&>button]:hover:bg-black/10 [&>button]:font-bold. bg-black/20 rounded-xl",
                 disabled:
-                  "[&>button]:text-gray-300 [&>button]:hover:bg-transparent [&>button]:cursor-not-allowed",
+                  "[&>button]:text-gray-300 dark:[&>button]:text-white/30 [&>button]:hover:bg-transparent [&>button]:cursor-not-allowed",
               }}
             />
           </PopoverContent>

@@ -106,7 +106,7 @@ function TrackSection({
       <div className="flex items-end justify-between">
         <div>
           <h3 className="text-2xl font-light">{title}</h3>
-          <p className="text-sm text-black/50">
+          <p className="text-sm text-black/50 dark:text-white/50">
             {items.length} {items.length === 1 ? "entry" : "entries"}
           </p>
         </div>
@@ -130,7 +130,7 @@ function TrackSection({
       </div>
 
       {items.length === 0 && (
-        <div className="text-sm text-black/50">
+        <div className="text-sm text-black/50 dark:text-white/50">
           No {title.toLowerCase()} yet. Add one to start tracking.
         </div>
       )}
@@ -214,7 +214,7 @@ function TrackCard({
       />
 
       <div className="flex flex-col gap-1">
-        <span className="text-xs text-black/50">
+        <span className="text-xs text-black/50 dark:text-white/50">
           {kind === "debt" ? "Total" : "Given"}
         </span>
         <input
@@ -227,10 +227,10 @@ function TrackCard({
       </div>
 
       <div className="flex justify-between text-sm">
-        <span className="text-black/60">
+        <span className="text-black/60 dark:text-white/60">
           {doneLabel}: {formatMoney(data.done)}
         </span>
-        <span className="font-medium text-black/80">
+        <span className="font-medium text-black/80 dark:text-white/80">
           Left: {formatMoney(remaining)}
         </span>
       </div>
@@ -260,7 +260,7 @@ function TrackCard({
 
         <button
           onClick={() => applyChange("sub")}
-          className="glass-card rounded-xl px-3 py-2 transition hover:bg-black/10 text-black/70">
+          className="glass-card rounded-xl px-3 py-2 transition hover:bg-black/10 text-black/70 dark:text-white/70">
           -
         </button>
       </div>
@@ -282,8 +282,8 @@ function AddNewCard({
   return (
     <button onClick={onClick} className="glass-card">
       <div className="h-[305px] w-[300px] rounded-3xl flex items-center justify-center flex-col gap-2 text-center transition hover:bg-white/40">
-        <Plus size={28} className="text-black/60" />
-        <span className="text-base text-black/60">{label}</span>
+        <Plus size={28} className="text-black/60 dark:text-white/60" />
+        <span className="text-base text-black/60 dark:text-white/60">{label}</span>
       </div>
     </button>
   );

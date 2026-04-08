@@ -6,7 +6,7 @@ import { createContext, useEffect, useState } from "react";
 export const Mycontext = createContext<any>(null);
 
 export function MyState({ children }: any) {
-  const [mode, setmode] = useState<boolean>(false);
+  const [mode, setmode] = useState<boolean>(true);
   useEffect(() => {
     document.documentElement.classList.toggle("dark", mode);
   }, [mode]);
