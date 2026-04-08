@@ -67,7 +67,7 @@ export function Dashboard() {
 
     return {
       name: c.name,
-      value: base ? (total / base) * 100 : 0,
+      value: base ? Math.round((total / base) * 100) : 0,
       type: c.type,
     };
   });
@@ -143,7 +143,10 @@ export function Dashboard() {
 
         {/* Row 2 RIGHT */}
         <div className="col-span-2 h-full">
-          <RecentTransactionsCard data={transactionItems} />
+          <RecentTransactionsCard
+            data={transactionItems}
+            categories={categories}
+          />
         </div>
       </div>
     </div>

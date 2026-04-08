@@ -85,45 +85,15 @@ export function Navbar() {
           {/* Right side buttons */}
           <div className="flex gap-1">
             <button
-              onClick={() => setPanel("settings")}
-              className="bg-[#f1f1f1] rounded-full p-3 flex gap-1 hover:bg-[#dadada] transition-colors duration-150">
-              <Settings /> Settings
-            </button>
-
-            <button
               onClick={() =>
                 setmode((prev) => (prev === "light" ? "dark" : "light"))
               }
               className="bg-[#f1f1f1] rounded-full p-3 hover:bg-[#dadada] transition-colors duration-150">
               {mode === "light" ? <MoonStar /> : <Sun />}
             </button>
-
-            <button
-              onClick={() => setPanel("notifications")}
-              className="bg-[#f1f1f1] rounded-full p-3 hover:bg-[#dadada] transition-colors duration-150">
-              <Bell />
-            </button>
-
-            <button
-              onClick={() => setPanel("profile")}
-              className="bg-[#f1f1f1] rounded-full p-3 hover:bg-[#dadada] transition-colors duration-150">
-              <User />
-            </button>
           </div>
         </div>
       </div>
-
-      {panel && (
-        <div
-          className="fixed inset-0 bg-black/30 flex justify-end"
-          onClick={() => setPanel(null)}>
-          <div
-            className="w-[350px] h-full bg-white p-6"
-            onClick={(e) => e.stopPropagation()}>
-            {renderPanel()}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

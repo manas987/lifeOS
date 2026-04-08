@@ -1,5 +1,5 @@
 import "./index.css";
-import { Navbar } from "./components/layout/navbar";
+import { Navbar } from "./navbar";
 import { Route, Routes } from "react-router-dom";
 import { Tasks } from "./pages/tasks/tasks";
 import { Finances } from "./pages/finance/finance";

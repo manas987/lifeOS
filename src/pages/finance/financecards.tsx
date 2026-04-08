@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { InboxIcon } from "lucide-react";
+import { format, parseISO } from "date-fns";
 
 type SummaryData = {
   totalBalance: string;
@@ -218,32 +219,28 @@ export type TransactionItem = {
   title?: string;
   amount: string;
   category?: string;
-  date?: string;
+  date: string;
   mode: "income" | "expense";
   account: string;
 };
 
-export function RecentTransactionsCard({ data }: { data: TransactionItem[] }) {
-  const [rows, setRows] = useState(data);
-
-  const [editing, setEditing] = useState<{
-    row: number;
-    field: keyof TransactionItem;
-  } | null>(null);
-
-  const handleChange = <K extends keyof TransactionItem>(
-    rowIndex: number,
-    field: K,
-    value: TransactionItem[K],
-  ) => {
-    setRows((prev) =>
-      prev.map((row, i) => (i === rowIndex ? { ...row, [field]: value } : row)),
-    );
-  };
-
+export type Category = {
+  id: string;
+  name: string;
+  type: "income" | "expense";
+};
+export function RecentTransactionsCard({
+  data,
+  categories,
+}: {
+  data: TransactionItem[];
+  categories: Category[];
+}) {
   return (
     <div className="glass-card p-4 pt-1 rounded-3xl w-full flex flex-col gap-3">
       <h3 className="text-xl font-medium text-black/80">Recent Transactions</h3>
+
+      {/* HEADER */}
       <div className="grid grid-cols-[1.2fr_1fr_1fr_1fr_1fr_0.5fr] text-sm text-black/50 px-2">
         <span>Title</span>
         <span>Amount</span>
@@ -254,68 +251,48 @@ export function RecentTransactionsCard({ data }: { data: TransactionItem[] }) {
       </div>
 
       <div className="h-[1px] bg-black/10" />
-      <div className="flex flex-col h-[390px] overflow-y-auto pr-1">
-        {rows.length === 0 ? (
+
+      {/* BODY */}
+      <div className="flex flex-col h-[370px] overflow-y-auto pr-1">
+        {data.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-2 py-6 text-black/30">
             <InboxIcon />
             <span className="text-sm">No transactions yet</span>
+            <span className="text-xs text-black/30">
+              Add your first income or expense
+            </span>
           </div>
         ) : (
-          rows.map((t, i) => (
+          data.map((t, i) => (
             <div
               key={i}
               className="grid grid-cols-[1.2fr_1fr_1fr_1fr_1fr_0.5fr] items-center px-2 py-2 rounded-lg hover:bg-black/5 text-sm">
-              {(
-                [
-                  "title",
-                  "amount",
-                  "category",
-                  "date",
-                  "mode",
-                  "account",
-                ] as (keyof TransactionItem)[]
-              ).map((field) => {
-                const isEditing =
-                  editing?.row === i && editing?.field === field;
+              {/* TITLE */}
+              <span className="truncate">{t.title || "empty"}</span>
 
-                const value =
-                  t[field] ??
-                  (field === "amount" || field === "mode" || field === "account"
-                    ? ""
-                    : "Not defined");
+              {/* AMOUNT */}
+              <span className="tabular-nums font-medium">
+                {t.amount || "0"}
+              </span>
 
-                return (
-                  <div
-                    key={field}
-                    className={`truncate ${
-                      field === "amount" ? " tabular-nums font-medium" : ""
-                    } ${
-                      field === "mode"
-                        ? t.mode === "income"
-                          ? "text-green-600"
-                          : "text-red-500"
-                        : ""
-                    }`}
-                    onClick={() => setEditing({ row: i, field })}>
-                    {isEditing ? (
-                      <input
-                        autoFocus
-                        value={value}
-                        onChange={(e) => handleChange(i, field, e.target.value)}
-                        onBlur={() => setEditing(null)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            setEditing(null);
-                          }
-                        }}
-                        className="w-full bg-transparent outline-none text-sm"
-                      />
-                    ) : (
-                      value || "Not defined"
-                    )}
-                  </div>
-                );
-              })}
+              {/* CATEGORY */}
+              <span className="truncate">
+                {categories.find((c) => c.id === t.category)?.name || "empty"}
+              </span>
+
+              {/* DATE */}
+              <span>{format(parseISO(t.date), "dd MMM") || "empty"}</span>
+
+              {/* MODE */}
+              <span
+                className={
+                  t.mode === "income" ? "text-green-600" : "text-red-500"
+                }>
+                {t.mode}
+              </span>
+
+              {/* ACCOUNT */}
+              <span className="truncate">{t.account || "empty"}</span>
             </div>
           ))
         )}

@@ -26,7 +26,7 @@ export function Taskside({
   const [title, setTitle] = useState("");
   const [date, setDate] = useState<Date | undefined>();
   const [calopen, setcalopen] = useState<boolean>(false);
-  const [projlistshow, toggleprojlistshow] = useState<boolean>(false);
+  const [projlistshow, toggleprojlistshow] = useState<boolean>(true);
   const [addingproj, setaddingproj] = useState<boolean>(false);
   const [projname, setprojname] = useState<string>("");
   const [openproj, setopenproj] = useState<string | null>(null);

@@ -1,6 +1,6 @@
 import { useOutletContext } from "react-router-dom";
 import type { Account, Category, Transaction } from "../logic/types";
-import { Trash, ChevronDown } from "lucide-react";
+import { Trash, ChevronDown, CalendarDays } from "lucide-react";
 import {
   useEffect,
   useLayoutEffect,
@@ -9,6 +9,13 @@ import {
   type CSSProperties,
 } from "react";
 import { createPortal } from "react-dom";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { format, parseISO } from "date-fns";
 
 type FinanceContextType = {
   transactions: Transaction[];
@@ -61,8 +68,9 @@ function GlassDropdown({
   useEffect(() => {
     if (!open) return;
 
-    const handlePointerDown = (e: PointerEvent) => {
+    const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as Node;
+
       if (
         !triggerRef.current?.contains(target) &&
         !menuRef.current?.contains(target)
@@ -71,18 +79,10 @@ function GlassDropdown({
       }
     };
 
-    const handleScrollOrResize = () => {
-      setOpen(false);
-    };
-
-    document.addEventListener("pointerdown", handlePointerDown);
-    window.addEventListener("scroll", handleScrollOrResize, true);
-    window.addEventListener("resize", handleScrollOrResize);
+    document.addEventListener("mousedown", handleClickOutside, true);
 
     return () => {
-      document.removeEventListener("pointerdown", handlePointerDown);
-      window.removeEventListener("scroll", handleScrollOrResize, true);
-      window.removeEventListener("resize", handleScrollOrResize);
+      document.removeEventListener("mousedown", handleClickOutside, true);
     };
   }, [open]);
 
@@ -102,45 +102,45 @@ function GlassDropdown({
         <ChevronDown size={14} className="shrink-0 text-black/50" />
       </button>
 
-      {open && typeof document !== "undefined"
-        ? createPortal(
-            <div
-              ref={menuRef}
-              style={{
-                position: "fixed",
-                ...menuStyle,
-                zIndex: 99999,
-              }}
-              className="overflow-hidden rounded-xl border border-white/30 bg-white/55 shadow-[0_12px_35px_rgba(0,0,0,0.14)] backdrop-blur-xl">
-              <div className="max-h-52 overflow-y-auto">
-                {options.length === 0 ? (
-                  <div className="px-3 py-2 text-sm italic text-black/35">
-                    empty
-                  </div>
-                ) : (
-                  options.map((opt) => (
-                    <button
-                      key={opt.value}
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onChange(opt.value);
-                        setOpen(false);
-                      }}
-                      className={`block w-full px-3 py-2 text-left text-sm transition hover:bg-white/45 ${
-                        opt.value === value
-                          ? "bg-white/35 text-black/90"
-                          : "text-black/80"
-                      }`}>
-                      {opt.label}
-                    </button>
-                  ))
-                )}
-              </div>
-            </div>,
-            document.body,
-          )
-        : null}
+      {open &&
+        createPortal(
+          <div
+            ref={menuRef}
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              position: "fixed",
+              ...menuStyle,
+              zIndex: 99999,
+            }}
+            className="overflow-hidden rounded-xl border border-white/30 bg-white/55 shadow-[0_12px_35px_rgba(0,0,0,0.14)] backdrop-blur-xl">
+            <div className="max-h-52 overflow-y-auto">
+              {options.length === 0 ? (
+                <div className="px-3 py-2 text-sm italic text-black/35">
+                  empty
+                </div>
+              ) : (
+                options.map((opt) => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onChange(opt.value);
+                      setOpen(false);
+                    }}
+                    className={`block w-full px-3 py-2 text-left text-sm transition hover:bg-white/45 ${
+                      opt.value === value
+                        ? "bg-white/35 text-black/90"
+                        : "text-black/80"
+                    }`}>
+                    {opt.label}
+                  </button>
+                ))
+              )}
+            </div>
+          </div>,
+          document.body,
+        )}
     </>
   );
 }
@@ -158,10 +158,6 @@ export function Logs() {
     id: string;
     field: string;
   } | null>(null);
-
-  function stopEditing() {
-    setEditing(null);
-  }
 
   const inputClass =
     "w-full rounded-xl border border-white/30 bg-white/30 px-2 py-1.5 text-sm text-black/80 outline-none backdrop-blur-md transition focus:border-white/50 focus:bg-white/45";
@@ -187,7 +183,7 @@ export function Logs() {
 
         <div className="h-px bg-black/10" />
 
-        <div className="flex max-h-[300px] flex-col overflow-y-auto overflow-x-visible pr-1">
+        <div className="flex max-h-full flex-col overflow-y-auto overflow-x-visible pr-1">
           {transactions.length === 0 && (
             <span className="px-2 text-sm text-black/50">No transactions</span>
           )}
@@ -216,7 +212,7 @@ export function Logs() {
                           title: e.target.value,
                         })
                       }
-                      onBlur={stopEditing}
+                      onBlur={() => setEditing(null)}
                       className={inputClass}
                     />
                   ) : (
@@ -240,34 +236,43 @@ export function Logs() {
                           amount: Number(e.target.value),
                         })
                       }
-                      onBlur={stopEditing}
+                      onBlur={() => setEditing(null)}
                       className={inputClass}
                     />
                   ) : (
-                    t.amount
+                    <div>₹{t.amount}</div>
                   )}
                 </div>
 
                 <div
-                  onClick={() => setEditing({ id: t.id, field: "category" })}>
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (!rowEditing("category")) {
+                      setEditing({ id: t.id, field: "category" });
+                    }
+                  }}
+                  className="min-w-0">
                   {rowEditing("category") ? (
-                    filteredCategories.length > 0 ? (
-                      <GlassDropdown
-                        value={t.category || ""}
-                        options={filteredCategories.map((c) => ({
-                          label: c.name,
-                          value: c.id,
-                        }))}
-                        onChange={(v) =>
-                          updateTransaction(t.id, {
-                            ...t,
-                            category: v || undefined,
-                          })
-                        }
-                      />
-                    ) : (
-                      <span className="italic text-black/30">empty</span>
-                    )
+                    <div onClick={(e) => e.stopPropagation()}>
+                      {filteredCategories.length > 0 ? (
+                        <GlassDropdown
+                          value={t.category || ""}
+                          options={filteredCategories.map((c) => ({
+                            label: c.name,
+                            value: c.id,
+                          }))}
+                          onChange={(v) => {
+                            updateTransaction(t.id, {
+                              ...t,
+                              category: v || undefined,
+                            });
+                            setEditing(null);
+                          }}
+                        />
+                      ) : (
+                        <span className="italic text-black/30">empty</span>
+                      )}
+                    </div>
                   ) : (
                     categories.find((c) => c.id === t.category)?.name || (
                       <span className="italic text-black/30">empty</span>
@@ -277,27 +282,66 @@ export function Logs() {
 
                 <div onClick={() => setEditing({ id: t.id, field: "date" })}>
                   {rowEditing("date") ? (
-                    <input
-                      type="date"
-                      autoFocus
-                      value={t.date}
-                      onChange={(e) =>
-                        updateTransaction(t.id, {
-                          ...t,
-                          date: e.target.value,
-                        })
-                      }
-                      onBlur={stopEditing}
-                      className={inputClass}
-                    />
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <button className="glass-card flex w-full items-center justify-between rounded-xl px-3 py-1.5 text-sm transition hover:!bg-white">
+                          <span>
+                            {t.date
+                              ? format(parseISO(t.date), "dd MMM yyyy")
+                              : "Select date"}
+                          </span>
+                          <CalendarDays size={14} />
+                        </button>
+                      </PopoverTrigger>
+
+                      <PopoverContent className="z-[9999] w-auto border border-white/40 bg-white/90 p-0 backdrop-blur-lg">
+                        <Calendar
+                          mode="single"
+                          selected={t.date ? parseISO(t.date) : undefined}
+                          onSelect={(date) => {
+                            if (!date) return;
+
+                            updateTransaction(t.id, {
+                              ...t,
+                              date: format(date, "yyyy-MM-dd"),
+                            });
+
+                            setEditing(null);
+                          }}
+                          classNames={{
+                            month: "space-y-3",
+                            caption_label: "text-xl text-gray-800",
+                            button_previous:
+                              "h-8 w-10 flex items-center justify-center rounded-lg hover:bg-black/10",
+                            button_next:
+                              "h-8 w-10 flex items-center justify-center rounded-lg hover:bg-black/10",
+                            weekdays: "mb-2 flex gap-1",
+                            weekday: "w-9 text-center text-xs text-gray-400",
+                            weeks: "space-y-1",
+                            week: "flex gap-1",
+                            day: "h-9 w-9 p-0 text-center",
+                            day_button:
+                              "h-9 w-9 rounded-xl transition hover:bg-black/10",
+                            selected:
+                              "[&>button]:bg-black [&>button]:text-white",
+                          }}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  ) : t.date ? (
+                    format(parseISO(t.date), "dd MMM")
                   ) : (
-                    t.date || (
-                      <span className="italic text-black/30">empty</span>
-                    )
+                    <span className="italic text-black/30">empty</span>
                   )}
                 </div>
 
-                <div onClick={() => setEditing({ id: t.id, field: "mode" })}>
+                <div
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (!rowEditing("mode")) {
+                      setEditing({ id: t.id, field: "mode" });
+                    }
+                  }}>
                   {rowEditing("mode") ? (
                     <GlassDropdown
                       value={t.mode}
@@ -306,13 +350,14 @@ export function Logs() {
                         { label: "expense", value: "expense" },
                         { label: "transfer", value: "transfer" },
                       ]}
-                      onChange={(v) =>
+                      onChange={(v) => {
                         updateTransaction(t.id, {
                           ...t,
                           mode: v as Transaction["mode"],
                           category: v === "transfer" ? undefined : t.category,
-                        })
-                      }
+                        });
+                        setEditing(null);
+                      }}
                     />
                   ) : (
                     <span
@@ -333,12 +378,13 @@ export function Logs() {
                         label: a.name,
                         value: a.id,
                       }))}
-                      onChange={(v) =>
+                      onChange={(v) => {
                         updateTransaction(t.id, {
                           ...t,
                           accountId: v,
-                        })
-                      }
+                        });
+                        setEditing(null);
+                      }}
                     />
                   ) : (
                     accounts.find((a) => a.id === t.accountId)?.name || (

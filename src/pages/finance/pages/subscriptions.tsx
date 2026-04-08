@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Plus, Trash, Check } from "lucide-react";
 
 // ======================
@@ -70,7 +70,18 @@ function daysLeft(nextDue: string) {
 // ======================
 
 export function Subscriptions() {
-  const [subscriptions, setSubscriptions] = useState<SubscriptionItem[]>([]);
+  const [subscriptions, setSubscriptions] = useState<SubscriptionItem[]>(() => {
+    try {
+      const saved = localStorage.getItem("subscriptions-custom");
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem("subscriptions-custom", JSON.stringify(subscriptions));
+  }, [subscriptions]);
 
   function addSubscription() {
     setSubscriptions((prev) => [

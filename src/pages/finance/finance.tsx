@@ -1,9 +1,10 @@
 import { Outlet } from "react-router-dom";
 import { FinanceSideBar } from "./finsidebar";
-import { useFinanceLogic } from "./logic/logic";
+import { Mycontext } from "@/context/AppContext";
+import { useContext } from "react";
 
 export function Finances() {
-  const logic = useFinanceLogic();
+  const { finance } = useContext(Mycontext);
   const {
     addTransaction,
     categories,
@@ -15,7 +16,7 @@ export function Finances() {
     updateCategory,
     deleteCategory,
     transactions,
-  } = logic;
+  } = finance;
   return (
     <div className="flex">
       <FinanceSideBar
@@ -32,7 +33,7 @@ export function Finances() {
       />
       <div className="flex-1 p-4 pl-9 overflow-visible">
         {/*/holy min width dont touch even god doesnt know how it works */}
-        <Outlet context={logic} />
+        <Outlet context={finance} />
       </div>
     </div>
   );

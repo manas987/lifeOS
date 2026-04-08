@@ -1,8 +1,10 @@
 import { Outlet, useParams } from "react-router-dom";
 import { Taskside } from "./sidebar";
-import { UseTaskLogic } from "./logic/tasklogic";
+import { useContext } from "react";
+import { Mycontext } from "@/context/AppContext";
 
 export function Tasks() {
+  const { task } = useContext(Mycontext);
   const {
     edittask,
     open,
@@ -22,7 +24,7 @@ export function Tasks() {
     addproj,
     deleteproj,
     editproj,
-  } = UseTaskLogic();
+  } = task;
   const { projectName } = useParams();
   return (
     <div className="flex">

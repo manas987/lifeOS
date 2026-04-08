@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Plus, Trash } from "lucide-react";
 
 // ======================
@@ -32,7 +32,14 @@ function cleanNumber(value: string) {
 // ======================
 
 export function Debt() {
-  const [items, setItems] = useState<TrackItem[]>([]);
+  const [items, setItems] = useState<TrackItem[]>(() => {
+    const saved = localStorage.getItem("debt-items");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem("debt-items", JSON.stringify(items));
+  }, [items]);
 
   function addItem(kind: TrackKind) {
     setItems((prev) => [
