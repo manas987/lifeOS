@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useMemo } from "react";
 import { Plus, Trash, Check } from "lucide-react";
+import { Mycontext } from "@/context/AppContext";
 
 // ======================
 // TYPES
@@ -12,6 +13,15 @@ type SubscriptionItem = {
   nextDue: string;
   repeatEvery: "weekly" | "monthly" | "yearly";
   active: boolean;
+};
+
+type FinanceState = {
+  subscriptions: SubscriptionItem[];
+  setSubscriptions: React.Dispatch<React.SetStateAction<SubscriptionItem[]>>;
+};
+
+type AppContextShape = {
+  finance: FinanceState;
 };
 
 // ======================
@@ -70,18 +80,8 @@ function daysLeft(nextDue: string) {
 // ======================
 
 export function Subscriptions() {
-  const [subscriptions, setSubscriptions] = useState<SubscriptionItem[]>(() => {
-    try {
-      const saved = localStorage.getItem("subscriptions-custom");
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  });
-
-  useEffect(() => {
-    localStorage.setItem("subscriptions-custom", JSON.stringify(subscriptions));
-  }, [subscriptions]);
+  const { finance } = useContext(Mycontext) as AppContextShape;
+  const { subscriptions, setSubscriptions } = finance;
 
   function addSubscription() {
     setSubscriptions((prev) => [
@@ -128,7 +128,7 @@ export function Subscriptions() {
 
   return (
     <div>
-      <h2 className="text-3xl font-light mb-4">Subscriptions</h2>
+      <h2 className="mb-4 text-3xl font-light">Subscriptions</h2>
 
       <div className="mb-4 flex items-center justify-between text-sm text-black/50">
         <span>{totalActive} active</span>
@@ -181,14 +181,12 @@ function SubscriptionCard({
 
   return (
     <div className="glass-card relative flex h-full flex-col gap-4 rounded-3xl p-4 pt-3">
-      {/* DELETE */}
       <button
         onClick={onDelete}
         className="absolute right-3 top-3 rounded p-1 transition hover:bg-red-100">
         <Trash size={14} className="text-red-500" />
       </button>
 
-      {/* NAME */}
       <input
         value={data.name}
         onChange={(e) => onUpdate({ name: e.target.value })}
@@ -196,7 +194,6 @@ function SubscriptionCard({
         className="border-b border-black/30 bg-transparent pb-1 text-lg font-medium outline-none"
       />
 
-      {/* AMOUNT */}
       <div className="flex flex-col gap-1">
         <span className="text-xs text-black/50">Amount</span>
         <input
@@ -212,7 +209,6 @@ function SubscriptionCard({
         />
       </div>
 
-      {/* NEXT DUE */}
       <div className="flex flex-col gap-1">
         <span className="text-xs text-black/50">Next due</span>
         <input
@@ -223,7 +219,6 @@ function SubscriptionCard({
         />
       </div>
 
-      {/* REPEAT */}
       <div className="flex flex-col gap-1">
         <span className="text-xs text-black/50">Repeats</span>
         <select
@@ -240,7 +235,6 @@ function SubscriptionCard({
         </select>
       </div>
 
-      {/* STATUS */}
       <div className="flex items-center justify-between text-sm">
         <span className="text-black/60">
           {data.active ? "Active" : "Paused"}
@@ -261,7 +255,6 @@ function SubscriptionCard({
         </span>
       </div>
 
-      {/* PROGRESS */}
       <div className="h-2 overflow-hidden rounded-full bg-black/10">
         <div
           className={`h-full transition-all ${
@@ -280,7 +273,6 @@ function SubscriptionCard({
 
       <div className="h-px bg-black/10" />
 
-      {/* ACTIONS */}
       <div className="flex items-center gap-2">
         <button
           onClick={onPaid}
@@ -301,10 +293,6 @@ function SubscriptionCard({
   );
 }
 
-// ======================
-// ADD NEW CARD
-// ======================
-
 function AddNewCard({
   onClick,
   label,
@@ -313,11 +301,11 @@ function AddNewCard({
   label: string;
 }) {
   return (
-    <button
-      onClick={onClick}
-      className="glass-card aspect-square h-[305px] w-[300px] rounded-3xl flex flex-col items-center justify-center gap-2 text-center transition hover:bg-white/40">
-      <Plus size={28} className="text-black/60" />
-      <span className="text-base text-black/60">{label}</span>
+    <button onClick={onClick} className="glass-card ">
+      <div className="h-[305px] w-[300px] rounded-3xl flex items-center justify-center flex-col gap-2 text-center transition hover:bg-white/40">
+        <Plus size={28} className="text-black/60" />
+        <span className="text-base text-black/60">{label}</span>
+      </div>
     </button>
   );
 }

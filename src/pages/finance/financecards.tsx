@@ -18,7 +18,7 @@ export function DashboardSummaryCard({ data }: { data: SummaryData }) {
           {data.totalBalance || "₹0"}
         </span>
       </div>
-      <div className="h-[1px] bg-black/10" />
+      <div className="h-[1px] bg-black/50" />
       <div className="grid grid-cols-2 gap-2 text-sm sm:text-base">
         <div className="flex flex-col">
           <span className="text-black/60">Income</span>
@@ -72,23 +72,26 @@ export function CategoriesCard({ data }: { data: CategoryItem[] }) {
               <span className="text-xs text-black/40">No expense data</span>
             ) : (
               expense.map((item, key) => (
-                <div
-                  key={key}
-                  className="grid grid-cols-[80px_1fr_42px] items-center gap-2">
-                  <span className="text-lg leading-none truncate">
-                    {item.name}
-                  </span>
+                <div>
+                  <div
+                    key={key}
+                    className="grid grid-cols-[80px_1fr_42px] items-center gap-2 ">
+                    <span className="text-lg leading-none truncate">
+                      {item.name}
+                    </span>
 
-                  <div className="h-5 rounded-md bg-black/10 overflow-hidden">
-                    <div
-                      className="h-full bg-black/85 rounded-md"
-                      style={{ width: `${item.value}%` }}
-                    />
+                    <div className="h-5 rounded-md bg-black/10 overflow-hidden">
+                      <div
+                        className="h-full bg-black/85 rounded-md"
+                        style={{ width: `${item.value}%` }}
+                      />
+                    </div>
+
+                    <span className="text-lg text-right tabular-nums">
+                      {item.value}%
+                    </span>
                   </div>
-
-                  <span className="text-lg text-right tabular-nums">
-                    {item.value}%
-                  </span>
+                  <div className="h-[1px] bg-black/10" />
                 </div>
               ))
             )}
@@ -102,23 +105,27 @@ export function CategoriesCard({ data }: { data: CategoryItem[] }) {
               <span className="text-xs text-black/40">No income data</span>
             ) : (
               income.map((item, key) => (
-                <div
-                  key={key}
-                  className="grid grid-cols-[80px_1fr_42px] items-center gap-2">
-                  <span className="text-lg leading-none truncate">
-                    {item.name}
-                  </span>
+                <div>
+                  <div
+                    key={key}
+                    className="grid grid-cols-[80px_1fr_42px] items-center gap-2">
+                    <span className="text-lg leading-none truncate">
+                      {item.name}
+                    </span>
 
-                  <div className="h-5 rounded-md bg-black/10 overflow-hidden">
-                    <div
-                      className="h-full bg-black/85 rounded-md"
-                      style={{ width: `${item.value}%` }}
-                    />
+                    <div className="h-5 rounded-md bg-black/10 overflow-hidden">
+                      <div
+                        className="h-full bg-black/85 rounded-md"
+                        style={{ width: `${item.value}%` }}
+                      />
+                    </div>
+
+                    <span className="text-lg text-right tabular-nums">
+                      {item.value}%
+                    </span>
                   </div>
 
-                  <span className="text-lg text-right tabular-nums">
-                    {item.value}%
-                  </span>
+                  <div className="h-[1px] bg-black/10" />
                 </div>
               ))
             )}
@@ -145,18 +152,21 @@ export function SubscriptionsCard({ data }: { data: SubscriptionItem[] }) {
           <span className="text-sm text-black/50">No active subscriptions</span>
         ) : (
           data.map((sub) => (
-            <div
-              key={sub.name}
-              className="flex justify-between items-center px-3 py-2 rounded-xl hover:bg-black/5 transition">
-              <span className="text-lg">{sub.name}</span>
+            <div>
+              <div
+                key={sub.name}
+                className="flex justify-between items-center px-3 py-2 rounded-xl hover:bg-black/5 transition ">
+                <span className="text-lg">{sub.name}</span>
 
-              <span className="font-semibold tabular-nums">{sub.amount}</span>
+                <span className="font-semibold tabular-nums">{sub.amount}</span>
+              </div>
+              <div className="h-[1px] bg-black/10" />
             </div>
           ))
         )}
       </div>
 
-      <div className="h-[1px] bg-black/10" />
+      <div className="h-[1px] bg-black/50" />
 
       <div className="flex justify-between items-center text-sm -mb-32">
         <span className="text-black/60">Total</span>
@@ -190,11 +200,14 @@ export function AccountsCard({ data }: { data: AccountItem[] }) {
           </div>
         ) : (
           data.map((acc, i) => (
-            <div
-              key={i}
-              className="flex justify-between items-center px-2 py-1.5 rounded-lg hover:bg-black/5 transition">
-              <span className="text-lg">{acc.name}</span>
-              <span className="font-semibold tabular-nums">{acc.amount}</span>
+            <div>
+              <div
+                key={i}
+                className="flex justify-between items-center px-2 py-1.5 rounded-lg hover:bg-black/5 transition ">
+                <span className="text-lg">{acc.name}</span>
+                <span className="font-semibold tabular-nums">{acc.amount}</span>
+              </div>
+              <div className="h-[1px] bg-black/10" />
             </div>
           ))
         )}
@@ -250,7 +263,7 @@ export function RecentTransactionsCard({
         <span>Account</span>
       </div>
 
-      <div className="h-[1px] bg-black/10" />
+      <div className="h-[1px] bg-black/60" />
 
       {/* BODY */}
       <div className="flex flex-col h-[370px] overflow-y-auto pr-1">
@@ -264,35 +277,38 @@ export function RecentTransactionsCard({
           </div>
         ) : (
           data.map((t, i) => (
-            <div
-              key={i}
-              className="grid grid-cols-[1.2fr_1fr_1fr_1fr_1fr_0.5fr] items-center px-2 py-2 rounded-lg hover:bg-black/5 text-sm">
-              {/* TITLE */}
-              <span className="truncate">{t.title || "empty"}</span>
+            <div>
+              <div
+                key={i}
+                className="grid grid-cols-[1.2fr_1fr_1fr_1fr_1fr_0.5fr] items-center px-2 py-2 rounded-lg hover:bg-black/5 text-sm">
+                {/* TITLE */}
+                <span className="truncate">{t.title || "empty"}</span>
 
-              {/* AMOUNT */}
-              <span className="tabular-nums font-medium">
-                {t.amount || "0"}
-              </span>
+                {/* AMOUNT */}
+                <span className="tabular-nums font-medium">
+                  {t.amount || "0"}
+                </span>
 
-              {/* CATEGORY */}
-              <span className="truncate">
-                {categories.find((c) => c.id === t.category)?.name || "empty"}
-              </span>
+                {/* CATEGORY */}
+                <span className="truncate">
+                  {categories.find((c) => c.id === t.category)?.name || "empty"}
+                </span>
 
-              {/* DATE */}
-              <span>{format(parseISO(t.date), "dd MMM") || "empty"}</span>
+                {/* DATE */}
+                <span>{format(parseISO(t.date), "dd MMM") || "empty"}</span>
 
-              {/* MODE */}
-              <span
-                className={
-                  t.mode === "income" ? "text-green-600" : "text-red-500"
-                }>
-                {t.mode}
-              </span>
+                {/* MODE */}
+                <span
+                  className={
+                    t.mode === "income" ? "text-green-600" : "text-red-500"
+                  }>
+                  {t.mode}
+                </span>
 
-              {/* ACCOUNT */}
-              <span className="truncate">{t.account || "empty"}</span>
+                {/* ACCOUNT */}
+                <span className="truncate">{t.account || "empty"}</span>
+              </div>
+              <div className="h-[1px] bg-black/10" />
             </div>
           ))
         )}

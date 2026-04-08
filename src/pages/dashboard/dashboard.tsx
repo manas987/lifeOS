@@ -11,8 +11,6 @@ import {
   PieChart,
   Pie,
   Cell,
-  BarChart,
-  Bar,
 } from "recharts";
 
 export function Dashboar() {
@@ -25,22 +23,23 @@ export function Dashboar() {
 
   const today = new Date().toISOString().slice(0, 10);
   const todayDate = new Date();
+  const todayDay = todayDate.getDay();
+
+  /* ── FILTER ── */
+  const filteredTx = useMemo(() => {
+    return transactions.filter((t: any) => {
+      if (activeTab === "all") return true;
+      const diff =
+        (todayDate.getTime() - new Date(t.date).getTime()) / 86400000;
+      return activeTab === "week" ? diff <= 7 : diff <= 30;
+    });
+  }, [transactions, activeTab]);
 
   /* ── FINANCE ── */
   const totalBalance = useMemo(
     () => accounts.reduce((s: number, a: any) => s + a.balance, 0),
     [accounts],
   );
-
-  const filteredTx = useMemo(() => {
-    return transactions.filter((t: any) => {
-      if (activeTab === "all") return true;
-      const d = new Date(t.date);
-      const diff = (todayDate.getTime() - d.getTime()) / 86400000;
-      return activeTab === "week" ? diff <= 7 : diff <= 30;
-    });
-  }, [transactions, activeTab]);
-
   const totalIncome = useMemo(
     () =>
       filteredTx
@@ -74,7 +73,7 @@ export function Dashboar() {
     );
   }, [filteredTx]);
 
-  const categoryPie = useMemo(() => {
+  const expensePie = useMemo(() => {
     const map = new Map<string, number>();
     filteredTx
       .filter((t: any) => t.mode === "expense")
@@ -86,25 +85,59 @@ export function Dashboar() {
     return Array.from(map.entries()).map(([name, value]) => ({ name, value }));
   }, [filteredTx, categories]);
 
-  const recentTx = useMemo(
-    () =>
-      [...transactions]
-        .sort((a: any, b: any) => b.date.localeCompare(a.date))
-        .slice(0, 5),
-    [transactions],
-  );
+  const incomePie = useMemo(() => {
+    const map = new Map<string, number>();
+    filteredTx
+      .filter((t: any) => t.mode === "income")
+      .forEach((t: any) => {
+        const name =
+          categories.find((c: any) => c.id === t.category)?.name || "Other";
+        map.set(name, (map.get(name) || 0) + t.amount);
+      });
+    return Array.from(map.entries()).map(([name, value]) => ({ name, value }));
+  }, [filteredTx, categories]);
 
-  const totalSubs = useMemo(
-    () =>
-      (subscriptions || []).reduce(
-        (s: number, sub: any) => s + (sub.amount || 0),
-        0,
-      ),
-    [subscriptions],
-  );
+  /* ── ALERTS ── */
+  const alerts = useMemo(() => {
+    const list: { text: string; type: "warn" | "danger" | "info" }[] = [];
+    const overdue = taskslist.filter(
+      (t: any) => !t.completed && t.duedate && t.duedate < today,
+    );
+    if (overdue.length > 0)
+      list.push({
+        text: `${overdue.length} task${overdue.length > 1 ? "s" : ""} overdue`,
+        type: "danger",
+      });
+    if (savings < 0)
+      list.push({ text: "You are overspending", type: "danger" });
+    if (totalExpense > totalIncome * 0.8 && totalIncome > 0)
+      list.push({ text: "Expense above 80% of income", type: "warn" });
+    const tomorrow = new Date(todayDate);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowStr = tomorrow.toISOString().slice(0, 10);
+    const subsDueTomorrow = (subscriptions || []).filter(
+      (s: any) => s.nextDue === tomorrowStr,
+    );
+    if (subsDueTomorrow.length > 0)
+      list.push({ text: "Subscription due tomorrow", type: "warn" });
+    habitslist.forEach((h: any) => {
+      const streak = CountStreak(h);
+      if (streak === 0 && h.completedDates?.length > 0)
+        list.push({ text: `"${h.title}" streak broken`, type: "warn" });
+    });
+    if (list.length === 0)
+      list.push({ text: "All good — no alerts", type: "info" });
+    return list;
+  }, [
+    taskslist,
+    savings,
+    totalExpense,
+    totalIncome,
+    subscriptions,
+    habitslist,
+  ]);
 
   /* ── HABITS ── */
-  const todayDay = todayDate.getDay();
   const activeHabits = habitslist.filter((h: any) => {
     if (h.repeatOn?.length > 0 && !h.repeatOn.includes(todayDay)) return false;
     return true;
@@ -121,12 +154,6 @@ export function Dashboar() {
     0,
   );
 
-  const habitBar = habitslist.slice(0, 6).map((h: any) => ({
-    name: h.title.length > 8 ? h.title.slice(0, 8) + "…" : h.title,
-    streak: CountStreak(h),
-    done: h.completedDates?.includes(today) ? 1 : 0,
-  }));
-
   /* ── TASKS ── */
   const completedTasks = taskslist.filter((t: any) => t.completed).length;
   const pendingTasks = taskslist.length - completedTasks;
@@ -137,10 +164,26 @@ export function Dashboar() {
     (t: any) => !t.completed && t.duedate === today,
   );
 
-  const taskPie = [
-    { name: "Done", value: completedTasks },
-    { name: "Pending", value: pendingTasks },
-  ];
+  /* ── PRODUCTIVITY CHART ── */
+  const productivityData = useMemo(() => {
+    const days = activeTab === "week" ? 7 : activeTab === "month" ? 30 : 60;
+    return Array.from({ length: days }, (_, i) => {
+      const d = new Date(todayDate);
+      d.setDate(d.getDate() - (days - 1 - i));
+      const dateStr = d.toISOString().slice(0, 10);
+      const habitsCompleted = habitslist.filter((h: any) =>
+        h.completedDates?.includes(dateStr),
+      ).length;
+      const tasksCompleted = taskslist.filter(
+        (t: any) => t.completed && t.duedate === dateStr,
+      ).length;
+      return {
+        date: dateStr.slice(5),
+        habits: habitsCompleted,
+        tasks: tasksCompleted,
+      };
+    });
+  }, [habitslist, taskslist, transactions, activeTab]);
 
   const COLORS = [
     "#111",
@@ -149,14 +192,16 @@ export function Dashboar() {
     "#3b82f6",
     "#f59e0b",
     "#8b5cf6",
+    "#ec4899",
   ];
 
   const tabs = ["week", "month", "all"] as const;
 
   return (
-    <div className="flex flex-col gap-4 pb-8">
+    <div className="flex flex-col gap-3 pb-8 min-w-0 p-4">
+      {/* ── HEADER ── */}
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-light">Dashboard</h1>
+        <h1 className="text-4xl font-light">Welcome back</h1>
         <div className="flex gap-1 glass-card p-1">
           {tabs.map((t) => (
             <button
@@ -171,47 +216,52 @@ export function Dashboar() {
         </div>
       </div>
 
-      {/* ── ROW 1: STAT PILLS ── */}
+      {/* ── ROW 1: STAT CARDS ── */}
       <div className="grid grid-cols-4 gap-3">
         <StatCard
           label="Total balance"
           value={`₹${totalBalance.toLocaleString()}`}
           sub="across all accounts"
-          color="text-black"
+          valueClass=""
         />
         <StatCard
           label="Net savings"
           value={`₹${savings.toLocaleString()}`}
           sub={`Income ₹${totalIncome.toLocaleString()} · Expense ₹${totalExpense.toLocaleString()}`}
-          color={savings >= 0 ? "text-green-600" : "text-red-500"}
+          valueClass={savings >= 0 ? "text-green-600" : "text-red-500"}
         />
         <StatCard
           label="Today's habits"
           value={`${completedToday}/${activeHabits.length}`}
           sub={`${habitRate}% done · best streak ${bestStreak}d`}
-          color="text-blue-600"
+          valueClass="text-blue-600"
         />
         <StatCard
           label="Tasks"
           value={`${pendingTasks} pending`}
           sub={`${overdueTasks} overdue · ${completedTasks} done`}
-          color={overdueTasks > 0 ? "text-red-500" : "text-black"}
+          valueClass={overdueTasks > 0 ? "text-red-500" : ""}
         />
       </div>
 
-      {/* ── ROW 2: LINE CHART + TASK/HABIT RING ── */}
-      <div className="grid grid-cols-3 gap-3">
-        <div className="col-span-2 glass-card p-4 pt-2">
-          <p className="text-sm text-black/50 mb-2">Income vs expense</p>
+      {/* ── ROW 2: LINE CHART + PIE x2 + ALERTS ── */}
+      <div className="grid grid-cols-[2.5fr_1fr_1fr_1fr] gap-3 h-80">
+        {/* Income vs Expense */}
+        <div className="glass-card p-4 pt-2">
+          <p className="text-xs text-black/40 uppercase tracking-wide mb-2">
+            Income vs expense
+          </p>
           {lineData.length === 0 ? (
             <Empty text="No transactions yet" />
           ) : (
             <ResponsiveContainer width="100%" height={200}>
               <LineChart data={lineData}>
                 <CartesianGrid strokeDasharray="3 3" opacity={0.15} />
-                <XAxis dataKey="date" tick={{ fontSize: 11 }} />
-                <YAxis tick={{ fontSize: 11 }} />
-                <Tooltip formatter={(v: any) => `₹${v.toLocaleString()}`} />
+                <XAxis dataKey="date" tick={{ fontSize: 10 }} />
+                <YAxis tick={{ fontSize: 10 }} />
+                <Tooltip
+                  formatter={(v: any) => `₹${Number(v).toLocaleString()}`}
+                />
                 <Line
                   type="monotone"
                   dataKey="income"
@@ -230,109 +280,138 @@ export function Dashboar() {
             </ResponsiveContainer>
           )}
           <div className="flex gap-4 mt-1">
-            <Legend color="bg-green-500" label="Income" />
-            <Legend color="bg-red-400" label="Expense" />
+            <Leg color="bg-green-500" label="Income" />
+            <Leg color="bg-red-400" label="Expense" />
           </div>
         </div>
 
-        <div className="flex flex-col gap-3">
-          <div className="glass-card p-4 pt-2 flex-1">
-            <p className="text-sm text-black/50 mb-1">Tasks overview</p>
-            {taskslist.length === 0 ? (
-              <Empty text="No tasks yet" />
-            ) : (
-              <ResponsiveContainer width="100%" height={120}>
-                <PieChart>
-                  <Pie
-                    data={taskPie}
-                    dataKey="value"
-                    innerRadius={30}
-                    outerRadius={50}
-                    paddingAngle={2}>
-                    <Cell fill="#111" />
-                    <Cell fill="#d1fae5" />
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            )}
-            <div className="flex gap-3 mt-1">
-              <Legend color="bg-black/80" label={`${completedTasks} done`} />
-              <Legend color="bg-green-100" label={`${pendingTasks} pending`} />
-            </div>
-          </div>
-
-          <div className="glass-card p-4 pt-2">
-            <p className="text-sm text-black/50 mb-2">Subscriptions</p>
-            <p className="text-2xl font-medium">
-              ₹{totalSubs.toLocaleString()}
-            </p>
-            <p className="text-xs text-black/40">
-              {(subscriptions || []).length} active / month
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* ── ROW 3: CATEGORIES + HABITS BAR ── */}
-      <div className="grid grid-cols-2 gap-3">
+        {/* Expense pie */}
         <div className="glass-card p-4 pt-2">
-          <p className="text-sm text-black/50 mb-2">Expense by category</p>
-          {categoryPie.length === 0 ? (
+          <p className="text-xs text-black/40 uppercase tracking-wide mb-2">
+            Expense breakdown
+          </p>
+          {expensePie.length === 0 ? (
             <Empty text="No expense data" />
           ) : (
-            <ResponsiveContainer width="100%" height={200}>
-              <PieChart>
-                <Pie
-                  data={categoryPie}
-                  dataKey="value"
-                  outerRadius={80}
-                  label={({ name, percent }) =>
-                    `${name} ${Math.round(percent * 100)}%`
-                  }
-                  labelLine={false}>
-                  {categoryPie.map((_, i) => (
-                    <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip formatter={(v: any) => `₹${v.toLocaleString()}`} />
-              </PieChart>
-            </ResponsiveContainer>
+            <>
+              <ResponsiveContainer width="100%" height={160}>
+                <PieChart>
+                  <Pie
+                    data={expensePie}
+                    dataKey="value"
+                    innerRadius={35}
+                    outerRadius={60}
+                    paddingAngle={2}>
+                    {expensePie.map((_, i) => (
+                      <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(v: any) => `₹${Number(v).toLocaleString()}`}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="flex flex-col gap-1 mt-1">
+                {expensePie.slice(0, 3).map((d, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center gap-1.5 text-xs text-black/50">
+                    <div
+                      className="w-2 h-2 rounded-full shrink-0"
+                      style={{ background: COLORS[i % COLORS.length] }}
+                    />
+                    <span className="truncate">{d.name}</span>
+                    <span className="ml-auto">₹{d.value.toLocaleString()}</span>
+                  </div>
+                ))}
+              </div>
+            </>
           )}
         </div>
 
+        {/* Income pie */}
         <div className="glass-card p-4 pt-2">
-          <p className="text-sm text-black/50 mb-2">Habit streaks</p>
-          {habitBar.length === 0 ? (
-            <Empty text="No habits yet" />
+          <p className="text-xs text-black/40 uppercase tracking-wide mb-2">
+            Income breakdown
+          </p>
+          {incomePie.length === 0 ? (
+            <Empty text="No income data" />
           ) : (
-            <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={habitBar} barSize={20}>
-                <CartesianGrid strokeDasharray="3 3" opacity={0.15} />
-                <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-                <YAxis tick={{ fontSize: 11 }} />
-                <Tooltip />
-                <Bar dataKey="streak" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            <>
+              <ResponsiveContainer width="100%" height={160}>
+                <PieChart>
+                  <Pie
+                    data={incomePie}
+                    dataKey="value"
+                    innerRadius={35}
+                    outerRadius={60}
+                    paddingAngle={2}>
+                    {incomePie.map((_, i) => (
+                      <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(v: any) => `₹${Number(v).toLocaleString()}`}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="flex flex-col gap-1 mt-1">
+                {incomePie.slice(0, 3).map((d, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center gap-1.5 text-xs text-black/50">
+                    <div
+                      className="w-2 h-2 rounded-full shrink-0"
+                      style={{ background: COLORS[i % COLORS.length] }}
+                    />
+                    <span className="truncate">{d.name}</span>
+                    <span className="ml-auto">₹{d.value.toLocaleString()}</span>
+                  </div>
+                ))}
+              </div>
+            </>
           )}
+        </div>
+
+        {/* Alerts */}
+        <div className="glass-card p-4 pt-2">
+          <p className="text-xs text-black/40 uppercase tracking-wide mb-2">
+            Alerts / warnings
+          </p>
+          <div className="flex flex-col gap-2">
+            {alerts.map((a, i) => (
+              <div
+                key={i}
+                className={`text-xs px-2 py-1.5 rounded-lg ${
+                  a.type === "danger"
+                    ? "bg-red-50 text-red-600"
+                    : a.type === "warn"
+                      ? "bg-yellow-50 text-yellow-700"
+                      : "bg-green-50 text-green-700"
+                }`}>
+                {a.text}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* ── ROW 4: TODAY'S TASKS + RECENT TX + ACCOUNTS ── */}
-      <div className="grid grid-cols-3 gap-3">
-        {/* Today's tasks */}
+      {/* ── ROW 3: DUE TODAY + ACCOUNTS + PRODUCTIVITY ── */}
+      <div className="grid grid-cols-[1fr_1fr_2fr] gap-3 h-80">
+        {/* Due today */}
         <div className="glass-card p-4 pt-2">
-          <p className="text-sm text-black/50 mb-3">Due today</p>
+          <p className="text-xs text-black/40 uppercase tracking-wide mb-3">
+            Due today
+          </p>
           {todayTasks.length === 0 ? (
             <Empty text="Nothing due today" />
           ) : (
-            <div className="flex flex-col gap-2">
-              {todayTasks.slice(0, 6).map((t: any) => (
+            <div className="flex flex-col gap-1.5">
+              {todayTasks.slice(0, 7).map((t: any) => (
                 <div
                   key={t.id}
                   className="flex items-center gap-2 text-sm py-1 border-b border-black/5 last:border-0">
-                  <div className="w-2 h-2 rounded-full bg-black/30 shrink-0" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-black/30 shrink-0" />
                   <span className="truncate">{t.title}</span>
                   {t.project && (
                     <span className="text-xs text-black/30 ml-auto shrink-0">
@@ -341,67 +420,81 @@ export function Dashboar() {
                   )}
                 </div>
               ))}
-              {todayTasks.length > 6 && (
-                <p className="text-xs text-black/30">
-                  +{todayTasks.length - 6} more
+              {todayTasks.length > 7 && (
+                <p className="text-xs text-black/30 mt-1">
+                  +{todayTasks.length - 7} more
                 </p>
               )}
             </div>
           )}
         </div>
 
-        {/* Recent transactions */}
-        <div className="glass-card p-4 pt-2">
-          <p className="text-sm text-black/50 mb-3">Recent transactions</p>
-          {recentTx.length === 0 ? (
-            <Empty text="No transactions" />
-          ) : (
-            <div className="flex flex-col gap-2">
-              {recentTx.map((t: any, i: number) => (
-                <div
-                  key={i}
-                  className="flex items-center justify-between text-sm py-1 border-b border-black/5 last:border-0">
-                  <div className="flex flex-col">
-                    <span className="font-medium truncate max-w-[100px]">
-                      {t.title || "—"}
-                    </span>
-                    <span className="text-xs text-black/30">{t.date}</span>
-                  </div>
-                  <span
-                    className={`font-medium tabular-nums ${t.mode === "income" ? "text-green-600" : "text-red-500"}`}>
-                    {t.mode === "income" ? "+" : "-"}₹
-                    {t.amount.toLocaleString()}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
         {/* Accounts */}
         <div className="glass-card p-4 pt-2">
-          <p className="text-sm text-black/50 mb-3">Accounts</p>
+          <p className="text-xs text-black/40 uppercase tracking-wide mb-3">
+            Accounts
+          </p>
           {accounts.length === 0 ? (
             <Empty text="No accounts" />
           ) : (
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1.5">
               {accounts.map((a: any) => (
                 <div
                   key={a.id}
                   className="flex items-center justify-between text-sm py-1 border-b border-black/5 last:border-0">
-                  <span>{a.name}</span>
+                  <span className="truncate">{a.name}</span>
                   <span
-                    className={`font-medium tabular-nums ${a.balance < 0 ? "text-red-500" : ""}`}>
+                    className={`font-medium tabular-nums shrink-0 ml-2 ${a.balance < 0 ? "text-red-500" : ""}`}>
                     ₹{a.balance.toLocaleString()}
                   </span>
                 </div>
               ))}
-              <div className="flex justify-between text-sm pt-1 font-medium border-t border-black/10 mt-1">
+              <div className="flex justify-between text-sm pt-2 font-medium border-t border-black/10">
                 <span>Total</span>
                 <span>₹{totalBalance.toLocaleString()}</span>
               </div>
             </div>
           )}
+        </div>
+
+        {/* Productivity chart */}
+        <div className="glass-card p-4 pt-2">
+          <p className="text-xs text-black/40 uppercase tracking-wide mb-2">
+            Productivity overview
+          </p>
+          <ResponsiveContainer width="100%" height={200}>
+            <LineChart data={productivityData}>
+              <CartesianGrid strokeDasharray="3 3" opacity={0.15} />
+              <XAxis
+                dataKey="date"
+                tick={{ fontSize: 10 }}
+                interval="preserveStartEnd"
+              />
+              <YAxis tick={{ fontSize: 10 }} />
+              <Tooltip />
+              <Line
+                type="monotone"
+                dataKey="habits"
+                stroke="#3b82f6"
+                dot={false}
+                strokeWidth={2}
+                name="Habits done"
+              />
+              <Line
+                type="monotone"
+                dataKey="tasks"
+                stroke="#22c55e"
+                dot={false}
+                strokeWidth={2}
+                name="Tasks done"
+              />
+            </LineChart>
+          </ResponsiveContainer>
+          <div className="flex gap-4 mt-1">
+            <Leg color="bg-blue-500" label="Habits" />
+            <Leg color="bg-green-500" label="Tasks" />
+            <Leg color="bg-red-400" label="Expense (÷100)" />
+          </div>
         </div>
       </div>
     </div>
@@ -412,23 +505,23 @@ function StatCard({
   label,
   value,
   sub,
-  color,
+  valueClass,
 }: {
   label: string;
   value: string;
   sub: string;
-  color: string;
+  valueClass: string;
 }) {
   return (
     <div className="glass-card p-4 pt-2 flex flex-col gap-1">
       <p className="text-xs text-black/40 uppercase tracking-wide">{label}</p>
-      <p className={`text-2xl font-medium ${color}`}>{value}</p>
+      <p className={`text-2xl font-medium ${valueClass}`}>{value}</p>
       <p className="text-xs text-black/40">{sub}</p>
     </div>
   );
 }
 
-function Legend({ color, label }: { color: string; label: string }) {
+function Leg({ color, label }: { color: string; label: string }) {
   return (
     <div className="flex items-center gap-1.5 text-xs text-black/50">
       <div className={`w-2 h-2 rounded-full ${color}`} />

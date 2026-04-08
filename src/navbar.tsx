@@ -1,29 +1,10 @@
 import { NavLink } from "react-router-dom";
-import { Settings, Bell, User, MoonStar, Sun } from "lucide-react";
-import { useState } from "react";
+import { MoonStar, Sun } from "lucide-react";
+import { useContext } from "react";
+import { Mycontext } from "./context/AppContext";
 
 export function Navbar() {
-  const [panel, setPanel] = useState<
-    null | "settings" | "notifications" | "profile"
-  >(null);
-
-  const [mode, setmode] = useState<"dark" | "light">("light");
-
-  function renderPanel() {
-    switch (panel) {
-      case "settings":
-        return <div className="text-xl">Settings Panel</div>;
-
-      case "notifications":
-        return <div className="text-xl">Notifications Panel</div>;
-
-      case "profile":
-        return <div className="text-xl">User Profile Panel</div>;
-
-      default:
-        return null;
-    }
-  }
+  const { mode, setmode } = useContext(Mycontext);
 
   return (
     <div>
@@ -85,11 +66,9 @@ export function Navbar() {
           {/* Right side buttons */}
           <div className="flex gap-1">
             <button
-              onClick={() =>
-                setmode((prev) => (prev === "light" ? "dark" : "light"))
-              }
+              onClick={() => setmode((prev: any) => !prev)}
               className="bg-[#f1f1f1] rounded-full p-3 hover:bg-[#dadada] transition-colors duration-150">
-              {mode === "light" ? <MoonStar /> : <Sun />}
+              {mode ? <MoonStar /> : <Sun />}
             </button>
           </div>
         </div>

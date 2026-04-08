@@ -73,8 +73,6 @@ export function FinanceSideBar({
   const selectedCategory = categories.find((c) => c.id === categoryId);
   const selectedAccount = accounts.find((a) => a.id === account);
   const selectedToAccount = accounts.find((a) => a.id === toAccountId);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
 
   const linkClass = (isActive: boolean) =>
     `glass-card w-full p-4 block transition duration-150 ${
@@ -190,7 +188,6 @@ export function FinanceSideBar({
               mode="single"
               selected={date}
               onSelect={setDate}
-              disabled={(date) => date < today}
               classNames={{
                 month: "space-y-3",
                 caption_label: "text-xl text-gray-800",
@@ -206,7 +203,7 @@ export function FinanceSideBar({
                 day_button:
                   "w-9 h-9 rounded-xl hover:bg-black/10 transition duration-100",
                 selected:
-                  " [&>button]:hover:bg-black/10 [&>button]:font-semibold",
+                  " [&>button]:hover:bg-black/10 [&>button]:font-bold. bg-black/20 rounded-xl",
                 disabled:
                   "[&>button]:text-gray-300 [&>button]:hover:bg-transparent [&>button]:cursor-not-allowed",
               }}

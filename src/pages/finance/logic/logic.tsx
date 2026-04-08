@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { Account, Category, Subscription, Transaction } from "./types";
+import type { Account, Category, Subscription, TrackItem, Transaction } from "./types";
 
 export function useFinanceLogic() {
   const [transactions, setTransactions] = useState<Transaction[]>(() => {
@@ -22,6 +22,11 @@ export function useFinanceLogic() {
     return saved ? JSON.parse(saved) : [];
   });
 
+  const [items, setItems] = useState<TrackItem[]>(() => {
+    const saved = localStorage.getItem("debt-items");
+    return saved ? JSON.parse(saved) : [];
+  });
+
   useEffect(() => {
     localStorage.setItem("transactions", JSON.stringify(transactions));
   }, [transactions]);
@@ -37,6 +42,10 @@ export function useFinanceLogic() {
   useEffect(() => {
     localStorage.setItem("categories", JSON.stringify(categories));
   }, [categories]);
+
+  useEffect(() => {
+    localStorage.setItem("debt-items", JSON.stringify(items));
+  }, [items]);
 
   function addTransaction(
     amount: number,
@@ -275,6 +284,7 @@ export function useFinanceLogic() {
     accounts,
     subscriptions,
     categories,
+    items,
 
     addTransaction,
     addSubscription,
@@ -293,6 +303,7 @@ export function useFinanceLogic() {
     deleteSubscription,
 
     setSubscriptions,
+    setItems,
   };
 }
 

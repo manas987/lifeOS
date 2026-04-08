@@ -38,3 +38,14 @@ export type Category = {
   name: string;
   type: "income" | "expense";
 };
+
+export type TrackKind = "debt" | "lent";
+
+export type TrackItem = {
+  id: string;
+  kind: TrackKind;
+  name: string;
+  total: number;
+  done: number;
+};
+ 

@@ -171,7 +171,7 @@ export function Logs() {
           Recent Transactions
         </h3>
 
-        <div className="grid grid-cols-[1.5fr_0.8fr_1fr_1fr_0.8fr_1fr_40px] px-2 text-sm text-black/50">
+        <div className="grid grid-cols-[1.3fr_1fr_1fr_1fr_1fr_1fr_10px] px-2 text-sm text-black/50">
           <span>Title</span>
           <span>Amount</span>
           <span>Category</span>
@@ -181,7 +181,7 @@ export function Logs() {
           <span />
         </div>
 
-        <div className="h-px bg-black/10" />
+        <div className="h-px bg-black/90" />
 
         <div className="flex max-h-full flex-col overflow-y-auto overflow-x-visible pr-1">
           {transactions.length === 0 && (
@@ -198,211 +198,219 @@ export function Logs() {
               editing?.id === t.id && editing?.field === field;
 
             return (
-              <div
-                key={t.id}
-                className="relative grid grid-cols-[1.5fr_0.8fr_1fr_1fr_0.8fr_1fr_40px] items-center rounded-lg px-2 py-2 text-sm transition hover:bg-white/30">
-                <div onClick={() => setEditing({ id: t.id, field: "title" })}>
-                  {rowEditing("title") ? (
-                    <input
-                      autoFocus
-                      value={t.title || ""}
-                      onChange={(e) =>
-                        updateTransaction(t.id, {
-                          ...t,
-                          title: e.target.value,
-                        })
-                      }
-                      onBlur={() => setEditing(null)}
-                      className={inputClass}
-                    />
-                  ) : (
-                    t.title || (
-                      <span className="italic text-black/30">empty</span>
-                    )
-                  )}
-                </div>
-
+              <div>
                 <div
-                  className="font-medium tabular-nums"
-                  onClick={() => setEditing({ id: t.id, field: "amount" })}>
-                  {rowEditing("amount") ? (
-                    <input
-                      type="number"
-                      autoFocus
-                      value={t.amount}
-                      onChange={(e) =>
-                        updateTransaction(t.id, {
-                          ...t,
-                          amount: Number(e.target.value),
-                        })
-                      }
-                      onBlur={() => setEditing(null)}
-                      className={inputClass}
-                    />
-                  ) : (
-                    <div>₹{t.amount}</div>
-                  )}
-                </div>
-
-                <div
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (!rowEditing("category")) {
-                      setEditing({ id: t.id, field: "category" });
-                    }
-                  }}
-                  className="min-w-0">
-                  {rowEditing("category") ? (
-                    <div onClick={(e) => e.stopPropagation()}>
-                      {filteredCategories.length > 0 ? (
-                        <GlassDropdown
-                          value={t.category || ""}
-                          options={filteredCategories.map((c) => ({
-                            label: c.name,
-                            value: c.id,
-                          }))}
-                          onChange={(v) => {
-                            updateTransaction(t.id, {
-                              ...t,
-                              category: v || undefined,
-                            });
-                            setEditing(null);
-                          }}
-                        />
-                      ) : (
+                  key={t.id}
+                  className="relative grid grid-cols-[1.3fr_1fr_1fr_1fr_1fr_1fr_5px] items-center rounded-lg px-2 py-2 text-sm transition hover:bg-white/30">
+                  <div onClick={() => setEditing({ id: t.id, field: "title" })}>
+                    {rowEditing("title") ? (
+                      <input
+                        autoFocus
+                        value={t.title || ""}
+                        onChange={(e) =>
+                          updateTransaction(t.id, {
+                            ...t,
+                            title: e.target.value,
+                          })
+                        }
+                        onBlur={() => setEditing(null)}
+                        className={inputClass}
+                      />
+                    ) : (
+                      t.title || (
                         <span className="italic text-black/30">empty</span>
-                      )}
-                    </div>
-                  ) : (
-                    categories.find((c) => c.id === t.category)?.name || (
-                      <span className="italic text-black/30">empty</span>
-                    )
-                  )}
-                </div>
+                      )
+                    )}
+                  </div>
 
-                <div onClick={() => setEditing({ id: t.id, field: "date" })}>
-                  {rowEditing("date") ? (
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <button className="glass-card flex w-full items-center justify-between rounded-xl px-3 py-1.5 text-sm transition hover:!bg-white">
-                          <span>
-                            {t.date
-                              ? format(parseISO(t.date), "dd MMM yyyy")
-                              : "Select date"}
-                          </span>
-                          <CalendarDays size={14} />
-                        </button>
-                      </PopoverTrigger>
+                  <div
+                    className="font-medium tabular-nums"
+                    onClick={() => setEditing({ id: t.id, field: "amount" })}>
+                    {rowEditing("amount") ? (
+                      <input
+                        type="number"
+                        autoFocus
+                        value={t.amount}
+                        onChange={(e) =>
+                          updateTransaction(t.id, {
+                            ...t,
+                            amount: Number(e.target.value),
+                          })
+                        }
+                        onBlur={() => setEditing(null)}
+                        className={inputClass}
+                      />
+                    ) : (
+                      <div>₹{t.amount}</div>
+                    )}
+                  </div>
 
-                      <PopoverContent className="z-[9999] w-auto border border-white/40 bg-white/90 p-0 backdrop-blur-lg">
-                        <Calendar
-                          mode="single"
-                          selected={t.date ? parseISO(t.date) : undefined}
-                          onSelect={(date) => {
-                            if (!date) return;
-
-                            updateTransaction(t.id, {
-                              ...t,
-                              date: format(date, "yyyy-MM-dd"),
-                            });
-
-                            setEditing(null);
-                          }}
-                          classNames={{
-                            month: "space-y-3",
-                            caption_label: "text-xl text-gray-800",
-                            button_previous:
-                              "h-8 w-10 flex items-center justify-center rounded-lg hover:bg-black/10",
-                            button_next:
-                              "h-8 w-10 flex items-center justify-center rounded-lg hover:bg-black/10",
-                            weekdays: "mb-2 flex gap-1",
-                            weekday: "w-9 text-center text-xs text-gray-400",
-                            weeks: "space-y-1",
-                            week: "flex gap-1",
-                            day: "h-9 w-9 p-0 text-center",
-                            day_button:
-                              "h-9 w-9 rounded-xl transition hover:bg-black/10",
-                            selected:
-                              "[&>button]:bg-black [&>button]:text-white",
-                          }}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  ) : t.date ? (
-                    format(parseISO(t.date), "dd MMM")
-                  ) : (
-                    <span className="italic text-black/30">empty</span>
-                  )}
-                </div>
-
-                <div
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (!rowEditing("mode")) {
-                      setEditing({ id: t.id, field: "mode" });
-                    }
-                  }}>
-                  {rowEditing("mode") ? (
-                    <GlassDropdown
-                      value={t.mode}
-                      options={[
-                        { label: "income", value: "income" },
-                        { label: "expense", value: "expense" },
-                        { label: "transfer", value: "transfer" },
-                      ]}
-                      onChange={(v) => {
-                        updateTransaction(t.id, {
-                          ...t,
-                          mode: v as Transaction["mode"],
-                          category: v === "transfer" ? undefined : t.category,
-                        });
-                        setEditing(null);
-                      }}
-                    />
-                  ) : (
-                    <span
-                      className={
-                        t.mode === "income" ? "text-green-600" : "text-red-500"
-                      }>
-                      {t.mode}
-                    </span>
-                  )}
-                </div>
-
-                <div
-                  onClick={() => setEditing({ id: t.id, field: "accountId" })}>
-                  {rowEditing("accountId") ? (
-                    <GlassDropdown
-                      value={t.accountId}
-                      options={accounts.map((a) => ({
-                        label: a.name,
-                        value: a.id,
-                      }))}
-                      onChange={(v) => {
-                        updateTransaction(t.id, {
-                          ...t,
-                          accountId: v,
-                        });
-                        setEditing(null);
-                      }}
-                    />
-                  ) : (
-                    accounts.find((a) => a.id === t.accountId)?.name || (
-                      <span className="italic text-black/30">empty</span>
-                    )
-                  )}
-                </div>
-
-                <div className="flex justify-center">
-                  <button
+                  <div
                     onClick={(e) => {
                       e.stopPropagation();
-                      deleteTransaction(t.id);
+                      if (!rowEditing("category")) {
+                        setEditing({ id: t.id, field: "category" });
+                      }
                     }}
-                    className="rounded p-1 transition hover:bg-red-100">
-                    <Trash size={16} className="text-red-500" />
-                  </button>
+                    className="min-w-0">
+                    {rowEditing("category") ? (
+                      <div onClick={(e) => e.stopPropagation()}>
+                        {filteredCategories.length > 0 ? (
+                          <GlassDropdown
+                            value={t.category || ""}
+                            options={filteredCategories.map((c) => ({
+                              label: c.name,
+                              value: c.id,
+                            }))}
+                            onChange={(v) => {
+                              updateTransaction(t.id, {
+                                ...t,
+                                category: v || undefined,
+                              });
+                              setEditing(null);
+                            }}
+                          />
+                        ) : (
+                          <span className="italic text-black/30">empty</span>
+                        )}
+                      </div>
+                    ) : (
+                      categories.find((c) => c.id === t.category)?.name || (
+                        <span className="italic text-black/30">empty</span>
+                      )
+                    )}
+                  </div>
+
+                  <div onClick={() => setEditing({ id: t.id, field: "date" })}>
+                    {rowEditing("date") ? (
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <button className="glass-card flex w-full items-center justify-between rounded-xl px-3 py-1.5 text-sm transition hover:!bg-white">
+                            <span>
+                              {t.date
+                                ? format(parseISO(t.date), "dd MMM yyyy")
+                                : "Select date"}
+                            </span>
+                            <CalendarDays size={14} />
+                          </button>
+                        </PopoverTrigger>
+
+                        <PopoverContent className="z-[9999] w-auto border border-white/40 bg-white/90 p-0 backdrop-blur-lg">
+                          <Calendar
+                            mode="single"
+                            selected={t.date ? parseISO(t.date) : undefined}
+                            onSelect={(date) => {
+                              if (!date) return;
+
+                              updateTransaction(t.id, {
+                                ...t,
+                                date: format(date, "yyyy-MM-dd"),
+                              });
+
+                              setEditing(null);
+                            }}
+                            classNames={{
+                              month: "space-y-3",
+                              caption_label: "text-xl text-gray-800",
+                              button_previous:
+                                "h-8 w-10 flex items-center justify-center rounded-lg hover:bg-black/10",
+                              button_next:
+                                "h-8 w-10 flex items-center justify-center rounded-lg hover:bg-black/10",
+                              weekdays: "mb-2 flex gap-1",
+                              weekday: "w-9 text-center text-xs text-gray-400",
+                              weeks: "space-y-1",
+                              week: "flex gap-1",
+                              day: "h-9 w-9 p-0 text-center",
+                              day_button:
+                                "h-9 w-9 rounded-xl transition hover:bg-black/10",
+                              selected:
+                                "[&>button]:bg-black [&>button]:text-white",
+                            }}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    ) : t.date ? (
+                      format(parseISO(t.date), "dd MMM")
+                    ) : (
+                      <span className="italic text-black/30">empty</span>
+                    )}
+                  </div>
+
+                  <div
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (!rowEditing("mode")) {
+                        setEditing({ id: t.id, field: "mode" });
+                      }
+                    }}>
+                    {rowEditing("mode") ? (
+                      <GlassDropdown
+                        value={t.mode}
+                        options={[
+                          { label: "income", value: "income" },
+                          { label: "expense", value: "expense" },
+                          { label: "transfer", value: "transfer" },
+                        ]}
+                        onChange={(v) => {
+                          updateTransaction(t.id, {
+                            ...t,
+                            mode: v as Transaction["mode"],
+                            category: v === "transfer" ? undefined : t.category,
+                          });
+                          setEditing(null);
+                        }}
+                      />
+                    ) : (
+                      <span
+                        className={
+                          t.mode === "income"
+                            ? "text-green-600"
+                            : "text-red-500"
+                        }>
+                        {t.mode}
+                      </span>
+                    )}
+                  </div>
+
+                  <div
+                    onClick={() =>
+                      setEditing({ id: t.id, field: "accountId" })
+                    }>
+                    {rowEditing("accountId") ? (
+                      <GlassDropdown
+                        value={t.accountId}
+                        options={accounts.map((a) => ({
+                          label: a.name,
+                          value: a.id,
+                        }))}
+                        onChange={(v) => {
+                          updateTransaction(t.id, {
+                            ...t,
+                            accountId: v,
+                          });
+                          setEditing(null);
+                        }}
+                      />
+                    ) : (
+                      accounts.find((a) => a.id === t.accountId)?.name || (
+                        <span className="italic text-black/30">empty</span>
+                      )
+                    )}
+                  </div>
+
+                  <div className="flex justify-center">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteTransaction(t.id);
+                      }}
+                      className="rounded p-1 transition hover:bg-red-100">
+                      <Trash size={16} className="text-red-500" />
+                    </button>
+                  </div>
                 </div>
+
+                <div className="h-px bg-black/10" />
               </div>
             );
           })}

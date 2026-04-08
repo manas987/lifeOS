@@ -20,8 +20,10 @@ import { Subscriptions } from "./pages/finance/pages/subscriptions";
 function App() {
   return (
     // <div className="min-h-screen bg-gradient-to-br from-[#e4f4ff] to-[#f4cd8d]">
-
-    <div className="min-h-screen bg-gradient-to-br from-[#e4f4ff] to-[#d6c562]">
+    <div
+      className="min-h-screen bg-gradient-to-br 
+  from-[#e4f4ff] to-[#d6c562] 
+  dark:from-[#0b1220] dark:via-[#121a2f] dark:to-[#3b1f2a]">
       <Navbar />
       <Routes>
         <Route index element={<Dashboar />} />

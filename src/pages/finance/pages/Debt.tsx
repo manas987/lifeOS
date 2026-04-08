@@ -1,19 +1,11 @@
-import { useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { Plus, Trash } from "lucide-react";
+import { Mycontext } from "@/context/AppContext";
+import type { TrackItem, TrackKind } from "../logic/types";
 
 // ======================
 // TYPES
 // ======================
-
-type TrackKind = "debt" | "lent";
-
-type TrackItem = {
-  id: string;
-  kind: TrackKind;
-  name: string;
-  total: number;
-  done: number;
-};
 
 // ======================
 // HELPERS
@@ -32,17 +24,11 @@ function cleanNumber(value: string) {
 // ======================
 
 export function Debt() {
-  const [items, setItems] = useState<TrackItem[]>(() => {
-    const saved = localStorage.getItem("debt-items");
-    return saved ? JSON.parse(saved) : [];
-  });
-
-  useEffect(() => {
-    localStorage.setItem("debt-items", JSON.stringify(items));
-  }, [items]);
+  const { finance } = useContext(Mycontext);
+  const { items, setItems } = finance;
 
   function addItem(kind: TrackKind) {
-    setItems((prev) => [
+    setItems((prev: any) => [
       ...prev,
       {
         id: crypto.randomUUID(),
@@ -55,17 +41,19 @@ export function Debt() {
   }
 
   function updateItem(id: string, updated: Partial<TrackItem>) {
-    setItems((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, ...updated } : item)),
+    setItems((prev: any) =>
+      prev.map((item: any) =>
+        item.id === id ? { ...item, ...updated } : item,
+      ),
     );
   }
 
   function deleteItem(id: string) {
-    setItems((prev) => prev.filter((item) => item.id !== id));
+    setItems((prev: any) => prev.filter((item: any) => item.id !== id));
   }
 
-  const debtItems = items.filter((item) => item.kind === "debt");
-  const lentItems = items.filter((item) => item.kind === "lent");
+  const debtItems = items.filter((item: any) => item.kind === "debt");
+  const lentItems = items.filter((item: any) => item.kind === "lent");
 
   return (
     <div>
@@ -292,11 +280,11 @@ function AddNewCard({
   label: string;
 }) {
   return (
-    <button
-      onClick={onClick}
-      className="glass-card h-[305px] w-[300px] rounded-3xl flex flex-col items-center justify-center gap-2 text-center transition hover:bg-white/40">
-      <Plus size={28} className="text-black/60" />
-      <span className="text-base text-black/60">{label}</span>
+    <button onClick={onClick} className="glass-card">
+      <div className="h-[305px] w-[300px] rounded-3xl flex items-center justify-center flex-col gap-2 text-center transition hover:bg-white/40">
+        <Plus size={28} className="text-black/60" />
+        <span className="text-base text-black/60">{label}</span>
+      </div>
     </button>
   );
 }
