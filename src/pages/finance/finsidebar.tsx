@@ -76,7 +76,7 @@ export function FinanceSideBar({
 
   const linkClass = (isActive: boolean) =>
     `glass-card w-full p-4 block transition duration-150 ${
-      isActive ? "!bg-black/80 text-white" : "hover:!bg-white"
+      isActive ? "!bg-black/80 text-white" : "hover:!bg-white dark:hover:!bg-white/10"
     }`;
 
   function handleModeChange(nextMode: "expense" | "income" | "transfer") {
@@ -168,7 +168,7 @@ export function FinanceSideBar({
               key={m}
               onClick={() => handleModeChange(m)}
               className={`flex-1 glass-card p-2 ${
-                mode === m ? "!bg-black/80 text-white" : "hover:!bg-white"
+                mode === m ? "!bg-black/80 text-white" : "hover:!bg-white dark:hover:!bg-white/10"
               }`}>
               {m}
             </button>
@@ -177,7 +177,7 @@ export function FinanceSideBar({
 
         <Popover>
           <PopoverTrigger asChild>
-            <button className="glass-card flex items-center justify-between px-4 py-2 rounded-xl text-sm hover:!bg-white transition">
+            <button className="glass-card flex items-center justify-between px-4 py-2 rounded-xl text-sm hover:!bg-white dark:hover:!bg-white/10 transition">
               <span>{date ? format(date, "dd MMM yyyy") : "Select date"}</span>
               <CalendarDays size={16} />
             </button>
@@ -216,7 +216,7 @@ export function FinanceSideBar({
           <div className="relative overflow-visible">
             <button
               onClick={() => setShowCategory((p) => !p)}
-              className="glass-card p-3 pt-2 pb-2 hover:!bg-white w-full">
+              className="glass-card p-3 pt-2 pb-2 hover:!bg-white dark:hover:!bg-white/10 w-full">
               <div className="flex justify-between items-center">
                 <span>{selectedCategory?.name || "Category"}</span>
                 <span>{">"}</span>
@@ -299,7 +299,7 @@ export function FinanceSideBar({
         <div className="relative overflow-visible">
           <button
             onClick={() => setShowAccount((p) => !p)}
-            className="glass-card p-3 pt-2 pb-2 hover:!bg-white w-full">
+            className="glass-card p-3 pt-2 pb-2 hover:!bg-white dark:hover:!bg-white/10 w-full">
             <div className="flex justify-between items-center">
               <span>{selectedAccount?.name || "Account"}</span>
               <span>{">"}</span>
@@ -391,7 +391,7 @@ export function FinanceSideBar({
           <div className="relative overflow-visible">
             <button
               onClick={() => setShowToAccount((p) => !p)}
-              className="glass-card p-3 pt-2 pb-2 hover:!bg-white w-full">
+              className="glass-card p-3 pt-2 pb-2 hover:!bg-white dark:hover:!bg-white/10 w-full">
               <div className="flex justify-between items-center">
                 <span>{selectedToAccount?.name || "To Account"}</span>
                 <span>{">"}</span>
@@ -456,7 +456,7 @@ export function FinanceSideBar({
         />
 
         <button
-          className="glass-card p-3 pt-2 hover:!bg-white transition -mb-14"
+          className="glass-card p-3 pt-2 hover:!bg-white dark:hover:!bg-white/10 transition -mb-14"
           onClick={() => {
             if (!amount || Number(amount) <= 0 || !account || !date) return;
             if (

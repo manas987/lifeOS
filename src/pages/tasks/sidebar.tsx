@@ -37,7 +37,9 @@ export function Taskside({
 
   const linkClass = (isActive: boolean) =>
     `glass-card w-full p-4 block transition duration-150 ${
-      isActive ? "!bg-black/80 text-white" : "hover:!bg-white"
+      isActive
+        ? "!bg-black/80 text-white"
+        : "hover:!bg-white dark:hover:!bg-white/10 "
     }`;
 
   return (
@@ -97,7 +99,7 @@ export function Taskside({
             <PopoverTrigger asChild>
               <button
                 type="button"
-                className={`glass-card px-3 min-w-[55px] flex items-center justify-center whitespace-nowrap gap-1 transition duration-150 hover:!bg-white ${
+                className={`glass-card px-3 min-w-[55px] flex items-center justify-center whitespace-nowrap gap-1 transition duration-150 hover:!bg-white dark:hover:!bg-white/10 ${
                   date ? "font-medium" : ""
                 }`}>
                 {date ? (
@@ -153,21 +155,21 @@ export function Taskside({
 
         <button
           type="submit"
-          className="glass-card p-2 hover:!bg-white transition duration-150">
+          className="glass-card p-2 hover:!bg-white dark:hover:!bg-white/10 transition duration-150">
           Add
         </button>
       </form>
 
-      <div className="glass-card w-full p-3 pl-4 flex justify-between items-center hover:!bg-white transition duration-150">
+      <div className="glass-card w-full p-3 pl-4 flex justify-between items-center hover:!bg-white dark:hover:!bg-white/10  transition duration-150">
         Projects
         <div className=" ml-auto flex items-center gap-2">
           <button
-            className="hover:bg-[#dadada] rounded-full p-1"
+            className="hover:bg-[#dadada] dark:hover:!bg-white/10  rounded-full p-1"
             onClick={() => setaddingproj((prev) => !prev)}>
             <Plus size={18} />
           </button>
           <button
-            className="hover:bg-[#dadada] rounded-full p-1"
+            className="hover:bg-[#dadada] dark:hover:!bg-white/10  rounded-full p-1"
             onClick={() => toggleprojlistshow((prev) => !prev)}>
             {projlistshow ? (
               <ChevronDown size={18} />
@@ -178,7 +180,7 @@ export function Taskside({
         </div>
       </div>
       {addingproj && (
-        <div className="glass-card w-full p-3 pl-4 flex flex-col gap-3 hover:!bg-white transition duration-150">
+        <div className="glass-card w-full p-3 pl-4 flex flex-col gap-3 hover:!bg-white dark:hover:!bg-white/10  transition duration-150">
           <input
             type="text"
             placeholder="Project name"
@@ -188,7 +190,7 @@ export function Taskside({
           />
           <button
             type="submit"
-            className="glass-card p-2 hover:!bg-white transition duration-150"
+            className="glass-card p-2 hover:!bg-white dark:hover:!bg-white/10  transition duration-150"
             onClick={() => {
               addproj(projname);
               setprojname("");
@@ -218,7 +220,7 @@ export function Taskside({
                   <div className="flex gap-2">
                     <button
                       onClick={() => seteditingproj(null)}
-                      className="glass-card p-1.5 text-sm flex-1 hover:!bg-white transition">
+                      className="glass-card p-1.5 text-sm flex-1 hover:!bg-white dark:hover:!bg-white/10 transition">
                       Cancel
                     </button>
                     <button
@@ -228,7 +230,7 @@ export function Taskside({
                           seteditingproj(null);
                         }
                       }}
-                      className="glass-card p-1.5 text-sm flex-1 hover:!bg-white transition">
+                      className="glass-card p-1.5 text-sm flex-1 hover:!bg-white dark:hover:!bg-white/10 transition">
                       Save
                     </button>
                   </div>

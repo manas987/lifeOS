@@ -88,9 +88,7 @@ export function UseTaskLogic() {
     const tempdeletestorage = taskslist.find((item) => item.id === id);
     if (!tempdeletestorage) return;
     setdeleteundo(null);
-    setTimeout(() => {
-      setdeleteundo(tempdeletestorage);
-    }, 10);
+    setdeleteundo(tempdeletestorage);
     settasks((prev) => prev.filter((task) => task.id !== id));
     setOpen(null);
   }
@@ -105,7 +103,7 @@ export function UseTaskLogic() {
     if (!deleteundo) return;
     const timer = setTimeout(() => {
       setdeleteundo(null);
-    }, 4000);
+    }, 5000);
     return () => clearTimeout(timer);
   }, [deleteundo]);
 

@@ -186,15 +186,14 @@ export function Dashboar() {
   }, [habitslist, taskslist, transactions, activeTab]);
 
   const COLORS = [
-    "#111",
-    "#22c55e",
-    "#ef4444",
-    "#3b82f6",
-    "#f59e0b",
-    "#8b5cf6",
-    "#ec4899",
+    "#60a5fa", // blue
+    "#34d399", // green
+    "#fbbf24", // amber
+    "#f87171", // soft red
+    "#a78bfa", // violet
+    "#f472b6", // pink
+    "#38bdf8", // sky blue
   ];
-
   const tabs = ["week", "month", "all"] as const;
 
   return (
@@ -208,7 +207,9 @@ export function Dashboar() {
               key={t}
               onClick={() => setActiveTab(t)}
               className={`px-3 py-1 rounded-xl text-sm transition capitalize ${
-                activeTab === t ? "!bg-black/80 text-white" : "hover:!bg-white "
+                activeTab === t
+                  ? "!bg-black/80 text-white"
+                  : "hover:!bg-white dark:hover:!bg-white/10 "
               }`}>
               {t}
             </button>
@@ -222,7 +223,7 @@ export function Dashboar() {
           label="Total balance"
           value={`₹${totalBalance.toLocaleString()}`}
           sub="across all accounts"
-          valueClass=""
+          valueClass="dark:text-white"
         />
         <StatCard
           label="Net savings"
@@ -247,8 +248,8 @@ export function Dashboar() {
       {/* ── ROW 2: LINE CHART + PIE x2 + ALERTS ── */}
       <div className="grid grid-cols-[2.5fr_1fr_1fr_1fr] gap-3 h-80">
         {/* Income vs Expense */}
-        <div className="glass-card p-4 pt-2">
-          <p className="text-xs text-black/40 uppercase tracking-wide mb-2">
+        <div className="glass-card p-4 pt-4 ">
+          <p className="text-xs text-black/40 uppercase tracking-wide mb-4 dark:text-white/40">
             Income vs expense
           </p>
           {lineData.length === 0 ? (
@@ -256,38 +257,40 @@ export function Dashboar() {
           ) : (
             <ResponsiveContainer width="100%" height={200}>
               <LineChart data={lineData}>
-                <CartesianGrid strokeDasharray="3 3" opacity={0.15} />
-                <XAxis dataKey="date" tick={{ fontSize: 10 }} />
-                <YAxis tick={{ fontSize: 10 }} />
+                <CartesianGrid opacity={0.15} />
+                <XAxis dataKey="date" tick={{ fontSize: 9 }} />
+                <YAxis tick={{ fontSize: 8 }} />
                 <Tooltip
                   formatter={(v: any) => `₹${Number(v).toLocaleString()}`}
                 />
+
                 <Line
                   type="monotone"
                   dataKey="income"
-                  stroke="#22c55e"
+                  stroke="#60a5fa" // blue (positive, calm)
                   dot={false}
-                  strokeWidth={2}
+                  strokeWidth={2.5}
                 />
+
                 <Line
                   type="monotone"
                   dataKey="expense"
-                  stroke="#ef4444"
+                  stroke="#fb7185" // rose (warning, not harsh)
                   dot={false}
-                  strokeWidth={2}
+                  strokeWidth={2.5}
                 />
               </LineChart>
             </ResponsiveContainer>
           )}
-          <div className="flex gap-4 mt-1">
+          <div className="flex gap-4 mt-1 ">
             <Leg color="bg-green-500" label="Income" />
             <Leg color="bg-red-400" label="Expense" />
           </div>
         </div>
 
         {/* Expense pie */}
-        <div className="glass-card p-4 pt-2">
-          <p className="text-xs text-black/40 uppercase tracking-wide mb-2">
+        <div className="glass-card p-4 pt-4">
+          <p className="text-xs text-black/40 uppercase tracking-wide mb-3 dark:text-white/40">
             Expense breakdown
           </p>
           {expensePie.length === 0 ? (
@@ -299,9 +302,9 @@ export function Dashboar() {
                   <Pie
                     data={expensePie}
                     dataKey="value"
-                    innerRadius={35}
-                    outerRadius={60}
-                    paddingAngle={2}>
+                    innerRadius={0}
+                    outerRadius={70}
+                    paddingAngle={0}>
                     {expensePie.map((_, i) => (
                       <Cell key={i} fill={COLORS[i % COLORS.length]} />
                     ))}
@@ -311,11 +314,11 @@ export function Dashboar() {
                   />
                 </PieChart>
               </ResponsiveContainer>
-              <div className="flex flex-col gap-1 mt-1">
+              <div className="flex flex-col gap-1 mt-3">
                 {expensePie.slice(0, 3).map((d, i) => (
                   <div
                     key={i}
-                    className="flex items-center gap-1.5 text-xs text-black/50">
+                    className="flex items-center gap-1.5 text-xs text-black/50 dark:text-white/40">
                     <div
                       className="w-2 h-2 rounded-full shrink-0"
                       style={{ background: COLORS[i % COLORS.length] }}
@@ -330,8 +333,8 @@ export function Dashboar() {
         </div>
 
         {/* Income pie */}
-        <div className="glass-card p-4 pt-2">
-          <p className="text-xs text-black/40 uppercase tracking-wide mb-2">
+        <div className="glass-card p-4 pt-4">
+          <p className="text-xs text-black/40 uppercase tracking-wide mb-3 dark:text-white/40">
             Income breakdown
           </p>
           {incomePie.length === 0 ? (
@@ -343,9 +346,8 @@ export function Dashboar() {
                   <Pie
                     data={incomePie}
                     dataKey="value"
-                    innerRadius={35}
-                    outerRadius={60}
-                    paddingAngle={2}>
+                    innerRadius={0}
+                    outerRadius={70}>
                     {incomePie.map((_, i) => (
                       <Cell key={i} fill={COLORS[i % COLORS.length]} />
                     ))}
@@ -355,11 +357,11 @@ export function Dashboar() {
                   />
                 </PieChart>
               </ResponsiveContainer>
-              <div className="flex flex-col gap-1 mt-1">
+              <div className="flex flex-col gap-1 mt-3">
                 {incomePie.slice(0, 3).map((d, i) => (
                   <div
                     key={i}
-                    className="flex items-center gap-1.5 text-xs text-black/50">
+                    className="flex items-center gap-1.5 text-xs text-black/50 dark:text-white/40">
                     <div
                       className="w-2 h-2 rounded-full shrink-0"
                       style={{ background: COLORS[i % COLORS.length] }}
@@ -374,8 +376,8 @@ export function Dashboar() {
         </div>
 
         {/* Alerts */}
-        <div className="glass-card p-4 pt-2">
-          <p className="text-xs text-black/40 uppercase tracking-wide mb-2">
+        <div className="glass-card p-4 pt-4">
+          <p className="text-xs text-black/40 uppercase tracking-wide mb-2 dark:text-white/40">
             Alerts / warnings
           </p>
           <div className="flex flex-col gap-2">
@@ -400,7 +402,7 @@ export function Dashboar() {
       <div className="grid grid-cols-[1fr_1fr_2fr] gap-3 h-80">
         {/* Due today */}
         <div className="glass-card p-4 pt-2">
-          <p className="text-xs text-black/40 uppercase tracking-wide mb-3">
+          <p className="text-xs text-black/40 uppercase tracking-wide mb-3 dark:text-white/40">
             Due today
           </p>
           {todayTasks.length === 0 ? (
@@ -431,7 +433,7 @@ export function Dashboar() {
 
         {/* Accounts */}
         <div className="glass-card p-4 pt-2">
-          <p className="text-xs text-black/40 uppercase tracking-wide mb-3">
+          <p className="text-xs text-black/40 uppercase tracking-wide mb-3 dark:text-white/40">
             Accounts
           </p>
           {accounts.length === 0 ? (
@@ -459,25 +461,25 @@ export function Dashboar() {
 
         {/* Productivity chart */}
         <div className="glass-card p-4 pt-2">
-          <p className="text-xs text-black/40 uppercase tracking-wide mb-2">
+          <p className="text-xs text-black/40 uppercase tracking-wide mb-2 dark:text-white/40">
             Productivity overview
           </p>
           <ResponsiveContainer width="100%" height={200}>
             <LineChart data={productivityData}>
-              <CartesianGrid strokeDasharray="3 3" opacity={0.15} />
+              <CartesianGrid opacity={0.15} />
               <XAxis
                 dataKey="date"
-                tick={{ fontSize: 10 }}
+                tick={{ fontSize: 8 }}
                 interval="preserveStartEnd"
               />
-              <YAxis tick={{ fontSize: 10 }} />
+              <YAxis tick={{ fontSize: 8 }} />
               <Tooltip />
               <Line
                 type="monotone"
                 dataKey="habits"
                 stroke="#3b82f6"
                 dot={false}
-                strokeWidth={2}
+                strokeWidth={2.5}
                 name="Habits done"
               />
               <Line
@@ -485,15 +487,14 @@ export function Dashboar() {
                 dataKey="tasks"
                 stroke="#22c55e"
                 dot={false}
-                strokeWidth={2}
+                strokeWidth={2.5}
                 name="Tasks done"
               />
             </LineChart>
           </ResponsiveContainer>
-          <div className="flex gap-4 mt-1">
+          <div className="flex gap-4 mt-1 ">
             <Leg color="bg-blue-500" label="Habits" />
             <Leg color="bg-green-500" label="Tasks" />
-            <Leg color="bg-red-400" label="Expense (÷100)" />
           </div>
         </div>
       </div>
@@ -514,16 +515,18 @@ function StatCard({
 }) {
   return (
     <div className="glass-card p-4 pt-2 flex flex-col gap-1">
-      <p className="text-xs text-black/40 uppercase tracking-wide">{label}</p>
+      <p className="text-xs text-black/40 uppercase tracking-wide dark:text-white/40">
+        {label}
+      </p>
       <p className={`text-2xl font-medium ${valueClass}`}>{value}</p>
-      <p className="text-xs text-black/40">{sub}</p>
+      <p className="text-xs text-black/40 dark:text-white/40">{sub}</p>
     </div>
   );
 }
 
 function Leg({ color, label }: { color: string; label: string }) {
   return (
-    <div className="flex items-center gap-1.5 text-xs text-black/50">
+    <div className="flex items-center gap-1.5 text-xs text-black/50 dark:text-white/30">
       <div className={`w-2 h-2 rounded-full ${color}`} />
       {label}
     </div>
@@ -532,7 +535,7 @@ function Leg({ color, label }: { color: string; label: string }) {
 
 function Empty({ text }: { text: string }) {
   return (
-    <div className="flex items-center justify-center h-20 text-sm text-black/30">
+    <div className="flex items-center justify-center h-20 text-sm text-black/30 ">
       {text}
     </div>
   );

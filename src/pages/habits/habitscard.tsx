@@ -185,7 +185,7 @@ export function Addhabitcard({ onAdd }: AddHabitProps) {
          font-medium 
          tracking-wide
          transition-all duration-200
-         hover:!bg-white 
+         hover:!bg-white dark:hover:!bg-white/10 
          active:scale-[0.98]
          active:shadow-inner">
         Add

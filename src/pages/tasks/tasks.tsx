@@ -66,3 +66,15 @@ export function Tasks() {
     </div>
   );
 }
+function Undo() {
+  return (
+    <div>
+      <span>Task deleted</span>
+      <button
+        onClick={undodelete}
+        className="text-red-500 hover:underline text-sm">
+        Undo
+      </button>
+    </div>
+  );
+}

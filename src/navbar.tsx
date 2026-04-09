@@ -20,7 +20,7 @@ export function Navbar() {
                 `rounded-full p-3 pr-5 pl-5 transition-colors duration-150 ${
                   isActive
                     ? "bg-[#2b2b2b] text-[#e4e4e4]"
-                    : "hover:bg-[#dadada]"
+                    : "hover:bg-[#dadada] dark:hover:!bg-white/10 "
                 }`
               }>
               Dashboard
@@ -32,7 +32,7 @@ export function Navbar() {
                 `rounded-full p-3 pr-5 pl-5 transition-colors duration-150 ${
                   isActive
                     ? "bg-[#2b2b2b] text-[#e4e4e4]"
-                    : "hover:bg-[#dadada]"
+                    : "hover:bg-[#dadada] dark:hover:!bg-white/10 "
                 }`
               }>
               Tasks
@@ -44,7 +44,7 @@ export function Navbar() {
                 `rounded-full p-3 pr-5 pl-5 transition-colors duration-150 ${
                   isActive
                     ? "bg-[#2b2b2b] text-[#e4e4e4]"
-                    : "hover:bg-[#dadada]"
+                    : "hover:bg-[#dadada] dark:hover:!bg-white/10 "
                 }`
               }>
               Finances
@@ -56,7 +56,7 @@ export function Navbar() {
                 `rounded-full p-3 pr-5 pl-5 transition-colors duration-150 ${
                   isActive
                     ? "bg-[#2b2b2b] text-[#e4e4e4]"
-                    : "hover:bg-[#dadada]"
+                    : "hover:bg-[#dadada] dark:hover:!bg-white/10 "
                 }`
               }>
               Habits
@@ -67,7 +67,7 @@ export function Navbar() {
           <div className="flex gap-1">
             <button
               onClick={() => setmode((prev: any) => !prev)}
-              className="bg-[#f1f1f1] rounded-full p-3 hover:bg-[#dadada] transition-colors duration-150 dark:bg-black">
+              className="bg-[#f1f1f1] rounded-full p-3 hover:bg-[#dadada] dark:hover:!bg-white/10  transition-colors duration-150 dark:bg-black">
               {mode ? <MoonStar /> : <Sun />}
             </button>
           </div>

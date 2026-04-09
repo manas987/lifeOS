@@ -209,7 +209,7 @@ export function Logs() {
               <div>
                 <div
                   key={t.id}
-                  className="relative grid grid-cols-[1.3fr_1fr_1fr_1fr_1fr_1fr_5px] items-center rounded-lg px-2 py-2 text-sm transition hover:bg-white/30">
+                  className="relative grid grid-cols-[1.3fr_1fr_1fr_1fr_1fr_1fr_5px] items-center rounded-lg px-2 py-2 text-sm transition hover:bg-white/30 hover:!bg-white/10">
                   <div onClick={() => setEditing({ id: t.id, field: "title" })}>
                     {rowEditing("title") ? (
                       <input
@@ -299,7 +299,7 @@ export function Logs() {
                     {rowEditing("date") ? (
                       <Popover>
                         <PopoverTrigger asChild>
-                          <button className="glass-card flex w-[130px] items-center justify-between rounded-xl px-3 py-1.5 text-sm transition hover:!bg-white">
+                          <button className="glass-card flex w-[130px] items-center justify-between rounded-xl px-3 py-1.5 text-sm transition hover:!bg-white dark:hover:!bg-white/10">
                             <span>
                               {t.date
                                 ? format(parseISO(t.date), "dd MMM yyyy")

@@ -7,7 +7,9 @@ export function Habitside({ habitLogic }: Propssidebar) {
   const { habitslist, addhabit } = habitLogic;
   const linkClass = (isActive: boolean) =>
     `glass-card w-full p-4 block transition duration-150 ${
-      isActive ? "!bg-black/80 text-white" : "hover:!bg-white"
+      isActive
+        ? "!bg-black/80 text-white"
+        : "hover:!bg-white dark:hover:!bg-white/10 "
     }`;
 
   const todayDate = new Date();

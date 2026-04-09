@@ -156,7 +156,7 @@ export function Tasklayout({
         </div>
       ) : (
         <div
-          className={`glass-card w-full p-4 flex items-center justify-between hover:!bg-white/80 transition duration-150 ${
+          className={`glass-card w-full p-4 flex items-center justify-between hover:!bg-white/80 dark:hover:!bg-white/10 transition duration-150 ${
             completed ? "line-through opacity-60" : ""
           } ${isDragging ? "scale-105 shadow-xl opacity-90 z-50" : ""}`}>
           <button
