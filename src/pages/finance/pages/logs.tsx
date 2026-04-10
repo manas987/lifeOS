@@ -209,7 +209,7 @@ export function Logs() {
               <div>
                 <div
                   key={t.id}
-                  className="relative grid grid-cols-[1.3fr_1fr_1fr_1fr_1fr_1fr_5px] items-center rounded-lg px-2 py-2 text-sm transition hover:bg-white/30 hover:!bg-white/10">
+                  className="relative grid grid-cols-[1.3fr_1fr_1fr_1fr_1fr_1fr_5px] items-center rounded-lg px-2 py-2 text-sm transition hover:bg-white/30 ">
                   <div onClick={() => setEditing({ id: t.id, field: "title" })}>
                     {rowEditing("title") ? (
                       <input
@@ -234,7 +234,7 @@ export function Logs() {
                   </div>
 
                   <div
-                    className="font-medium tabular-nums"
+                    className="font-medium tabular-nums "
                     onClick={() => setEditing({ id: t.id, field: "amount" })}>
                     {rowEditing("amount") ? (
                       <input
@@ -248,7 +248,7 @@ export function Logs() {
                           })
                         }
                         onBlur={() => setEditing(null)}
-                        className={inputClass}
+                        className={`w-32 ${inputClass}`}
                       />
                     ) : (
                       <div>₹{t.amount}</div>
@@ -262,7 +262,7 @@ export function Logs() {
                         setEditing({ id: t.id, field: "category" });
                       }
                     }}
-                    className="min-w-0 ">
+                    className="min-w-0  ">
                     {rowEditing("category") ? (
                       <div onClick={(e) => e.stopPropagation()}>
                         {filteredCategories.length > 0 ? (
@@ -309,13 +309,12 @@ export function Logs() {
                           </button>
                         </PopoverTrigger>
 
-                        <PopoverContent className="z-[9999] w-auto border border-white/40 bg-white/90 p-0 backdrop-blur-lg">
+                        <PopoverContent className="z-[100] w-auto border border-white/40 bg-white/90 p-0 backdrop-blur-lg dark:bg-black">
                           <Calendar
                             mode="single"
                             selected={t.date ? parseISO(t.date) : undefined}
                             onSelect={(date) => {
                               if (!date) return;
-
                               updateTransaction(t.id, {
                                 ...t,
                                 date: format(date, "yyyy-MM-dd"),
@@ -328,19 +327,21 @@ export function Logs() {
                               caption_label:
                                 "text-xl text-gray-800 dark:text-white",
                               button_previous:
-                                "h-8 w-10 flex items-center justify-center rounded-lg hover:bg-black/10",
+                                "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-center dark:text-white",
                               button_next:
-                                "h-8 w-10 flex items-center justify-center rounded-lg hover:bg-black/10",
-                              weekdays: "mb-2 flex gap-1",
+                                "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-cente dark:text-white",
+                              weekdays: "flex mb-2 gap-1 dark:text-white",
                               weekday:
-                                "w-9 text-center text-xs text-gray-400 dark:text-white",
+                                "w-9 font-normal text-xs text-center text-gray-400 dark:text-white ",
                               weeks: "space-y-1",
                               week: "flex gap-1",
-                              day: "h-9 w-9 p-0 text-center",
+                              day: "w-9 h-9 text-center p-0 dark:text-white",
                               day_button:
-                                "h-9 w-9 rounded-xl transition hover:bg-black/10",
+                                "w-9 h-9 rounded-xl hover:bg-black/10 transition duration-100 ",
                               selected:
-                                "[&>button]:bg-black [&>button]:text-white",
+                                " [&>button]:hover:bg-black/10 [&>button]:font-semibold",
+                              disabled:
+                                "[&>button]:text-gray-300 dark:[&>button]:text-white/80 [&>button]:hover:bg-transparent [&>button]:cursor-not-allowed ",
                             }}
                           />
                         </PopoverContent>

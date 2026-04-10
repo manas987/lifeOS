@@ -259,7 +259,7 @@ export function Detailedhabitcard({
 
         <div className="flex items-center gap-2">
           <div className="text-xs px-2 py-1 rounded-md bg-orange-100/70 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400 whitespace-nowrap">
-            🔥 {streak}
+            streak: {streak}d
           </div>
           <button
             onClick={onDelete}
@@ -313,7 +313,7 @@ export function Detailedhabitcard({
             </button>
           </PopoverTrigger>
 
-          <PopoverContent className="w-auto p-0 bg-white/90 backdrop-blur-lg border border-white/40">
+          <PopoverContent className="w-auto p-0 bg-white/90 backdrop-blur-lg border border-white/40 dark:bg-black dark:border-white/20">
             <Calendar
               mode="range"
               selected={localRange}
@@ -332,17 +332,17 @@ export function Detailedhabitcard({
                 month: "space-y-3",
                 caption_label: "text-xl text-gray-800 dark:text-white",
                 button_previous:
-                  "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-center",
+                  "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-center dark:text-white",
                 button_next:
-                  "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-center",
-                weekdays: "flex mb-2 gap-1",
+                  "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-center dark:text-white",
+                weekdays: "flex mb-2 gap-1 dark:text-white",
                 weekday:
                   "w-9 font-normal text-xs text-center text-gray-400 dark:text-white",
                 weeks: "space-y-1",
                 week: "flex ",
                 day: "w-10 h-9 text-center",
                 day_button:
-                  "w-9 h-9 rounded-xl hover:bg-black/10 transition duration-100 flex items-center justify-center",
+                  "w-9 h-9 rounded-xl hover:bg-black/10 transition duration-100 flex items-center justify-center dark:text-white",
                 today: "[&>button]:border [&>button]:border-black/40",
                 range_middle: "bg-black/10",
                 range_start:
@@ -350,7 +350,7 @@ export function Detailedhabitcard({
                 range_end:
                   "bg-black/10 rounded-r-xl [&>button]:bg-black [&>button]:text-white",
                 disabled:
-                  "[&>button]:text-gray-300 dark:[&>button]:text-white/30 [&>button]:hover:bg-transparent [&>button]:cursor-not-allowed",
+                  "[&>button]:text-gray-300 dark:[&>button]:text-white/80 [&>button]:hover:bg-transparent [&>button]:cursor-not-allowed ",
               }}
             />
           </PopoverContent>

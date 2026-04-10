@@ -96,7 +96,7 @@ export function Tasklayout({
                 </button>
               </PopoverTrigger>
 
-              <PopoverContent className="w-auto p-0 bg-white/90 backdrop-blur-lg border border-white/40">
+              <PopoverContent className="w-auto p-0 bg-white/90 backdrop-blur-lg border border-white/40 dark:bg-black dark:border-white/30">
                 <Calendar
                   mode="single"
                   selected={editduedate}
@@ -106,21 +106,21 @@ export function Tasklayout({
                     month: "space-y-3",
                     caption_label: "text-xl text-gray-800 dark:text-white",
                     button_previous:
-                      "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-center",
+                      "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-center dark:text-white",
                     button_next:
-                      "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-center",
-                    weekdays: "flex mb-2 gap-1",
+                      "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-cente dark:text-white",
+                    weekdays: "flex mb-2 gap-1 dark:text-white",
                     weekday:
-                      "w-9 font-normal text-xs text-center text-gray-400 dark:text-white",
+                      "w-9 font-normal text-xs text-center text-gray-400 dark:text-white ",
                     weeks: "space-y-1",
                     week: "flex gap-1",
-                    day: "w-9 h-9 text-center p-0",
+                    day: "w-9 h-9 text-center p-0 dark:text-white",
                     day_button:
-                      "w-9 h-9 rounded-xl hover:bg-black/10 transition duration-100",
+                      "w-9 h-9 rounded-xl hover:bg-black/10 transition duration-100 ",
                     selected:
                       " [&>button]:hover:bg-black/10 [&>button]:font-semibold",
                     disabled:
-                      "[&>button]:text-gray-300 dark:[&>button]:text-white/30 [&>button]:hover:bg-transparent [&>button]:cursor-not-allowed",
+                      "[&>button]:text-gray-300 dark:[&>button]:text-white/80 [&>button]:hover:bg-transparent [&>button]:cursor-not-allowed ",
                   }}
                 />
               </PopoverContent>

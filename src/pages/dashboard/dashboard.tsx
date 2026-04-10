@@ -1,8 +1,8 @@
 import { Mycontext } from "@/context/AppContext";
 import { useContext, useMemo, useState } from "react";
 import {
-  LineChart,
-  Line,
+  AreaChart,
+  Area,
   CartesianGrid,
   XAxis,
   YAxis,
@@ -55,23 +55,86 @@ export function Dashboar() {
     [filteredTx],
   );
   const savings = totalIncome - totalExpense;
+  const pad2 = (n: number) => String(n).padStart(2, "0");
+
+  const toDateKey = (d: Date) =>
+    `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+
+  const fromDateKey = (key: string) => {
+    const [y, m, d] = key.split("-").map(Number);
+    return new Date(y, m - 1, d);
+  };
 
   const lineData = useMemo(() => {
-    const map = new Map<
+    const txByDate = new Map<
       string,
       { date: string; income: number; expense: number }
     >();
-    filteredTx.forEach((t: any) => {
-      if (!map.has(t.date))
-        map.set(t.date, { date: t.date, income: 0, expense: 0 });
-      const item = map.get(t.date)!;
+
+    for (const t of filteredTx) {
+      const key = String(t.date).slice(0, 10);
+
+      const item = txByDate.get(key) ?? {
+        date: key.slice(5),
+        income: 0,
+        expense: 0,
+      };
+
       if (t.mode === "income") item.income += t.amount;
       if (t.mode === "expense") item.expense += t.amount;
-    });
-    return Array.from(map.values()).sort((a, b) =>
-      a.date.localeCompare(b.date),
-    );
-  }, [filteredTx]);
+
+      txByDate.set(key, item);
+    }
+
+    if (activeTab === "all") {
+      const keys = [...txByDate.keys()].sort();
+      if (keys.length === 0) return [];
+
+      const start = fromDateKey(keys[0]);
+      const end = fromDateKey(keys[keys.length - 1]);
+
+      start.setHours(12, 0, 0, 0);
+      end.setHours(12, 0, 0, 0);
+
+      const result: { date: string; income: number; expense: number }[] = [];
+      const d = new Date(start);
+
+      while (d <= end) {
+        const key = toDateKey(d);
+        result.push(
+          txByDate.get(key) ?? {
+            date: key.slice(5),
+            income: 0,
+            expense: 0,
+          },
+        );
+        d.setDate(d.getDate() + 1);
+      }
+
+      return result;
+    }
+
+    const days = activeTab === "week" ? 7 : 30;
+    const result: { date: string; income: number; expense: number }[] = [];
+
+    for (let i = 0; i < days; i++) {
+      const d = new Date(todayDate);
+      d.setHours(12, 0, 0, 0);
+      d.setDate(d.getDate() - (days - 1 - i));
+
+      const key = toDateKey(d);
+
+      result.push(
+        txByDate.get(key) ?? {
+          date: key.slice(5),
+          income: 0,
+          expense: 0,
+        },
+      );
+    }
+
+    return result;
+  }, [filteredTx, activeTab]);
 
   const expensePie = useMemo(() => {
     const map = new Map<string, number>();
@@ -256,30 +319,71 @@ export function Dashboar() {
             <Empty text="No transactions yet" />
           ) : (
             <ResponsiveContainer width="100%" height={200}>
-              <LineChart data={lineData}>
-                <CartesianGrid opacity={0.15} />
-                <XAxis dataKey="date" tick={{ fontSize: 9 }} />
-                <YAxis tick={{ fontSize: 8 }} />
+              <AreaChart data={lineData}>
+                <defs>
+                  <linearGradient
+                    id="incomeGradient"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1">
+                    <stop offset="0%" stopColor="#60a5fa" stopOpacity={0.35} />
+                    <stop offset="60%" stopColor="#60a5fa" stopOpacity={0.15} />
+                    <stop offset="100%" stopColor="#60a5fa" stopOpacity={0} />
+                  </linearGradient>
+
+                  <linearGradient
+                    id="expenseGradient"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1">
+                    <stop offset="0%" stopColor="#fb7185" stopOpacity={0.35} />
+                    <stop offset="60%" stopColor="#fb7185" stopOpacity={0.15} />
+                    <stop offset="100%" stopColor="#fb7185" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid
+                  stroke="rgba(255,255,255,0.05)"
+                  vertical={false}
+                />
+
+                <XAxis
+                  dataKey="date"
+                  tick={{ fontSize: 8, fill: "rgba(255,255,255,0.4)" }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+
+                <YAxis hide />
                 <Tooltip
                   formatter={(v: any) => `₹${Number(v).toLocaleString()}`}
                 />
 
-                <Line
+                <Area
                   type="monotone"
                   dataKey="income"
-                  stroke="#60a5fa" // blue (positive, calm)
+                  stroke="#60a5fa"
+                  fill="url(#incomeGradient)"
+                  style={{
+                    filter: "drop-shadow(0 0 6px rgba(96,165,250,0.4))",
+                  }}
                   dot={false}
                   strokeWidth={2.5}
                 />
 
-                <Line
+                <Area
                   type="monotone"
                   dataKey="expense"
-                  stroke="#fb7185" // rose (warning, not harsh)
+                  stroke="#fb7185"
+                  fill="url(#expenseGradient)"
+                  style={{
+                    filter: "drop-shadow(0 0 6px rgba(96,165,250,0.4))",
+                  }}
                   dot={false}
                   strokeWidth={2.5}
                 />
-              </LineChart>
+              </AreaChart>
             </ResponsiveContainer>
           )}
           <div className="flex gap-4 mt-1 ">
@@ -465,32 +569,52 @@ export function Dashboar() {
             Productivity overview
           </p>
           <ResponsiveContainer width="100%" height={200}>
-            <LineChart data={productivityData}>
-              <CartesianGrid opacity={0.15} />
+            <AreaChart data={productivityData}>
+              <defs>
+                <linearGradient id="habitsGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.35} />
+                  <stop offset="60%" stopColor="#3b82f6" stopOpacity={0.15} />
+                  <stop offset="100%" stopColor="#3b82f6" stopOpacity={0} />
+                </linearGradient>
+
+                <linearGradient id="tasksGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#22c55e" stopOpacity={0.35} />
+                  <stop offset="60%" stopColor="#22c55e" stopOpacity={0.15} />
+                  <stop offset="100%" stopColor="#22c55e" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid stroke="rgba(255,255,255,0.05)" vertical={false} />
+
               <XAxis
                 dataKey="date"
-                tick={{ fontSize: 8 }}
-                interval="preserveStartEnd"
+                tick={{ fontSize: 8, fill: "rgba(255,255,255,0.4)" }}
+                axisLine={false}
+                tickLine={false}
               />
-              <YAxis tick={{ fontSize: 8 }} />
+
+              <YAxis hide />
               <Tooltip />
-              <Line
+              <Area
                 type="monotone"
                 dataKey="habits"
                 stroke="#3b82f6"
+                fill="url(#habitsGradient)"
+                style={{ filter: "drop-shadow(0 0 6px rgba(59,130,246,0.4))" }}
                 dot={false}
                 strokeWidth={2.5}
                 name="Habits done"
               />
-              <Line
+              <Area
                 type="monotone"
                 dataKey="tasks"
                 stroke="#22c55e"
+                fill="url(#tasksGradient)"
+                style={{ filter: "drop-shadow(0 0 6px rgba(34,197,94,0.4))" }}
                 dot={false}
                 strokeWidth={2.5}
                 name="Tasks done"
               />
-            </LineChart>
+            </AreaChart>
           </ResponsiveContainer>
           <div className="flex gap-4 mt-1 ">
             <Leg color="bg-blue-500" label="Habits" />

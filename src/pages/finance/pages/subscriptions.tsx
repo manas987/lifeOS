@@ -1,6 +1,14 @@
 import { useContext, useMemo } from "react";
-import { Plus, Trash, Check } from "lucide-react";
+import { Plus, Trash, Check, CalendarDays } from "lucide-react";
 import { Mycontext } from "@/context/AppContext";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import { useState } from "react";
 
 // ======================
 // TYPES
@@ -178,6 +186,11 @@ function SubscriptionCard({
 }) {
   const due = daysLeft(data.nextDue);
   const overdue = due !== null && due < 0;
+  const [date, setDate] = useState<Date | undefined>(
+    data.nextDue ? new Date(data.nextDue) : undefined,
+  );
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
   return (
     <div className="glass-card relative flex h-full flex-col gap-4 rounded-3xl p-4 pt-3">
@@ -191,7 +204,7 @@ function SubscriptionCard({
         value={data.name}
         onChange={(e) => onUpdate({ name: e.target.value })}
         placeholder="Subscription name"
-        className="border-b border-black/30 bg-transparent pb-1 text-lg font-medium outline-none"
+        className="border-b border-black/30 bg-transparent pb-1 text-lg font-medium outline-none "
       />
 
       <div className="flex flex-col gap-1">
@@ -205,22 +218,65 @@ function SubscriptionCard({
             onUpdate({ amount: isNaN(val) ? 0 : val });
           }}
           placeholder="0"
-          className="glass-card rounded-xl px-3 py-2 outline-none"
+          className="glass-card rounded-xl px-3 py-2 outline-none "
         />
       </div>
 
       <div className="flex flex-col gap-1">
-        <span className="text-xs text-black/50 dark:text-white/50">Next due</span>
-        <input
-          type="date"
-          value={data.nextDue}
-          onChange={(e) => onUpdate({ nextDue: e.target.value })}
-          className="glass-card rounded-xl px-3 py-2 outline-none"
-        />
+        <span className="text-xs text-black/50 dark:text-white/50">
+          Next due
+        </span>
+
+        <Popover>
+          <PopoverTrigger asChild>
+            <button className="glass-card w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm hover:bg-white/20 transition">
+              <span>{date ? format(date, "dd MMM yyyy") : "Select date"}</span>
+              <CalendarDays size={16} />
+            </button>
+          </PopoverTrigger>
+
+          <PopoverContent className="w-auto p-0 bg-white/90 dark:bg-black/60 backdrop-blur-lg border border-white/40 z-[999]">
+            <Calendar
+              mode="single"
+              selected={date}
+              disabled={(date) => date < today}
+              onSelect={(d) => {
+                setDate(d);
+                if (d) {
+                  onUpdate({
+                    nextDue: d.toISOString().split("T")[0],
+                  });
+                }
+              }}
+              classNames={{
+                month: "space-y-3",
+                caption_label: "text-xl text-gray-800 dark:text-white",
+                button_previous:
+                  "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-center dark:text-white",
+                button_next:
+                  "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-cente dark:text-white",
+                weekdays: "flex mb-2 gap-1 dark:text-white",
+                weekday:
+                  "w-9 font-normal text-xs text-center text-gray-400 dark:text-white ",
+                weeks: "space-y-1",
+                week: "flex gap-1",
+                day: "w-9 h-9 text-center p-0 dark:text-white",
+                day_button:
+                  "w-9 h-9 rounded-xl hover:bg-black/10 transition duration-100 ",
+                selected:
+                  " [&>button]:hover:bg-black/10 [&>button]:font-semibold",
+                disabled:
+                  "[&>button]:text-gray-300 dark:[&>button]:text-white/80 [&>button]:hover:bg-transparent [&>button]:cursor-not-allowed ",
+              }}
+            />
+          </PopoverContent>
+        </Popover>
       </div>
 
       <div className="flex flex-col gap-1">
-        <span className="text-xs text-black/50 dark:text-white/50">Repeats</span>
+        <span className="text-xs text-black/50 dark:text-white/50">
+          Repeats
+        </span>
         <select
           value={data.repeatEvery}
           onChange={(e) =>
@@ -288,7 +344,9 @@ function SubscriptionCard({
         </button>
       </div>
 
-      <div className="text-sm text-black/60 dark:text-white/60">{formatMoney(data.amount)}</div>
+      <div className="text-sm text-black/60 dark:text-white/60">
+        {formatMoney(data.amount)}
+      </div>
     </div>
   );
 }
@@ -304,7 +362,9 @@ function AddNewCard({
     <button onClick={onClick} className="glass-card ">
       <div className="h-[305px] w-[300px] rounded-3xl flex items-center justify-center flex-col gap-2 text-center transition hover:bg-white/40">
         <Plus size={28} className="text-black/60 dark:text-white/60" />
-        <span className="text-base text-black/60 dark:text-white/60">{label}</span>
+        <span className="text-base text-black/60 dark:text-white/60">
+          {label}
+        </span>
       </div>
     </button>
   );

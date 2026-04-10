@@ -76,7 +76,9 @@ export function FinanceSideBar({
 
   const linkClass = (isActive: boolean) =>
     `glass-card w-full p-4 block transition duration-150 ${
-      isActive ? "!bg-black/80 text-white" : "hover:!bg-white dark:hover:!bg-white/10"
+      isActive
+        ? "!bg-black/80 text-white"
+        : "hover:!bg-white dark:hover:!bg-white/10"
     }`;
 
   function handleModeChange(nextMode: "expense" | "income" | "transfer") {
@@ -168,7 +170,9 @@ export function FinanceSideBar({
               key={m}
               onClick={() => handleModeChange(m)}
               className={`flex-1 glass-card p-2 ${
-                mode === m ? "!bg-black/80 text-white" : "hover:!bg-white dark:hover:!bg-white/10"
+                mode === m
+                  ? "!bg-black/80 text-white"
+                  : "hover:!bg-white dark:hover:!bg-white/10"
               }`}>
               {m}
             </button>
@@ -183,7 +187,7 @@ export function FinanceSideBar({
             </button>
           </PopoverTrigger>
 
-          <PopoverContent className="w-auto p-0 bg-white/90 backdrop-blur-lg border border-white/40">
+          <PopoverContent className="w-auto p-0 bg-white/90 backdrop-blur-lg border border-white/40 dark:bg-black ">
             <Calendar
               mode="single"
               selected={date}
@@ -192,21 +196,21 @@ export function FinanceSideBar({
                 month: "space-y-3",
                 caption_label: "text-xl text-gray-800 dark:text-white",
                 button_previous:
-                  "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-center",
+                  "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-center dark:text-white",
                 button_next:
-                  "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-center",
-                weekdays: "flex mb-2 gap-1",
+                  "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-cente dark:text-white",
+                weekdays: "flex mb-2 gap-1 dark:text-white",
                 weekday:
-                  "w-9 font-normal text-xs text-center text-gray-400 dark:text-white",
+                  "w-9 font-normal text-xs text-center text-gray-400 dark:text-white ",
                 weeks: "space-y-1",
                 week: "flex gap-1",
-                day: "w-9 h-9 text-center p-0",
+                day: "w-9 h-9 text-center p-0 dark:text-white",
                 day_button:
-                  "w-9 h-9 rounded-xl hover:bg-black/10 transition duration-100",
+                  "w-9 h-9 rounded-xl hover:bg-black/10 transition duration-100 ",
                 selected:
-                  " [&>button]:hover:bg-black/10 [&>button]:font-bold. bg-black/20 rounded-xl",
+                  " [&>button]:hover:bg-black/10 [&>button]:font-semibold",
                 disabled:
-                  "[&>button]:text-gray-300 dark:[&>button]:text-white/30 [&>button]:hover:bg-transparent [&>button]:cursor-not-allowed",
+                  "[&>button]:text-gray-300 dark:[&>button]:text-white/80 [&>button]:hover:bg-transparent [&>button]:cursor-not-allowed ",
               }}
             />
           </PopoverContent>
@@ -224,7 +228,7 @@ export function FinanceSideBar({
             </button>
 
             {showCategory && (
-              <div className="absolute left-0 top-full mt-2 z-50 w-full rounded-2xl border border-white/40 bg-white/90 backdrop-blur-lg shadow-xl overflow-hidden">
+              <div className="absolute left-0 top-full mt-2 z-50 w-full rounded-2xl border border-white/40 bg-white/90 dark:bg-black/80 backdrop-blur-lg shadow-xl overflow-hidden">
                 <div className="max-h-64 overflow-y-auto">
                   {filteredCategories.map((c) => (
                     <div
@@ -307,7 +311,7 @@ export function FinanceSideBar({
           </button>
 
           {showAccount && (
-            <div className="absolute left-0 top-full mt-2 z-50 w-full rounded-2xl border border-white/40 bg-white/90 backdrop-blur-lg shadow-xl overflow-hidden">
+            <div className="absolute left-0 top-full mt-2 z-50 w-full rounded-2xl border border-white/40 bg-white/90 dark:bg-black/80 backdrop-blur-lg shadow-xl overflow-hidden">
               <div className="max-h-64 overflow-y-auto">
                 {accounts.map((acc) => (
                   <div
