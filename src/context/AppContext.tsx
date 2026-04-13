@@ -1,11 +1,11 @@
 import { useFinanceLogic } from "@/pages/finance/logic/logic";
 import { useHabitLogic } from "@/pages/habits/logic/logic";
 import { UseTaskLogic } from "@/pages/tasks/logic/tasklogic";
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState, type ReactNode } from "react";
 
 export const Mycontext = createContext<any>(null);
 
-export function MyState({ children }: any) {
+export function MyState({ children }: { children: ReactNode }) {
   const [mode, setmode] = useState<boolean>(true);
   useEffect(() => {
     document.documentElement.classList.toggle("dark", mode);
