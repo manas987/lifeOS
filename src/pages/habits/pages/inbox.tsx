@@ -7,7 +7,7 @@ import { getLocalDate } from "../logic/logic";
 
 export function HabitsInbox() {
   const [openpending, setopenpending] = useState(true);
-  const [opencompleted, setopencomplted] = useState(false);
+  const [opencompleted, setopencompleted] = useState(false);
   const todayDate = new Date();
   const today = getLocalDate();
   const todayDay = todayDate.getDay();
@@ -104,7 +104,7 @@ export function HabitsInbox() {
           <div className="flex justify-between items-center">
             <h2 className="text-3xl font-extralight">Completed</h2>
 
-            <div onClick={() => setopencomplted((prev) => !prev)}>
+            <div onClick={() => setopencompleted((prev) => !prev)}>
               {opencompleted ? (
                 <ChevronUp size={30} />
               ) : (

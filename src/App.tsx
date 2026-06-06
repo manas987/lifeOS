@@ -4,7 +4,7 @@ import { Route, Routes } from "react-router-dom";
 import { Tasks } from "./pages/tasks/tasks";
 import { Finances } from "./pages/finance/finance";
 import { Habits } from "./pages/habits/habits";
-import { Dashboar } from "./pages/dashboard/dashboard";
+import { MainDashboard } from "./pages/dashboard/dashboard";
 import { Inbox } from "./pages/tasks/subpages/taskinbox";
 import { Today } from "./pages/tasks/subpages/tasktoday";
 import { Upcoming } from "./pages/tasks/subpages/taskupcom";
@@ -26,8 +26,7 @@ function App() {
   dark:from-[#000000]  dark:to-[#06387e] dark:text-white">
       <Navbar />
       <Routes>
-        <Route index element={<Dashboar />} />
-
+        <Route index element={<MainDashboard />} />
         <Route path="/tasks" element={<Tasks />}>
           <Route index element={<Inbox />} />
           <Route path="inbox" element={<Inbox />} />
@@ -36,12 +35,10 @@ function App() {
           <Route path="completed" element={<Completed />} />
           <Route path="project/:projectName" element={<ProjectPage />} />
         </Route>
-
         <Route path="/habits" element={<Habits />}>
           <Route index element={<HabitsInbox />} />
           <Route path="allhabits" element={<AllHabits />} />
         </Route>
-
         <Route path="/finances" element={<Finances />}>
           <Route index element={<Dashboard />} />
           <Route path="debt" element={<Debt />} />

@@ -72,17 +72,16 @@ export function CategoriesCard({ data }: { data: CategoryItem[] }) {
               <span className="text-xs text-black/40 dark:text-white/40">No expense data</span>
             ) : (
               expense.map((item, key) => (
-                <div>
+                <div key={key}>
                   <div
-                    key={key}
                     className="grid grid-cols-[80px_1fr_42px] items-center gap-2 ">
                     <span className="text-lg leading-none truncate">
                       {item.name}
                     </span>
 
-                    <div className="h-5 rounded-md bg-black/10 overflow-hidden">
+                    <div className="h-5 rounded-md bg-black/10 dark:bg-white/10 overflow-hidden">
                       <div
-                        className="h-full bg-black/85 rounded-md"
+                        className="h-full bg-black/85 dark:bg-white/85 rounded-md"
                         style={{ width: `${item.value}%` }}
                       />
                     </div>
@@ -91,7 +90,7 @@ export function CategoriesCard({ data }: { data: CategoryItem[] }) {
                       {item.value}%
                     </span>
                   </div>
-                  <div className="h-[1px] bg-black/10" />
+                  <div className="h-[1px] bg-black/10 dark:bg-white/10" />
                 </div>
               ))
             )}
@@ -105,17 +104,16 @@ export function CategoriesCard({ data }: { data: CategoryItem[] }) {
               <span className="text-xs text-black/40 dark:text-white/40">No income data</span>
             ) : (
               income.map((item, key) => (
-                <div>
+                <div key={key}>
                   <div
-                    key={key}
                     className="grid grid-cols-[80px_1fr_42px] items-center gap-2">
                     <span className="text-lg leading-none truncate">
                       {item.name}
                     </span>
 
-                    <div className="h-5 rounded-md bg-black/10 overflow-hidden">
+                    <div className="h-5 rounded-md bg-black/10 dark:bg-white/10 overflow-hidden">
                       <div
-                        className="h-full bg-black/85 rounded-md"
+                        className="h-full bg-black/85 dark:bg-white/85 rounded-md"
                         style={{ width: `${item.value}%` }}
                       />
                     </div>
@@ -125,7 +123,7 @@ export function CategoriesCard({ data }: { data: CategoryItem[] }) {
                     </span>
                   </div>
 
-                  <div className="h-[1px] bg-black/10" />
+                  <div className="h-[1px] bg-black/10 dark:bg-white/10" />
                 </div>
               ))
             )}
@@ -151,16 +149,15 @@ export function SubscriptionsCard({ data }: { data: SubscriptionItem[] }) {
         {data.length === 0 ? (
           <span className="text-sm text-black/50 dark:text-white/50">No active subscriptions</span>
         ) : (
-          data.map((sub) => (
-            <div>
+          data.map((sub, index) => (
+            <div key={sub.name || index}>
               <div
-                key={sub.name}
-                className="flex justify-between items-center px-3 py-2 rounded-xl hover:bg-black/5 transition ">
+                className="flex justify-between items-center px-3 py-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition ">
                 <span className="text-lg">{sub.name}</span>
 
                 <span className="font-semibold tabular-nums">{sub.amount}</span>
               </div>
-              <div className="h-[1px] bg-black/10" />
+              <div className="h-[1px] bg-black/10 dark:bg-white/10" />
             </div>
           ))
         )}
@@ -200,14 +197,13 @@ export function AccountsCard({ data }: { data: AccountItem[] }) {
           </div>
         ) : (
           data.map((acc, i) => (
-            <div>
+            <div key={i}>
               <div
-                key={i}
-                className="flex justify-between items-center px-2 py-1.5 rounded-lg hover:bg-black/5 transition ">
+                className="flex justify-between items-center px-2 py-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition ">
                 <span className="text-lg">{acc.name}</span>
                 <span className="font-semibold tabular-nums">{acc.amount}</span>
               </div>
-              <div className="h-[1px] bg-black/10" />
+              <div className="h-[1px] bg-black/10 dark:bg-white/10" />
             </div>
           ))
         )}
@@ -277,10 +273,9 @@ export function RecentTransactionsCard({
           </div>
         ) : (
           data.map((t, i) => (
-            <div>
+            <div key={i}>
               <div
-                key={i}
-                className="grid grid-cols-[1.2fr_1fr_1fr_1fr_1fr_0.5fr] items-center px-2 py-2 rounded-lg hover:bg-black/5 text-sm">
+                className="grid grid-cols-[1.2fr_1fr_1fr_1fr_1fr_0.5fr] items-center px-2 py-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-sm">
                 {/* TITLE */}
                 <span className="truncate">{t.title || "empty"}</span>
 
@@ -308,7 +303,7 @@ export function RecentTransactionsCard({
                 {/* ACCOUNT */}
                 <span className="truncate">{t.account || "empty"}</span>
               </div>
-              <div className="h-[1px] bg-black/10" />
+              <div className="h-[1px] bg-black/10 dark:bg-white/10" />
             </div>
           ))
         )}
@@ -355,13 +350,13 @@ export function DebtCard() {
         <div className="flex gap-1">
           <button
             onClick={() => setAmount((a) => a + count)}
-            className="glass-card px-3 py-2 rounded-l-xl hover:bg-black/10">
+            className="glass-card px-3 py-2 rounded-l-xl hover:bg-black/10 dark:hover:bg-white/10 dark:bg-white/10">
             +
           </button>
 
           <button
             onClick={() => setAmount((a) => a - count)}
-            className="glass-card px-3 py-2 rounded-r-xl hover:bg-black/10">
+            className="glass-card px-3 py-2 rounded-r-xl hover:bg-black/10 dark:hover:bg-white/10 dark:bg-white/10">
             -
           </button>
         </div>
@@ -374,7 +369,7 @@ export function AddNewCard({ onClick }: { onClick?: () => void }) {
   return (
     <div
       onClick={onClick}
-      className="glass-card p-4 rounded-3xl w-full flex items-center justify-center cursor-pointer hover:bg-black/5 transition">
+      className="glass-card p-4 rounded-3xl w-full flex items-center justify-center cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition">
       <span className="text-4xl font-light">+</span>
     </div>
   );

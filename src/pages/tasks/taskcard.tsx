@@ -5,7 +5,7 @@ import type { TaskProps } from "./logic/types";
 import { formatDate, formatLocalDate } from "./logic/taskutils";
 import { isPast, isToday } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   Popover,
   PopoverContent,
@@ -40,6 +40,7 @@ export function Tasklayout({
   const [editduedate, seteditduedate] = useState<Date | undefined>(
     duedate ? new Date(duedate) : undefined,
   );
+  const titleInputRef = useRef<HTMLInputElement>(null);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -64,6 +65,7 @@ export function Tasklayout({
       {isediting ? (
         <div className="glass-card flex flex-col p-6 rounded-xl">
           <input
+            ref={titleInputRef}
             type="text"
             value={editinput}
             onChange={(e) => seteditinput(e.target.value)}
@@ -100,15 +102,20 @@ export function Tasklayout({
                 <Calendar
                   mode="single"
                   selected={editduedate}
-                  onSelect={(date) => seteditduedate(date ?? undefined)}
+                  onSelect={(date) => {
+                    seteditduedate(date ?? undefined);
+                    if (date) {
+                      setTimeout(() => titleInputRef.current?.focus(), 0);
+                    }
+                  }}
                   disabled={(date) => date < today}
                   classNames={{
                     month: "space-y-3",
                     caption_label: "text-xl text-gray-800 dark:text-white",
                     button_previous:
-                      "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-center dark:text-white",
+                      "h-8 w-10 hover:bg-black/10 dark:hover:bg-white/10 rounded-lg transition duration-100 flex items-center justify-center dark:text-white",
                     button_next:
-                      "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-cente dark:text-white",
+                      "h-8 w-10 hover:bg-black/10 dark:hover:bg-white/10 rounded-lg transition duration-100 flex items-center justify-cente dark:text-white",
                     weekdays: "flex mb-2 gap-1 dark:text-white",
                     weekday:
                       "w-9 font-normal text-xs text-center text-gray-400 dark:text-white ",
@@ -116,9 +123,9 @@ export function Tasklayout({
                     week: "flex gap-1",
                     day: "w-9 h-9 text-center p-0 dark:text-white",
                     day_button:
-                      "w-9 h-9 rounded-xl hover:bg-black/10 transition duration-100 ",
+                      "w-9 h-9 rounded-xl hover:bg-black/10 dark:hover:bg-white/10 transition duration-100 ",
                     selected:
-                      " [&>button]:hover:bg-black/10 [&>button]:font-semibold",
+                      " [&>button]:hover:bg-black/10 dark:hover:bg-white/10 [&>button]:font-semibold",
                     disabled:
                       "[&>button]:text-gray-300 dark:[&>button]:text-white/80 [&>button]:hover:bg-transparent [&>button]:cursor-not-allowed ",
                   }}
@@ -135,7 +142,7 @@ export function Tasklayout({
                 className="px-3 py-1.5 rounded-lg glass-card hover:bg-white/20 text-sm transition">
                 Cancel
               </button>
-              {/* 547365 my attendence site pin */}
+              {/* Attendance site pin removed for security */}
               <button
                 type="button"
                 onClick={(e) => {
@@ -148,7 +155,7 @@ export function Tasklayout({
                   }
                   e.stopPropagation();
                 }}
-                className={`px-4 py-1.5 rounded-lg ${editinput.length > 0 ? "glass-card" : "bg-gray:950 line-through"} text-black dark:text-white text-sm font-medium transition`}>
+                className={`px-4 py-1.5 rounded-lg ${editinput.length > 0 ? "glass-card" : "bg-gray-950 line-through"} text-black dark:text-white text-sm font-medium transition`}>
                 Save
               </button>
             </div>

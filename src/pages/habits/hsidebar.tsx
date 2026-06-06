@@ -66,7 +66,7 @@ export function Habitside({ habitLogic }: Propssidebar) {
         </div>
 
         {/* Bar */}
-        <div className="w-full mt-2 h-2.5 rounded-full bg-black/10 overflow-hidden">
+        <div className="w-full mt-2 h-2.5 rounded-full bg-black/10 dark:bg-white/10 overflow-hidden">
           <div
             className="h-full bg-black/60 rounded-full transition-all duration-500"
             style={{ width: `${progress}%` }}

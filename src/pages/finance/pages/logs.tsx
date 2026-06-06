@@ -206,9 +206,8 @@ export function Logs() {
               editing?.id === t.id && editing?.field === field;
 
             return (
-              <div>
+              <div key={t.id}>
                 <div
-                  key={t.id}
                   className="relative grid grid-cols-[1.3fr_1fr_1fr_1fr_1fr_1fr_5px] items-center rounded-lg px-2 py-2 text-sm transition hover:bg-white/30 ">
                   <div onClick={() => setEditing({ id: t.id, field: "title" })}>
                     {rowEditing("title") ? (
@@ -327,9 +326,9 @@ export function Logs() {
                               caption_label:
                                 "text-xl text-gray-800 dark:text-white",
                               button_previous:
-                                "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-center dark:text-white",
+                                "h-8 w-10 hover:bg-black/10 dark:hover:bg-white/10 dark:bg-white/10 rounded-lg transition duration-100 flex items-center justify-center dark:text-white",
                               button_next:
-                                "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-cente dark:text-white",
+                                "h-8 w-10 hover:bg-black/10 dark:hover:bg-white/10 dark:bg-white/10 rounded-lg transition duration-100 flex items-center justify-cente dark:text-white",
                               weekdays: "flex mb-2 gap-1 dark:text-white",
                               weekday:
                                 "w-9 font-normal text-xs text-center text-gray-400 dark:text-white ",
@@ -337,9 +336,9 @@ export function Logs() {
                               week: "flex gap-1",
                               day: "w-9 h-9 text-center p-0 dark:text-white",
                               day_button:
-                                "w-9 h-9 rounded-xl hover:bg-black/10 transition duration-100 ",
+                                "w-9 h-9 rounded-xl hover:bg-black/10 dark:hover:bg-white/10 dark:bg-white/10 transition duration-100 ",
                               selected:
-                                " [&>button]:hover:bg-black/10 [&>button]:font-semibold",
+                                " [&>button]:hover:bg-black/10 dark:hover:bg-white/10 dark:bg-white/10 [&>button]:font-semibold",
                               disabled:
                                 "[&>button]:text-gray-300 dark:[&>button]:text-white/80 [&>button]:hover:bg-transparent [&>button]:cursor-not-allowed ",
                             }}
@@ -431,7 +430,7 @@ export function Logs() {
                   </div>
                 </div>
 
-                <div className="h-px bg-black/10" />
+                <div className="h-px bg-black/10 dark:bg-white/10" />
               </div>
             );
           })}

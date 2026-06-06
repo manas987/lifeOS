@@ -56,6 +56,7 @@ export function HabbitCard({
 export function Addhabitcard({ onAdd }: AddHabitProps) {
   const days = ["S", "M", "T", "W", "T", "F", "S"];
 
+  const titleInputRef = useRef<HTMLInputElement>(null);
   const [title, settitle] = useState("");
   const [selectedDays, setSelectedDays] = useState<number[]>([]);
   const [range, setRange] = useState<DateRange | undefined>();
@@ -78,11 +79,21 @@ export function Addhabitcard({ onAdd }: AddHabitProps) {
     <div className="glass-card w-full max-w-md mx-auto flex flex-col p-5 pt-1 pb-1 gap-4 rounded-2xl">
       {/* Title */}
       <input
+        ref={titleInputRef}
         type="text"
         value={title}
         onChange={(e) => settitle(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            if (!title.trim()) return;
+            onAdd(title, selectedDays, range);
+            settitle("");
+            setSelectedDays([]);
+            setRange(undefined);
+          }
+        }}
         placeholder="Title"
-        className="bg-transparent border-b outline-none text-2xl pb-1"
+        className="bg-transparent border-b border-black/30 dark:border-white/30 outline-none text-2xl pb-1"
       />
 
       {/* Repeat */}
@@ -127,7 +138,12 @@ export function Addhabitcard({ onAdd }: AddHabitProps) {
             <Calendar
               mode="range"
               selected={range}
-              onSelect={setRange}
+              onSelect={(r) => {
+                setRange(r);
+                if (r?.from && r?.to) {
+                  setTimeout(() => titleInputRef.current?.focus(), 0);
+                }
+              }}
               numberOfMonths={1}
               disabled={(date) => {
                 const today = new Date();
@@ -142,9 +158,9 @@ export function Addhabitcard({ onAdd }: AddHabitProps) {
                 month: "space-y-3",
                 caption_label: "text-xl text-gray-800 dark:text-white",
                 button_previous:
-                  "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-center",
+                  "h-8 w-10 hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/10 rounded-lg transition duration-100 flex items-center justify-center",
                 button_next:
-                  "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-center",
+                  "h-8 w-10 hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/10 rounded-lg transition duration-100 flex items-center justify-center",
                 weekdays: "flex mb-2 gap-1",
                 weekday:
                   "w-9 font-normal text-xs text-center text-gray-400 dark:text-white",
@@ -152,13 +168,13 @@ export function Addhabitcard({ onAdd }: AddHabitProps) {
                 week: "flex ",
                 day: "w-10 h-9 text-center p-0",
                 day_button:
-                  "w-9 h-9 rounded-xl hover:bg-black/10 transition duration-100 flex items-center justify-center",
+                  "w-9 h-9 rounded-xl hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/10 transition duration-100 flex items-center justify-center",
                 today: "[&>button]:border [&>button]:border-black/40",
-                range_middle: "bg-black/10",
+                range_middle: "bg-black/10 dark:bg-white/10",
                 range_start:
-                  "bg-black/10 rounded-l-xl [&>button]:bg-black [&>button]:text-white",
+                  "bg-black/10 dark:bg-white/10 rounded-l-xl [&>button]:bg-black [&>button]:text-white",
                 range_end:
-                  "bg-black/10 rounded-r-xl [&>button]:bg-black [&>button]:text-white",
+                  "bg-black/10 dark:bg-white/10 rounded-r-xl [&>button]:bg-black [&>button]:text-white",
                 disabled:
                   "[&>button]:text-gray-300 dark:[&>button]:text-white/30 [&>button]:hover:bg-transparent [&>button]:cursor-not-allowed",
               }}
@@ -204,6 +220,7 @@ export function Detailedhabitcard({
   streak,
 }: DetailedHabitProps) {
   const days = ["S", "M", "T", "W", "T", "F", "S"];
+  const titleInputRef = useRef<HTMLInputElement>(null);
   const [localTitle, setLocalTitle] = useState(title);
   const [localDays, setLocalDays] = useState(selectedDays);
   const [localRange, setLocalRange] = useState<DateRange | undefined>(range);
@@ -252,9 +269,10 @@ export function Detailedhabitcard({
       {/* Title */}
       <div className="flex justify-between items-center">
         <input
+          ref={titleInputRef}
           value={localTitle}
           onChange={(e) => setLocalTitle(e.target.value)}
-          className="bg-transparent border-b outline-none text-2xl pb-1 w-full"
+          className="bg-transparent border-b border-black/30 dark:border-white/30 outline-none text-2xl pb-1 w-full"
         />
 
         <div className="flex items-center gap-2">
@@ -317,7 +335,12 @@ export function Detailedhabitcard({
             <Calendar
               mode="range"
               selected={localRange}
-              onSelect={setLocalRange}
+              onSelect={(r) => {
+                setLocalRange(r);
+                if (r?.from && r?.to) {
+                  setTimeout(() => titleInputRef.current?.focus(), 0);
+                }
+              }}
               numberOfMonths={1}
               disabled={(date) => {
                 const today = new Date();
@@ -332,9 +355,9 @@ export function Detailedhabitcard({
                 month: "space-y-3",
                 caption_label: "text-xl text-gray-800 dark:text-white",
                 button_previous:
-                  "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-center dark:text-white",
+                  "h-8 w-10 hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/10 rounded-lg transition duration-100 flex items-center justify-center dark:text-white",
                 button_next:
-                  "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-center dark:text-white",
+                  "h-8 w-10 hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/10 rounded-lg transition duration-100 flex items-center justify-center dark:text-white",
                 weekdays: "flex mb-2 gap-1 dark:text-white",
                 weekday:
                   "w-9 font-normal text-xs text-center text-gray-400 dark:text-white",
@@ -342,13 +365,13 @@ export function Detailedhabitcard({
                 week: "flex ",
                 day: "w-10 h-9 text-center",
                 day_button:
-                  "w-9 h-9 rounded-xl hover:bg-black/10 transition duration-100 flex items-center justify-center dark:text-white",
+                  "w-9 h-9 rounded-xl hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/10 transition duration-100 flex items-center justify-center dark:text-white",
                 today: "[&>button]:border [&>button]:border-black/40",
-                range_middle: "bg-black/10",
+                range_middle: "bg-black/10 dark:bg-white/10",
                 range_start:
-                  "bg-black/10 rounded-l-xl [&>button]:bg-black [&>button]:text-white",
+                  "bg-black/10 dark:bg-white/10 rounded-l-xl [&>button]:bg-black [&>button]:text-white",
                 range_end:
-                  "bg-black/10 rounded-r-xl [&>button]:bg-black [&>button]:text-white",
+                  "bg-black/10 dark:bg-white/10 rounded-r-xl [&>button]:bg-black [&>button]:text-white",
                 disabled:
                   "[&>button]:text-gray-300 dark:[&>button]:text-white/80 [&>button]:hover:bg-transparent [&>button]:cursor-not-allowed ",
               }}
@@ -390,7 +413,7 @@ export function HabitHeatmapCard({ habitlist }: { habitlist: Habit[] }) {
   const todayStr = getLocalDate(today);
 
   function getColor(value: number) {
-    if (value === 0) return "bg-black/10";
+    if (value === 0) return "bg-black/10 dark:bg-white/10";
     if (value <= 2) return "bg-green-300";
     if (value <= 4) return "bg-green-400";
     return "bg-green-500";

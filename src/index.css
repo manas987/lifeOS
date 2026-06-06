@@ -17,6 +17,9 @@
     inset 0 0 0px 0px rgba(255, 255, 255, 0);
   overflow: visible;
 }
+@theme{
+  --primary-color:oklch(76.8% 0.233 130.85);
+}
 
 .glass-card::before {
   content: "";

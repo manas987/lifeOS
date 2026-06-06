@@ -13,7 +13,7 @@ import {
   Cell,
 } from "recharts";
 
-export function Dashboar() {
+export function MainDashboard() {
   const { task, habbit, finance } = useContext(Mycontext);
   const { transactions, accounts, categories, subscriptions } = finance;
   const { habitslist, CountStreak } = habbit;

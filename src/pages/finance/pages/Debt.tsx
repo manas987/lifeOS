@@ -206,12 +206,12 @@ function TrackCard({
         <Trash size={14} className="text-red-500" />
       </button>
 
-      <input
-        value={data.name}
-        onChange={(e) => onUpdate({ name: e.target.value })}
-        placeholder={kind === "debt" ? "Debt name" : "Person name"}
-        className="border-b border-black/30 bg-transparent pb-1 text-lg font-medium outline-none"
-      />
+        <input
+          value={data.name}
+          onChange={(e) => onUpdate({ name: e.target.value })}
+          placeholder={kind === "debt" ? "Debt name" : "Person name"}
+          className="border-b border-black/30 dark:border-white/30 bg-transparent pb-1 text-lg font-medium outline-none"
+        />
 
       <div className="flex flex-col gap-1">
         <span className="text-xs text-black/50 dark:text-white/50">
@@ -248,19 +248,22 @@ function TrackCard({
         <input
           value={input}
           onChange={(e) => setInput(cleanNumber(e.target.value))}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") applyChange("add");
+          }}
           placeholder="amount"
           className="glass-card w-full rounded-xl px-3 py-2 outline-none"
         />
 
         <button
           onClick={() => applyChange("add")}
-          className={`glass-card rounded-xl px-3 py-2 transition hover:bg-black/10 ${accentText}`}>
+          className={`glass-card rounded-xl px-3 py-2 transition hover:bg-black/10 dark:hover:bg-white/10 ${accentText}`}>
           +
         </button>
 
         <button
           onClick={() => applyChange("sub")}
-          className="glass-card rounded-xl px-3 py-2 transition hover:bg-black/10 text-black/70 dark:text-white/70">
+          className="glass-card rounded-xl px-3 py-2 transition hover:bg-black/10 dark:hover:bg-white/10 text-black/70 dark:text-white/70">
           -
         </button>
       </div>

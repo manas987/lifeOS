@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import type { Account, Category, Transaction } from "./logic/types";
@@ -67,6 +67,9 @@ export function FinanceSideBar({
 
   const [addingAccount, setAddingAccount] = useState(false);
   const [newAccountName, setNewAccountName] = useState("");
+
+  const formRef = useRef<HTMLFormElement>(null);
+  const titleInputRef = useRef<HTMLInputElement>(null);
 
   const filteredCategories = categories.filter((c) => c.type === mode);
 
@@ -145,7 +148,33 @@ export function FinanceSideBar({
         Subscriptions
       </NavLink>
 
-      <div className="glass-card p-4 pt-1 flex flex-col gap-3 overflow-visible">
+      <form
+        ref={formRef}
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (!amount || Number(amount) <= 0 || !account || !date) return;
+          if (mode === "transfer" && (!toAccountId || account === toAccountId))
+            return;
+
+          addTransaction(
+            Number(amount),
+            mode,
+            account,
+            date.toISOString().slice(0, 10),
+            mode === "transfer" ? toAccountId : undefined,
+            title,
+            mode === "transfer" ? undefined : categoryId,
+            note,
+          );
+
+          setAmount("");
+          setTitle("");
+          setCategoryId("");
+          setAccount("");
+          setNote("");
+          setToAccountId("");
+        }}
+        className="glass-card p-4 pt-1 flex flex-col gap-3 overflow-visible">
         <h3 className="text-lg font-light -mb-1 -mt-1">Add Transaction</h3>
 
         <input
@@ -157,6 +186,7 @@ export function FinanceSideBar({
         />
 
         <input
+          ref={titleInputRef}
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
@@ -188,17 +218,22 @@ export function FinanceSideBar({
           </PopoverTrigger>
 
           <PopoverContent className="w-auto p-0 bg-white/90 backdrop-blur-lg border border-white/40 dark:bg-black ">
-            <Calendar
-              mode="single"
-              selected={date}
-              onSelect={setDate}
+              <Calendar
+                mode="single"
+                selected={date}
+                onSelect={(d) => {
+                  setDate(d);
+                  if (d) {
+                    setTimeout(() => titleInputRef.current?.focus(), 0);
+                  }
+                }}
               classNames={{
                 month: "space-y-3",
                 caption_label: "text-xl text-gray-800 dark:text-white",
                 button_previous:
-                  "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-center dark:text-white",
+                  "h-8 w-10 hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/10 rounded-lg transition duration-100 flex items-center justify-center dark:text-white",
                 button_next:
-                  "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-cente dark:text-white",
+                  "h-8 w-10 hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/10 rounded-lg transition duration-100 flex items-center justify-cente dark:text-white",
                 weekdays: "flex mb-2 gap-1 dark:text-white",
                 weekday:
                   "w-9 font-normal text-xs text-center text-gray-400 dark:text-white ",
@@ -206,9 +241,9 @@ export function FinanceSideBar({
                 week: "flex gap-1",
                 day: "w-9 h-9 text-center p-0 dark:text-white",
                 day_button:
-                  "w-9 h-9 rounded-xl hover:bg-black/10 transition duration-100 ",
+                  "w-9 h-9 rounded-xl hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/10 transition duration-100 ",
                 selected:
-                  " [&>button]:hover:bg-black/10 [&>button]:font-semibold",
+                  " [&>button]:hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/10 [&>button]:font-semibold",
                 disabled:
                   "[&>button]:text-gray-300 dark:[&>button]:text-white/80 [&>button]:hover:bg-transparent [&>button]:cursor-not-allowed ",
               }}
@@ -234,7 +269,7 @@ export function FinanceSideBar({
                     <div
                       key={c.id}
                       className={`w-full px-3 py-2 text-left flex items-center justify-between hover:bg-black/5 ${
-                        c.id === categoryId ? "bg-black/10" : ""
+                        c.id === categoryId ? "bg-black/10 dark:bg-white/10" : ""
                       }`}
                       onClick={() => {
                         setCategoryId(c.id);
@@ -270,7 +305,7 @@ export function FinanceSideBar({
                   ))}
                 </div>
 
-                <div className="h-px bg-black/10" />
+                <div className="h-px bg-black/10 dark:bg-white/10" />
 
                 {!addingCategory ? (
                   <button
@@ -317,7 +352,7 @@ export function FinanceSideBar({
                   <div
                     key={acc.id}
                     className={`w-full px-3 py-2 text-left flex items-center justify-between hover:bg-black/5 ${
-                      acc.id === account ? "bg-black/10" : ""
+                      acc.id === account ? "bg-black/10 dark:bg-white/10" : ""
                     }`}
                     onClick={() => {
                       setAccount(acc.id);
@@ -362,7 +397,7 @@ export function FinanceSideBar({
                 ))}
               </div>
 
-              <div className="h-px bg-black/10" />
+              <div className="h-px bg-black/10 dark:bg-white/10" />
 
               {!addingAccount ? (
                 <button
@@ -411,7 +446,7 @@ export function FinanceSideBar({
                       <div
                         key={acc.id}
                         className={`w-full px-3 py-2 text-left flex items-center justify-between hover:bg-black/5 ${
-                          acc.id === toAccountId ? "bg-black/10" : ""
+                          acc.id === toAccountId ? "bg-black/10 dark:bg-white/10" : ""
                         }`}
                         onClick={() => {
                           setToAccountId(acc.id);
@@ -420,7 +455,7 @@ export function FinanceSideBar({
                         <span>{acc.name}</span>
 
                         <div className="flex items-center gap-2">
-                          {acc.id === toAccountId && <Check size={14} />}ƒ
+                          {acc.id === toAccountId && <Check size={14} />}
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
@@ -461,35 +496,10 @@ export function FinanceSideBar({
 
         <button
           className="glass-card p-3 pt-2 hover:!bg-white dark:hover:!bg-white/10 transition -mb-14"
-          onClick={() => {
-            if (!amount || Number(amount) <= 0 || !account || !date) return;
-            if (
-              mode === "transfer" &&
-              (!toAccountId || account === toAccountId)
-            )
-              return;
-
-            addTransaction(
-              Number(amount),
-              mode,
-              account,
-              date.toISOString().slice(0, 10),
-              mode === "transfer" ? toAccountId : undefined,
-              title,
-              mode === "transfer" ? undefined : categoryId,
-              note,
-            );
-
-            setAmount("");
-            setTitle("");
-            setCategoryId("");
-            setAccount("");
-            setNote("");
-            setToAccountId("");
-          }}>
+          type="submit">
           Add
         </button>
-      </div>
+      </form>
     </div>
   );
 }

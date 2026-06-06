@@ -134,9 +134,8 @@ export function Upcoming() {
                       {taskfordate.map((task: Tasktype) => {
                         const isActive = activeTask?.id === task.id;
                         return (
-                          <div style={{ opacity: isActive ? 0 : 1 }}>
+                          <div key={task.id} style={{ opacity: isActive ? 0 : 1 }}>
                             <Tasklayout
-                              key={task.id}
                               title={task.title}
                               duedate={task.duedate}
                               projectname={task.project}

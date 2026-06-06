@@ -6,7 +6,7 @@ import {
   Plus,
   Ellipsis,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
@@ -32,6 +32,7 @@ export function Taskside({
   const [openproj, setopenproj] = useState<string | null>(null);
   const [editingproj, seteditingproj] = useState<string | null>(null);
   const [editprojval, seteditprojval] = useState<string>("");
+  const titleInputRef = useRef<HTMLInputElement>(null);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -74,7 +75,6 @@ export function Taskside({
 
       <form
         onSubmit={(e) => {
-          console.log(date);
           e.preventDefault();
           if (!title.trim()) return;
           if (currentlyon) {
@@ -88,6 +88,7 @@ export function Taskside({
 
         <div className="flex gap-2 items-stretch">
           <input
+            ref={titleInputRef}
             value={title}
             type="text"
             placeholder="task name"
@@ -122,7 +123,10 @@ export function Taskside({
                 selected={date}
                 onSelect={(d) => {
                   setDate(d);
-                  if (d) setcalopen(false);
+                  if (d) {
+                    setcalopen(false);
+                    setTimeout(() => titleInputRef.current?.focus(), 0);
+                  }
                 }}
                 disabled={(date) => date < today}
                 formatters={{
@@ -133,9 +137,9 @@ export function Taskside({
                   month: "space-y-3",
                   caption_label: "text-xl text-gray-800 dark:text-white",
                   button_previous:
-                    "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-center dark:text-white",
+                    "h-8 w-10 hover:bg-black/10 dark:hover:bg-white/10 rounded-lg transition duration-100 flex items-center justify-center dark:text-white",
                   button_next:
-                    "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-cente dark:text-white",
+                    "h-8 w-10 hover:bg-black/10 dark:hover:bg-white/10 rounded-lg transition duration-100 flex items-center justify-cente dark:text-white",
                   weekdays: "flex mb-2 gap-1 dark:text-white",
                   weekday:
                     "w-9 font-normal text-xs text-center text-gray-400 dark:text-white ",
@@ -143,9 +147,9 @@ export function Taskside({
                   week: "flex gap-1",
                   day: "w-9 h-9 text-center p-0 dark:text-white",
                   day_button:
-                    "w-9 h-9 rounded-xl hover:bg-black/10 transition duration-100 ",
+                    "w-9 h-9 rounded-xl hover:bg-black/10 dark:hover:bg-white/10 transition duration-100 ",
                   selected:
-                    " [&>button]:hover:bg-black/10 [&>button]:font-semibold",
+                    " [&>button]:hover:bg-black/10 dark:hover:bg-white/10 [&>button]:font-semibold",
                   disabled:
                     "[&>button]:text-gray-300 dark:[&>button]:text-white/80 [&>button]:hover:bg-transparent [&>button]:cursor-not-allowed ",
                 }}
@@ -248,7 +252,7 @@ export function Taskside({
                         e.stopPropagation();
                         setopenproj(openproj === proj ? null : proj);
                       }}
-                      className={`transition-opacity duration-150 hover:bg-black/10 rounded-full p-0.5 ${
+                      className={`transition-opacity duration-150 hover:bg-black/10 dark:hover:bg-white/10 rounded-full p-0.5 ${
                         openproj === proj
                           ? "opacity-100"
                           : "opacity-0 group-hover:opacity-100"

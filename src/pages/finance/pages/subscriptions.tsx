@@ -204,7 +204,7 @@ function SubscriptionCard({
         value={data.name}
         onChange={(e) => onUpdate({ name: e.target.value })}
         placeholder="Subscription name"
-        className="border-b border-black/30 bg-transparent pb-1 text-lg font-medium outline-none "
+        className="border-b border-black/30 dark:border-white/30 bg-transparent pb-1 text-lg font-medium outline-none "
       />
 
       <div className="flex flex-col gap-1">
@@ -252,9 +252,9 @@ function SubscriptionCard({
                 month: "space-y-3",
                 caption_label: "text-xl text-gray-800 dark:text-white",
                 button_previous:
-                  "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-center dark:text-white",
+                  "h-8 w-10 hover:bg-black/10 dark:hover:bg-white/10 rounded-lg transition duration-100 flex items-center justify-center dark:text-white",
                 button_next:
-                  "h-8 w-10 hover:bg-black/10 rounded-lg transition duration-100 flex items-center justify-cente dark:text-white",
+                  "h-8 w-10 hover:bg-black/10 dark:hover:bg-white/10 rounded-lg transition duration-100 flex items-center justify-cente dark:text-white",
                 weekdays: "flex mb-2 gap-1 dark:text-white",
                 weekday:
                   "w-9 font-normal text-xs text-center text-gray-400 dark:text-white ",
@@ -262,9 +262,9 @@ function SubscriptionCard({
                 week: "flex gap-1",
                 day: "w-9 h-9 text-center p-0 dark:text-white",
                 day_button:
-                  "w-9 h-9 rounded-xl hover:bg-black/10 transition duration-100 ",
+                  "w-9 h-9 rounded-xl hover:bg-black/10 dark:hover:bg-white/10 transition duration-100 ",
                 selected:
-                  " [&>button]:hover:bg-black/10 [&>button]:font-semibold",
+                  " [&>button]:hover:bg-black/10 dark:hover:bg-white/10 [&>button]:font-semibold",
                 disabled:
                   "[&>button]:text-gray-300 dark:[&>button]:text-white/80 [&>button]:hover:bg-transparent [&>button]:cursor-not-allowed ",
               }}
@@ -332,14 +332,14 @@ function SubscriptionCard({
       <div className="flex items-center gap-2">
         <button
           onClick={onPaid}
-          className="glass-card flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2 transition hover:bg-black/10">
+          className="glass-card flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2 transition hover:bg-black/10 dark:hover:bg-white/10">
           <Check size={14} />
           Paid
         </button>
 
         <button
           onClick={() => onUpdate({ active: !data.active })}
-          className="glass-card rounded-xl px-3 py-2 transition hover:bg-black/10">
+          className="glass-card rounded-xl px-3 py-2 transition hover:bg-black/10 dark:hover:bg-white/10">
           {data.active ? "Pause" : "Resume"}
         </button>
       </div>
